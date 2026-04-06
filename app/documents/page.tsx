@@ -9,6 +9,7 @@ const DocumentsPage = () => {
           return (
             <div key={doc.id}>
               <h1>{doc.name}</h1>
+              <p>{doc.description}</p>
             </div>
           )
         })
