@@ -2,14 +2,13 @@ import TakwimTachkhisiForm from "@/pages/TakwimTachkhisiForm";
 import { documentsConfig } from "@/src/config/documents";
 import React from "react"
 
-
-const FilePage = ({params}: {params: Promise<{file:string, category:string}>}) => {
-  const {category, file} = React.use(params);
-  const files = documentsConfig[category as keyof typeof documentsConfig ].files[file as keyof typeof documentsConfig] ;
+const FilePage = ({ params }: { params: Promise<{ file: string, category: string }> }) => {
+  const { category, file } = React.use(params);
+  const files = documentsConfig[category as keyof typeof documentsConfig].files[file as keyof typeof documentsConfig];
   console.log(files);
 
   const components = {
-    taqwimTach : <TakwimTachkhisiForm /> //the name should be like the config components
+    taqwimTach: <TakwimTachkhisiForm /> //the name should be like the config components
   }
 
   return (

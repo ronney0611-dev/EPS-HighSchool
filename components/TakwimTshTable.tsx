@@ -27,6 +27,31 @@ const TakwimTshTable = () => {
         console.log(students)
     }
 
+    {/* const totalResult1 = students.reduce((acc, student)=> {
+        return(
+            (acc + student.score.reduce((a, b)=> a + b.t1, 0 ))  
+        )
+    },0 );
+
+    const averageT1 = students.length === 0
+    ?0
+    : totalResult1 / students.length; */} //this calculate all t1 score 
+
+    const totalT2PerMochir = Array.from({ length: mochir }, (_, i) => {
+        const total = students.reduce((acc, student) => {
+            return acc + student.score[i].t2;
+        }, 0);
+
+        return students.length === 0 ? 0 : total / students.length;
+    });
+    const totalT1PerMochir = Array.from({ length: mochir }, (_, i) => {
+        const total = students.reduce((acc, student) => {
+            return acc + student.score[i].t1;
+        }, 0);
+
+        return students.length === 0 ? 0 : total / students.length;
+    });
+
     return (
         <section dir="rtl" className="mb-10 mx-10  ">
             {/* المؤشر handler*/}
@@ -107,12 +132,54 @@ const TakwimTshTable = () => {
                                     <td className="border">{percentaget1}%</td>
                                     <td className="border">{percentaget2}%</td>
                                     <td className="border"> {t2_t1}%</td>
-                                    <td className="border"></td><td className="border"></td><td className="border"></td>
-                                    <td className="border"></td><td className="border"></td>
+                                    <td className="border">14.23</td><td className="border">14.23</td><td className="border">xx.xx</td>
+                                    <td className="border">cc.cc</td><td className="border">bb..bb</td>
                                 </tr>
                             )
                         })
                     }
+
+                    <tr>
+                        <td className="border"></td>
+                        <td className="border">النتيجة الجماعية</td>
+                        {totalT1PerMochir.map((value, i) => (
+                            <React.Fragment key={i}>
+                                {/* T1 */}
+                                <td className="border">{value.toFixed(2)}</td>
+                                {/*T2 */}
+                                <td className="border">{totalT2PerMochir[i].toFixed(2)}</td>
+                            </React.Fragment>
+                        ))}
+                        <td className="border"></td>
+                        <td className="border"></td>
+                        <td className="border"></td>
+                        <td className="border"></td>
+                        <td className="border"></td>
+                        <td className="border"></td>
+                        <td className="border"></td>
+                        <td className="border"></td>
+                    </tr>
+
+                    <tr>
+                        <td className="border"></td>
+                        <td className="border">النسبة %</td>
+                        {totalT1PerMochir.map((value, i) => (
+                            <React.Fragment key={i}>
+                                {/* T1 */}
+                                <td className="border">{(value *100).toFixed(2)}%</td>
+                                {/*T2 */}
+                                <td className="border">{(totalT2PerMochir[i] * 100).toFixed(2)}%</td>
+                            </React.Fragment>
+                        ))}
+                        <td className="border"></td>
+                        <td className="border"></td>
+                        <td className="border"></td>
+                        <td className="border"></td>
+                        <td className="border"></td>
+                        <td className="border"></td>
+                        <td className="border"></td>
+                        <td className="border"></td>
+                    </tr>
                 </tbody>
             </table>
         </section>
