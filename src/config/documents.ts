@@ -44,5 +44,20 @@ export const documentsConfig =
                 component: 'taqwimTach'
             }
         },
+    },
+    planOfTheYear: {
+        id: 'first',
+        name: 'mokhatat',
+        description: 'mokhatat is a document management system designed to help students and teachers organize and access their academic materials efficiently.',
+        files: {
+            mokhatat1: {
+                id: 's1',
+                name: "mokhatat1",
+                description: "This is the first mokhatat document",
+                type: 'static',
+                src: '/documents/barmaja/1.pdf',
+                thumbnail: '/documents/barmaja/barmaja.png'
+            },
+        }
     }
 }
