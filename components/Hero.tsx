@@ -1,6 +1,7 @@
 'use client'
 
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 const Hero = () => {
@@ -38,7 +39,7 @@ const Hero = () => {
                 `}
             </style>
 
-            <header dir="rtl" className='bg-black lg:mt-[-20] text-white flex flex-col items-center bg-[url("https://assets.prebuiltui.com/images/components/hero-section/hero-background-image.png")] bg-cover bg-center bg-no-repeat pb-10'>
+            <header dir="rtl" className='bg-black lg:mt-[-20] lg:mb-[-100] text-white flex flex-col items-center bg-[url("https://assets.prebuiltui.com/images/components/hero-section/hero-background-image.png")] bg-cover bg-center bg-no-repeat pb-10'>
 
                 <div className="rainbow relative z-0 bg-white/15 overflow-hidden p-px flex items-center justify-center rounded-full transition duration-300 active:scale-100 mt-8 md:mt-32">
                     <button className="flex items-center justify-center gap-3 pl-4 pr-6 py-3 text-white rounded-full font-medium bg-gray-900/80 backdrop-blur">
@@ -58,19 +59,20 @@ const Hero = () => {
                 </p>
 
                 <div className="mx-4 my-10 grid lg:grid-cols-2 gap-6 sm:grid-rows-2">
-                    <div className="flex flex-col items-center text-center border border-gray-500 rounded-2xl py-2 " >
-                        <div  >
+                    <div className="flex flex-col items-center text-center border border-gray-500 rounded-2xl py-2 transition-transform duration-300 hover:scale-102 " >
+                        <Link href={`/documents`} >
                             <Image src={'/images/Entraîneur avec un clipboard sur le terrain.png'} alt="sport teacher" width={'200'} height={100}
                                 className="rounded-2xl my-2" />
-                        </div>
+
+                        </Link>
                         <div>
                             <p className="text-lg my-2 px-4" >
                                 أنشئ بطاقات تقويم رسمية بسرعة | أدخل أسماء التلاميذ، سجّل النتائج، واحسب النسب المئوية تلقائياً ثم صدّرها كملف
-                                 PDF جاهز للطباعة | 
-                                نماذج البرمجة السنوية والمخططات الجاهزة لجميع المستويات — حمّلها مباشرة ووفّر وقتك  
+                                PDF جاهز للطباعة |
+                                نماذج البرمجة السنوية والمخططات الجاهزة لجميع المستويات — حمّلها مباشرة ووفّر وقتك
                             </p>
                         </div>
-                        <div className="rainbow my-4 relative z-0 bg-white/15 overflow-hidden p-px flex items-center justify-center rounded-full transition duration-300 active:scale-100">
+                        <Link href={`/documents`} className="rainbow my-4 relative z-0 bg-white/15 overflow-hidden p-px flex items-center justify-center rounded-full transition duration-300 active:scale-100">
                             <button className="flex items-center justify-center gap-3 cursor-pointer pl-4 pr-6 py-3 text-white rounded-full font-medium bg-gray-900/80 backdrop-blur">
                                 <div className="relative flex size-3.5 items-center justify-center">
                                     <span className="absolute inline-flex h-full w-full rounded-full bg-[#A6FF5D] opacity-75 animate-ping duration-300"></span>
@@ -78,20 +80,20 @@ const Hero = () => {
                                 </div>
                                 <span className='text-lg px-4'>اكتشف المزيد</span>
                             </button>
-                        </div>
+                        </Link>
                     </div>
-                    <div className="flex flex-col items-center text-center border border-gray-500 rounded-2xl py-2 " >
-                        <div  >
+                    <div className="flex flex-col items-center text-center border border-gray-500 rounded-2xl py-2  transition-transform duration-300 hover:scale-102" >
+                        <Link href={`/exercises`} >
                             <Image src={'/images/Sports en action.png'} alt="sport teacher" width={200} height={100}
                                 className="rounded-2xl my-2 object-contain" />
-                        </div>
+                        </Link>
                         <div>
                             <p className="text-lg my-2 px-4 flex text-center  " >
                                 - تمارين جاهزة لكل نشاط -
                                 كرة الطائرة، كرة السلة، كرة اليد، الجري السريع والمزيد <br /> اختر النشاط، صف ما تحتاجه، <br /> وذكاؤنا الاصطناعي يقترح عليك التمارين المناسبة فوراً.
                             </p>
                         </div>
-                        <div className="rainbow my-4 relative z-0 bg-white/15 overflow-hidden p-px flex items-center justify-center rounded-full transition duration-300 active:scale-100">
+                        <Link href={`/exercises`} className="rainbow my-4 relative z-0 bg-white/15 overflow-hidden p-px flex items-center justify-center rounded-full transition duration-300 active:scale-100">
                             <button className="flex items-center justify-center gap-3 cursor-pointer pl-4 pr-6 py-3 text-white rounded-full font-medium bg-gray-900/80 backdrop-blur">
                                 <div className="relative flex size-3.5 items-center justify-center">
                                     <span className="absolute inline-flex h-full w-full rounded-full bg-[#A6FF5D] opacity-75 animate-ping duration-300"></span>
@@ -99,12 +101,12 @@ const Hero = () => {
                                 </div>
                                 <span className='text-lg px-4'>اكتشف المزيد</span>
                             </button>
-                        </div>
+                        </Link>
                     </div>
                 </div>
 
 
-            </header>
+            </header >
         </>
     )
 }
