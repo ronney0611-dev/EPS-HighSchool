@@ -15,7 +15,7 @@ const FilePage = ({ params }: { params: Promise<{ file: string, category: string
 
   return (
     <div>
-      {components[files.component]}
+      {components[files.component as keyof typeof components]}
     </div>
   )
 }
