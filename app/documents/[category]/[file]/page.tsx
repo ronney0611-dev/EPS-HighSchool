@@ -5,7 +5,7 @@ import React from "react"
 
 const FilePage = ({ params }: { params: Promise<{ file: string, category: string }> }) => {
   const { category, file } = React.use(params);
-  const files = documentsConfig[category as keyof typeof documentsConfig].files[file as keyof typeof documentsConfig];
+  const files = (documentsConfig[category as keyof typeof documentsConfig].files as any)[file ];
   console.log(files);
 
   const components = {
