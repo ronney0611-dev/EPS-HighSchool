@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 const ProfileDoc = () => {
     const [teacherInfo, setTeacherInfo] = useState({
-        picture: null,
+        picture: '',
         name: '',
         nationality: '',
         birthday: '',
