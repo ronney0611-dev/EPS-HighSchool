@@ -6,7 +6,7 @@ const TakwimTshTable = () => {
 
     const [mochir, setMochir] = useState(4);
     const [newName, setNewName] = useState('');
-    const [students, setStudents] = useState([]);
+    const [students, setStudents] = useState<{name: string, score: {t1: number, t2: number}[]}[]>([]);
 
     //add student
     const addStudent = () => {
@@ -18,9 +18,9 @@ const TakwimTshTable = () => {
     }
 
     //update the score for student
-    const updateScore = (studentIndex, scoreIndex, attempt, value) => {
-        let newStudents = [...students]; //copy the students array
-        let newStudentScore = [...newStudents[studentIndex].score]; //copy the spsfic student score
+    const updateScore = (studentIndex: number, scoreIndex: number, attempt: string, value: number) => {
+        const newStudents = [...students]; //copy the students array
+        const newStudentScore = [...newStudents[studentIndex].score]; //copy the spsfic student score
         newStudentScore[scoreIndex] = { ...newStudentScore[scoreIndex], [attempt]: value }
         newStudents[studentIndex] = { ...newStudents[studentIndex], score: newStudentScore } //put the updated scores back into the student
         setStudents(newStudents); // update the state
