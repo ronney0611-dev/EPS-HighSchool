@@ -23,7 +23,7 @@ const ProfileDoc = () => {
                     <div className="flex flex-col gap-2">
                         <label>Upload Picture</label>
                         <input onChange={e => {
-                            const file = e.target.files[0]
+                            const file = e.target.files?.[0]
                             if (file) {
                                 const url = URL.createObjectURL(file)
                                 setTeacherInfo({ ...teacherInfo, picture: url })
