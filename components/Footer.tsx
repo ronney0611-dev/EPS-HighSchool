@@ -7,7 +7,7 @@ const Footer = () => {
             <hr className='my-5 border-gray-500 ' />
 
             <div className='lg:flex lg:justify-end justify-center' >
-                <div className='text-start text-sm' >© 2024 Mohammed B. | ronneyDev. All rights rederved.</div>
+                <div className='text-start text-sm' >© 2026 Mohammed B | ronneyDev. All rights rederved.</div>
 
                 <div>
                     <div className='text-white mx-20 w-2/3 flex justify-between' >

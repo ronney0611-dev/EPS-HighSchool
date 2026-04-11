@@ -3,24 +3,23 @@ export const documentsConfig =
 {
     informationCard: {
         id: 'first',
-        image: '/',
+        image: '/images/information.png',
         name: 'بطاقة المعلومات الشخصية',
         description: 'mokhatat is a document management system designed to help students and teachers organize and access their academic materials efficiently.',
         files: {
-            mokhatat1: {
-                id: 's1',
-                name: "mokhatat1",
+            informationCard: {
+                id: 'بطاقة-المعلومات-الشخصية',
+                name: 'بطاقة-المعلومات-الشخصية',
                 description: "This is the first mokhatat document",
-                type: 'static',
-                src: '/documents/barmaja/1.pdf',
-                thumbnail: '/documents/barmaja/barmaja.png'
+                type: 'interactive',
+                component: 'informationCard',
             },
         }
     },
     jardCard: {
         id: 'first',
         name: 'بطاقة الجرد',
-        image: '/',
+        image: '/images/calc.png',
         description: 'mokhatat is a document management system designed to help students and teachers organize and access their academic materials efficiently.',
         files: {
             mokhatat1: {
@@ -36,7 +35,7 @@ export const documentsConfig =
     timeCard: {
         id: 'first',
         name: 'استعمال الزمن',
-        image: '/',
+        image: '/images/time.png',
         description: 'mokhatat is a document management system designed to help students and teachers organize and access their academic materials efficiently.',
         files: {
             mokhatat1: {
@@ -102,6 +101,30 @@ export const documentsConfig =
                 type: 'static',
                 src: '/documents/plan/2.pdf',
                 thumbnail: '/images/plan.png'
+            },
+        }
+    },
+    classPlan: {
+        id: 'first',
+        name: 'تفويج القسم',
+        image: '/images/groupe.png',
+        description: 'mokhatat is a document management system designed to help students and teachers organize and access their academic materials efficiently.',
+        files: {
+            mokhatat1: {
+                id: 's1',
+                name: "تفويج القسم-1",
+                description: "بلمسة زر واحدة. حمل المخطط السنوي. الفصل الاول",
+                type: 'static',
+                src: '/documents/plan/groupe1.docx',
+                thumbnail: '/images/group1.png'
+            },
+            mokhatat2: {
+                id: 's4',
+                name: "تفويج القسم-2",
+                description: "بلمسة زر واحدة. حمل المخطط السنوي. الفصل الاول",
+                type: 'static',
+                src: '/documents/plan/groupe2.docx',
+                thumbnail: '/images/group2.png'
             },
         }
     },

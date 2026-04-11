@@ -24,11 +24,11 @@ const CategoryPage = ({ params }: { params: Promise<{ category: string }> }) => 
                       </a>
                     </div>
 
-                  ) : (
-                    <Link href={`/documents/${category}/${doc.id}`} >
-                      hello world
+                  ) : Object.entries(post.files).map(([key, doc]) => (
+                    <Link key={doc} href={`/documents/${category}/${key}`}>
+                      hello
                     </Link>
-                  )
+                  ))
                 }
                 <h1 className='text-xl font-medium  mt-2' >{doc.name}</h1>
                 <p className='flex justify-center text-center my-2 text-gray-400' >{doc.description}</p>
