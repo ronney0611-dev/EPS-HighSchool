@@ -6,13 +6,13 @@ const TakwimTshTable = () => {
 
     const [mochir, setMochir] = useState(4);
     const [newName, setNewName] = useState('');
-    const [students, setStudents] = useState<{name: string, score: {t1: number, t2: number}[]}[]>([]);
+    const [students, setStudents] = useState<{ name: string, score: { t1: number, t2: number }[] }[]>([]);
 
     //add student
     const addStudent = () => {
         setStudents([...students, {
             name: newName,
-            score: Array(mochir).fill({ t1: 0, t2: 0 }) //creat a new array with lenght of mochir and fill it with value=0
+            score: Array.from({ length: mochir }, () => ({ t1: 0, t2: 0 })) //creat a new array with lenght of mochir and fill it with value=0
         }]);
         setNewName('');
     }
@@ -39,16 +39,14 @@ const TakwimTshTable = () => {
 
     const totalT2PerMochir = Array.from({ length: mochir }, (_, i) => {
         const total = students.reduce((acc, student) => {
-            return acc + student.score[i].t2;
+            return acc + (student.score[i]?.t2 ?? 0);
         }, 0);
-
         return students.length === 0 ? 0 : total / students.length;
     });
     const totalT1PerMochir = Array.from({ length: mochir }, (_, i) => {
         const total = students.reduce((acc, student) => {
-            return acc + student.score[i].t1;
+            return acc + (student.score[i]?.t1 ?? 0);
         }, 0);
-
         return students.length === 0 ? 0 : total / students.length;
     });
 
@@ -58,7 +56,7 @@ const TakwimTshTable = () => {
             <div className="flex border px-2 py-1 gap-6 " >
                 <div className="flex gap-4 border-l" >
                     <p>عدد المؤشرات</p>
-                    <select className="mx-2 p-1 text-center border-none pr-2" name="" id="" onChange={e => setMochir(Number(e.target.value))} >
+                    <select disabled={students.length > 0} className="mx-2 p-1 text-center border-none pr-2" name="" id="" onChange={e => setMochir(Number(e.target.value))} >
                         <option value="4">4</option>
                         <option value="3">3</option>
                         <option value="5">5</option>
@@ -129,11 +127,11 @@ const TakwimTshTable = () => {
                                             </React.Fragment>
                                         ))
                                     }
-                                    <td className="border">{percentaget1}%</td>
-                                    <td className="border">{percentaget2}%</td>
-                                    <td className="border"> {t2_t1}%</td>
-                                    <td className="border">14.23</td><td className="border">14.23</td><td className="border">xx.xx</td>
-                                    <td className="border">cc.cc</td><td className="border">bb..bb</td>
+                                    <td className="border">{percentaget1.toFixed(2)}%</td>
+                                    <td className="border">{percentaget2.toFixed(2)}%</td>
+                                    <td className="border"> {t2_t1.toFixed(2)}%</td>
+                                    <td className="border"></td><td className="border"></td><td className="border"></td>
+                                    <td className="border"></td><td className="border"></td>
                                 </tr>
                             )
                         })
@@ -166,7 +164,7 @@ const TakwimTshTable = () => {
                         {totalT1PerMochir.map((value, i) => (
                             <React.Fragment key={i}>
                                 {/* T1 */}
-                                <td className="border">{(value *100).toFixed(2)}%</td>
+                                <td className="border">{(value * 100).toFixed(2)}%</td>
                                 {/*T2 */}
                                 <td className="border">{(totalT2PerMochir[i] * 100).toFixed(2)}%</td>
                             </React.Fragment>

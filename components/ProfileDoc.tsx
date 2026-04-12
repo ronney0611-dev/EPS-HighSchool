@@ -48,6 +48,10 @@ const ProfileDoc = () => {
                             <input type="text" placeholder='الاسم واللقب' value={teacherInfo.name} onChange={e => setTeacherInfo({ ...teacherInfo, name: e.target.value })} />
                         </div>
                         <div className='flex gap-2 border p-2'>
+                            <label htmlFor="">الثانوية:</label>
+                            <input value={teacherInfo.school} onChange={e => setTeacherInfo({ ...teacherInfo, school: e.target.value })} type="text" placeholder='الثانوية' />
+                        </div>
+                        <div className='flex gap-2 border p-2'>
                             <label htmlFor="">الجنسية:</label>
                             <input value={teacherInfo.nationality} onChange={e => setTeacherInfo({ ...teacherInfo, nationality: e.target.value })} type="text" placeholder='الجنسية' />
                         </div>
@@ -62,11 +66,6 @@ const ProfileDoc = () => {
                         <div className='flex gap-2 border p-2'>
                             <label htmlFor="">الحالة المدنية:</label>
                             <input value={teacherInfo.statu} onChange={e => setTeacherInfo({ ...teacherInfo, statu: e.target.value })} type="text" placeholder='الحالة المدنية' />
-                        </div>
-
-                        <div className='flex gap-2 border p-2'>
-                            <label htmlFor="">الثانوية:</label>
-                            <input value={teacherInfo.school} onChange={e => setTeacherInfo({ ...teacherInfo, school: e.target.value })} type="text" placeholder='الثانوية' />
                         </div>
                         <div className='flex gap-2 border p-2'>
                             <label htmlFor="">email:</label>
@@ -106,19 +105,19 @@ const ProfileDoc = () => {
                 </div>
                 <div>
                     <div className='items-center relative' >
-                        <Image className=' rounded-full flex justify-center text-center items-center  absolute left-2 top-4 lg:h-50 lg:w-50 h-20 w-20' src={teacherInfo.picture || '/placeholder.png'} alt='حمل الصورة الخاصة بك' width={200} height={200} />
+                        <Image className=' rounded-full flex justify-center text-center items-center  absolute left-2 top-4 object-cover lg:h-50 lg:w-50 h-20 w-20' src={teacherInfo.picture || '/placeholder.png'} alt='حمل الصورة الخاصة بك' width={200} height={200} />
                     </div>
                     <div className='flex flex-col justify-end my-6 gap-2 mx-2' >
-                        <p className='text-xl font-bold text-blue-600' >الاسم و اللقب: <span className='text-lg font-semibold text-black mx-2' >{teacherInfo.name}</span> </p>
-                        <p className='text-xl font-bold text-blue-600' >الثانوية: <span className='text-lg font-semibold text-black mx-2'>{teacherInfo.school}</span></p>
-                        <p className='text-xl font-bold text-blue-600' >الجنسية:<span className='text-lg font-semibold text-black mx-2'>{teacherInfo.nationality}</span></p>
+                        <p className='text-xl font-bold text-blue-600' >الاسم و اللقب: <span className='font-medium text-black mx-2' >{teacherInfo.name}</span> </p>
+                        <p className='text-xl font-bold text-blue-600' >الثانوية: <span className='font-medium text-black mx-2'>{teacherInfo.school}</span></p>
+                        <p className='text-xl font-bold text-blue-600' >الجنسية:<span className='font-medium text-black mx-2'>{teacherInfo.nationality}</span></p>
                         <div>
-                            <p className='text-xl font-bold text-blue-600' >تاريخ الميلاد:<span className='text-lg font-semibold text-black mx-2'>{teacherInfo.birthday}</span></p>
-                            <p className='text-xl font-bold text-blue-600' >الولاية:<span className='text-lg font-semibold text-black mx-2'>{teacherInfo.birthloc}</span></p>
+                            <p className='text-xl font-bold text-blue-600' >تاريخ الميلاد:<span className='font-medium text-black mx-2'>{teacherInfo.birthday}</span></p>
+                            <p className='text-xl font-bold text-blue-600' >الولاية:<span className='font-medium text-black mx-2'>{teacherInfo.birthloc}</span></p>
                         </div>
-                        <p className='text-xl font-bold text-blue-600' >الحالة:<span className='text-lg font-semibold text-black mx-2'>{teacherInfo.statu}</span></p>
-                        <p className='text-xl font-bold text-blue-600' >البريد الالكتروني:<span className='text-lg font-semibold text-black mx-2'>{teacherInfo.email}</span></p>
-                        <p className='text-xl font-bold text-blue-600' >رقم الهاتف:<span className='text-lg font-semibold text-black mx-2'>{teacherInfo.phone}</span></p>
+                        <p className='text-xl font-bold text-blue-600' >الحالة:<span className='font-medium text-black mx-2'>{teacherInfo.statu}</span></p>
+                        <p className='text-xl font-bold text-blue-600' >البريد الالكتروني:<span className='font-medium text-black mx-2'>{teacherInfo.email}</span></p>
+                        <p className='text-xl font-bold text-blue-600' >رقم الهاتف:<span className='font-medium text-black mx-2'>{teacherInfo.phone}</span></p>
                         <div className='border py-2 px-4 w-30 rounded-2xl bg-green-200 border-none my-4' >
                             <p className='text-xl flex text-center justify-center font-bold text-red-700'>المؤهلات</p>
                         </div>

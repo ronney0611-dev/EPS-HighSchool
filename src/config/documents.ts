@@ -22,13 +22,12 @@ export const documentsConfig =
         image: '/images/calc.png',
         description: 'mokhatat is a document management system designed to help students and teachers organize and access their academic materials efficiently.',
         files: {
-            mokhatat1: {
+            materialsCalc: {
                 id: 's1',
-                name: "mokhatat1",
+                name: 'بطاقة الجرد',
                 description: "This is the first mokhatat document",
-                type: 'static',
-                src: '/documents/barmaja/1.pdf',
-                thumbnail: '/documents/barmaja/barmaja.png'
+                type: 'interactive',
+                component: 'materialsCalc',
             },
         }
     },
