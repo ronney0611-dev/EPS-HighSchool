@@ -1,4 +1,5 @@
 import ProfileDoc from "@/components/ProfileDoc";
+import ClassPlan from "@/pages/ClassPlan";
 import MaterialsCalc from "@/pages/MaterialsCalc";
 import TakwimTachkhisiForm from "@/pages/TakwimTachkhisiForm";
 import { documentsConfig } from "@/src/config/documents";
@@ -13,6 +14,7 @@ const FilePage = ({ params }: { params: Promise<{ file: string, category: string
     taqwimTach: <TakwimTachkhisiForm />, //the name should be like the config components
     informationCard: <ProfileDoc />,
     materialsCalc:<MaterialsCalc />,
+    classPlan: <ClassPlan />,
   }
 
   return (

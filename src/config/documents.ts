@@ -47,6 +47,21 @@ export const documentsConfig =
             },
         }
     },
+        classPlan: {
+        id: 'first',
+        name: 'تفويج القسم',
+        image: '/images/groupe4.png',
+        description: 'mokhatat is a document management system designed to help students and teachers organize and access their academic materials efficiently.',
+        files: {
+            classPlan: {
+                id: 's1',
+                name: "تفويج القسم-1",
+                description: "بلمسة زر واحدة. حمل المخطط السنوي. الفصل الاول",
+                type: 'interactive',
+                component: 'classPlan',
+            },
+        }
+    },
     barmaja: {
         id: 'first',
         name: 'البرمجة السنوية',
@@ -100,30 +115,6 @@ export const documentsConfig =
                 type: 'static',
                 src: '/documents/plan/2.pdf',
                 thumbnail: '/images/plan.png'
-            },
-        }
-    },
-    classPlan: {
-        id: 'first',
-        name: 'تفويج القسم',
-        image: '/images/groupe.png',
-        description: 'mokhatat is a document management system designed to help students and teachers organize and access their academic materials efficiently.',
-        files: {
-            mokhatat1: {
-                id: 's1',
-                name: "تفويج القسم-1",
-                description: "بلمسة زر واحدة. حمل المخطط السنوي. الفصل الاول",
-                type: 'static',
-                src: '/documents/plan/groupe1.docx',
-                thumbnail: '/images/group1.png'
-            },
-            mokhatat2: {
-                id: 's4',
-                name: "تفويج القسم-2",
-                description: "بلمسة زر واحدة. حمل المخطط السنوي. الفصل الاول",
-                type: 'static',
-                src: '/documents/plan/groupe2.docx',
-                thumbnail: '/images/group2.png'
             },
         }
     },

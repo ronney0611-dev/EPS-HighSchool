@@ -79,7 +79,7 @@ const MaterialsCalc = () => {
                 </div>
                 {/*tabel */}
                 <div className="overflow-x-auto">
-                    <table className="w-full min-w-[600px]">
+                    <table className="w-full min-w-150">
                         <thead className="">
                             <tr className="">
                                 <th className=""></th>
