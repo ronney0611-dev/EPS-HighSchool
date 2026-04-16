@@ -47,7 +47,7 @@ const Hero = () => {
                             <span className="absolute inline-flex h-full w-full rounded-full bg-[#A6FF5D] opacity-75 animate-ping duration-300"></span>
                             <span className="relative inline-flex size-2 rounded-full bg-[#A6FF5D]"></span>
                         </div>
-                        <span className='text-xs'>Designed for Modern Websites</span>
+                        <span className='text-xs'>Designed for Sport Teachers</span>
                     </button>
                 </div>
 
@@ -55,7 +55,7 @@ const Hero = () => {
                     أدر وثائقك البيداغوجية بسهولة | بطاقات التقويم، البرمجة السنوية، والتمارين، كل شيء في مكان واحد
                 </h1>
                 <p className="text-center text-xl text-gray-200 my-6">
-                    منصة رقمية مخصصة لأساتذة التربية البدنية والرياضية في الجزائر. أنشئ بطاقات التقويم، برمج حصصك، وولّد تمارينك بضغطة زر
+                    منصة رقمية مخصصة لأساتذة التربية البدنية والرياضية في الجزائر. أنشئ بطاقات التقويم، برمج حصصك، وولّد تمارينك بضغطة زر واحدة.
                 </p>
 
                 <div className="mx-4 my-10 grid lg:grid-cols-2 gap-6 sm:grid-rows-2">
