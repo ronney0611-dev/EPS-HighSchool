@@ -9,7 +9,8 @@ import StarBorder from '../../../components/StarBorder'
 
 const CategoryPage = ({ params }: { params: Promise<{ category: string }> }) => {
   const { category } = React.use(params);
-  const post = documentsConfig[category as keyof typeof documentsConfig];
+  const allCategories = { ...documentsConfig.teacherclass, ...documentsConfig.teacherNote };
+  const post = allCategories[category as keyof typeof allCategories];
   return (
     <div>
       <div className='flex flex-col md:flex-row lg:flex-row justify-center items-center gap-20 m-20 ' >
