@@ -1,9 +1,10 @@
 import ProfileDoc from "@/components/ProfileDoc";
 import ClassPlan from "@/pages/ClassPlan";
-import ManageClasses from "@/pages/ManageClasses";
 import MaterialsCalc from "@/pages/MaterialsCalc";
-//import Mostamir from "@/pages/Mostamir";
+import Mostamir from "@/pages/Mostamir";
 import TakwimTachkhisiForm from "@/pages/TakwimTachkhisiForm";
+import TakwinTahsili from "@/pages/TakwinTahsili";
+import TaqwimTakwini from "@/pages/TaqwimTakwini";
 import { documentsConfig } from "@/src/config/documents";
 import React from "react"
 
@@ -17,7 +18,9 @@ const FilePage = ({ params }: { params: Promise<{ file: string, category: string
     informationCard: <ProfileDoc />,
     materialsCalc: <MaterialsCalc />,
     classPlan: <ClassPlan />,
-    mostamir : <ManageClasses />,
+    mostamir : <Mostamir />,
+    taqwimTaqwini: <TaqwimTakwini />,
+    taqwimTahsili: <TakwinTahsili />, 
   }
 
   return (

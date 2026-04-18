@@ -149,17 +149,17 @@ export const documentsConfig =
                 }
             },
         },
-        takwin: {
+        takwini: {
             id: 'second',
             name: 'التقويم التكويني',
             image: '/images/testx.png',
             description: 'نظام “التقويم التكويني” يتيح للمعلم متابعة تقدم التلاميذ بشكل مستمر أثناء عملية التعلم، من خلال تقييمات دورية وأنشطة تعليمية تساعد على قياس مدى استيعابهم ',
             files: {
                 taqwim: {
-                    id: 'taqwim',
+                    id: 'cbhh',
                     name: 'التقويم التكويني',
                     type: 'interactive',
-                    component: 'taqwimTach'
+                    component: 'taqwimTaqwini'
                 }
             },
         },
@@ -169,11 +169,11 @@ export const documentsConfig =
             image: '/images/final.png',
             description: 'نظام “التقويم التحصيلي” يهدف إلى قياس مدى تحقيق التلاميذ للأهداف التعليمية في نهاية وحدة أو فصل دراسي، من خلال اختبارات أو أنشطة تقييمية شاملة تساعد على تحديد مستوى التحصيل الدراسي وتوثيق النتائج بشكل دقيق ومنظم.',
             files: {
-                taqwim: {
+                ta7sili: {
                     id: 'taqwim',
                     name: 'التقويم التحصيلي',
                     type: 'interactive',
-                    component: 'taqwimTach'
+                    component: 'taqwimTahsili'
                 }
             },
         },

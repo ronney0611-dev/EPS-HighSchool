@@ -2,6 +2,7 @@ import { documentsConfig } from '@/src/config/documents';
 import Image from 'next/image';
 import Link from 'next/link';
 import GradientText from '../../components/GradientText'
+import ManageClasses from '@/pages/ManageClasses';
 
 const DocumentsPage = () => {
 
@@ -43,7 +44,22 @@ const DocumentsPage = () => {
             showBorder={false}
             className="custom-class my-6 text-5xl md:text-6xl lg:text-6xl"
           >
-           دفتر التنقيط
+            ادارة الاقسام
+          </GradientText>
+        </div>
+        <div className='w-full border border-gray-200 my-4 rounded-2xl overflow-hidden'>
+          <ManageClasses />
+        </div>
+      </div>
+      <div className='flex flex-col justify-center items-center'>
+        <div className='flex justify-center text-center '>
+          <GradientText
+            colors={["#ffffff", "#1600eb", "#ffffff"]}
+            animationSpeed={5}
+            showBorder={false}
+            className="custom-class my-6 text-5xl md:text-6xl lg:text-6xl"
+          >
+            دفتر التنقيط
           </GradientText>
         </div>
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
