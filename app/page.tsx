@@ -2,7 +2,7 @@ import Hero from "@/components/Hero"
 
 const page = () => {
   return (
-    <div>
+    <div className="mt-[-20]">
       <Hero />
     </div>
   )

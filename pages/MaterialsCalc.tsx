@@ -97,7 +97,7 @@ const MaterialsCalc = () => {
                             {material.map((m, i) => (
                                 <tr className="border" key={i}>
                                     <td className="border text-center font-semibold">{i + 1}</td>
-                                    <td className="border text-center font-semibold">{m.name}</td>
+                                    <td className="border p-2 text-center font-semibold">{m.name}</td>
                                     <td className="border text-center">
                                         <input className="w-full text-center border-none outline-none" type="number" value={m.quantity} onChange={e => updateMaterial(i, 'quantity', e.target.value)} />
                                     </td>

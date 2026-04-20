@@ -5,9 +5,17 @@
 @custom-variant dark (&:is(.dark *));
 
 @media print {
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   body * { visibility: hidden; }
   #a4-card, #a4-card * { visibility: visible; }
   #a4-card { position: absolute; top: 0; left: 0; width: 210mm; padding: 10mm; }
+  body { background: white !important; }
+  html { background: white !important; }
+}
+
+@media print {
+  table { page-break-inside: auto; }
+  tr { page-break-inside: avoid; }
 }
 
 svg {

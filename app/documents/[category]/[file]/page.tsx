@@ -13,19 +13,19 @@ const FilePage = ({ params }: { params: Promise<{ file: string, category: string
   const allCategories = { ...documentsConfig.teacherclass, ...documentsConfig.teacherNote };
   const files = (allCategories[category as keyof typeof allCategories].files as any)[file];
 
-  const components = {
-    taqwimTach: <TakwimTachkhisiForm />, //the name should be like the config components
-    informationCard: <ProfileDoc />,
-    materialsCalc: <MaterialsCalc />,
-    classPlan: <ClassPlan />,
-    mostamir : <Mostamir />,
-    taqwimTaqwini: <TaqwimTakwini />,
-    taqwimTahsili: <TakwinTahsili />, 
-  }
+  const components = [
+    { key: 'taqwimTach', component: <TakwimTachkhisiForm /> }, //the name should be like the config components
+    { key: 'informationCard', component: <ProfileDoc /> },
+    { key: 'materialsCalc', component: <MaterialsCalc /> },
+    { key: 'classPlan', component: <ClassPlan /> },
+    { key: 'mostamir', component: <Mostamir /> },
+    { key: 'taqwimTaqwini', component: <TaqwimTakwini /> },
+    { key: 'taqwimTahsili', component: <TakwinTahsili /> },
+  ]
 
   return (
     <div>
-      {components[files.component as keyof typeof components]}
+      {components.find(c => c.key === files.component)?.component}
     </div>
   )
 }

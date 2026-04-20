@@ -3,7 +3,7 @@ import { faFacebook, faInstagram, faTiktok, faWhatsapp } from '@fortawesome/free
 
 const Footer = () => {
     return (
-        <div className=' mx-10 lg:mx-20 my-5  ' >
+        <div className=' mx-10 lg:mx-20 my-5 body print:hidden ' >
             <hr className='my-5 border-gray-500 ' />
 
             <div className='lg:flex lg:justify-end justify-center' >

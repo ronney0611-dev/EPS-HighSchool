@@ -30,7 +30,7 @@ const ProfileDoc = () => {
                             alt="profile"
                             width={200}
                             height={200}
-                            className='w-"44 h-"44 rounded-full object-cover border-2 border-blue-600'
+                            className='w-34 h-34 rounded-full object-cover border-2 border-blue-600'
                         />
                     )}
                 </div>

@@ -10,9 +10,16 @@ const ManageClasses = () => {
     const [gender, setGender] = useState<'male' | 'female'>('male')
     const [status, setStatus] = useState<'active' | 'malade' | 'special'>('active');
 
+    const getLevel = (name: string) => {
+            if (name.startsWith('1')) return 'أولى ثانوي'
+            if (name.startsWith('2')) return 'ثانية ثانوي'
+            if (name.startsWith('3')) return 'ثالثة ثانوي'
+            return ''
+        }
+
     const addClass = () => {
         if (!classInput.trim()) return
-        setClasses([...classes, { name: classInput, students: [] }])
+        setClasses([...classes, { name: classInput, level: getLevel(classInput), students: [] }])
         setClassInput("")
     }
 
@@ -50,6 +57,8 @@ const ManageClasses = () => {
         setClasses(updated)
     }
 
+
+
     return (
         <div dir="rtl" className='px-4 my-8 w-full flex flex-col'>
             {/* Add Class */}
@@ -65,9 +74,9 @@ const ManageClasses = () => {
             </div>
 
             {/* Classes list */}
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 '>
                 {classes.map((c, i) => (
-                    <div key={i} className='bg-gray-200 text-black border border-gray-400 rounded'>
+                    <div key={i} className='bg-white text-black border border-gray-400 '>
 
                         {/* header */}
                         <div
@@ -87,8 +96,8 @@ const ManageClasses = () => {
                                         <li key={j}
                                             className={`flex flex-wrap items-center gap-1 px-1 py-1 rounded text-xs
                                                 ${s.status === 'malade' ? 'bg-red-300' :
-                                                  s.status === 'special' ? 'bg-yellow-300' :
-                                                  s.gender === 'female' ? 'bg-pink-200' : 'bg-blue-200'}`}>
+                                                    s.status === 'special' ? 'bg-yellow-300' :
+                                                        s.gender === 'female' ? 'bg-pink-200' : 'bg-blue-200'}`}>
                                             <span className='border border-black rounded px-1 font-bold min-w-6 text-center'>{j + 1}</span>
                                             <span className='flex-1'>{s.name}</span>
                                             <select

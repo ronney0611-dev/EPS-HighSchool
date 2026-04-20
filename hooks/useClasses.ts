@@ -6,7 +6,7 @@ export type Student = {
   gender: 'female' | 'male',
   status : 'active' | 'malade' | 'special'
 }
-export type Class = { name: string, students: Student[] }
+export type Class = { name: string, level: string, students: Student[] }
 
 export const useClasses = () => {
   const [classes, setClasses] = useState<Class[]>(() => {

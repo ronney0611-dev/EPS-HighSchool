@@ -8,7 +8,7 @@ import { useState } from 'react'
 const Navbare = () => {
     const [open, setOpen] = useState(false)
     return (
-        <nav className="bg-transparent text-white h-20 flex items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 border-b border-gray-300 relative transition-all">
+        <nav className="bg-transparent print:hidden w-full fixed z-100 backdrop-blur top-0 text-white h-20 flex items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 border-b border-gray-300  transition-all">
 
             <Link href="/">
                 <Image src={images.logo} width="157" height="40" className='w-50 h-30 object-contain mt-4'  alt='EpsLogo'  />
