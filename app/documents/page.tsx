@@ -36,21 +36,7 @@ const DocumentsPage = () => {
           }
         </div>
       </div>
-      <div className='flex flex-col justify-center items-center'>
-        <div className='flex justify-center text-center '>
-          <GradientText
-            colors={["#ffffff", "#1600eb", "#ffffff"]}
-            animationSpeed={5}
-            showBorder={false}
-            className="custom-class my-6 text-5xl md:text-6xl lg:text-6xl"
-          >
-            ادارة الاقسام
-          </GradientText>
-        </div>
-        <div className='w-full border border-gray-200 my-4 rounded-2xl overflow-hidden'>
-          <ManageClasses />
-        </div>
-      </div>
+      
       <div className='flex flex-col justify-center items-center'>
         <div className='flex justify-center text-center '>
           <GradientText

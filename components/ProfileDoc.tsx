@@ -1,151 +1,106 @@
 'use client'
+
+import { useTeacher } from '@/hooks/useTeacher';
 import Image from 'next/image';
-import { useState } from 'react'
 
 const ProfileDoc = () => {
-    const [teacherInfo, setTeacherInfo] = useState({
-        picture: '',
-        name: '',
-        nationality: '',
-        birthday: '',
-        birthloc: '',
-        statu: '',
-        school: '',
-        email: '',
-        phone: '',
-        experience: '',
-        univerLic: '',
-        anneLic: '',
-        univerMas: '',
-        anneMas: '',
-    });
+    const { teacher } = useTeacher();
+
     return (
-        <div dir="rtl" className=' flex flex-col lg:flex-row lg:my-10 lg:mx-10 p-2 lg:p-10 '>
-            {/* info card */}
-            <div className=' flex-1 gap-1  bg-black text-white p-4' >
-                <div>
-                    <div className="flex flex-col my-2 border p-2 gap-2">
-                        <label>حمل صورتك الشخصية</label>
-                        <input className=' cursor-pointer' onChange={e => {
-                            const file = e.target.files?.[0]
-                            if (file) {
-                                const url = URL.createObjectURL(file)
-                                setTeacherInfo({ ...teacherInfo, picture: url })
-                            }
-                        }} type="file" accept="image/*" />
-                        {teacherInfo.picture && (
-                            <Image src={teacherInfo.picture} alt="profile" width={100} height={100} className="w-24 h-24 rounded-full object-cover" />
-                        )}
+        <div dir="rtl" className='p-4'>
+            {/* print button */}
+            <button
+                onClick={() => window.print()}
+                className='print:hidden bg-blue-500 text-white px-6 py-2 rounded-xl mb-4 block mx-auto'>
+                طباعة
+            </button>
+
+            {/* A4 card */}
+            <div id="a4-card" className='w-full max-w-[210mm] mx-auto bg-white text-black p-4 md:p-10 shadow-lg'>
+                
+                {/* header */}
+                <div className='flex justify-between items-center border-b-2 border-blue-600 pb-4 mb-6'>
+                    <div className='flex flex-col gap-1'>
+                        <h1 className='text-2xl font-bold text-blue-600'>بطاقة المعلومات الشخصية</h1>
+                        <p className='text-sm text-gray-500'>السنة الدراسية: 2025/2026</p>
                     </div>
-                    <div className='my-4 text-2xl font-bold'>
-                        <h1>بطاقة المعلومات الشخصية</h1>
+                    {teacher.photo && (
+                        <Image
+                            src={teacher.photo}
+                            alt="profile"
+                            width={200}
+                            height={200}
+                            className='w-"44 h-"44 rounded-full object-cover border-2 border-blue-600'
+                        />
+                    )}
+                </div>
+
+                {/* info grid */}
+                <div className='grid grid-cols-1 gap-4 mb-6'>
+                    <div className='flex flex-col gap-1'>
+                        <span className='text-xs text-gray-400'>الاسم واللقب</span>
+                        <span className='font-semibold border-b border-gray-300 pb-1'>{teacher.name || '—'}</span>
+                    </div>
+                    <div className='flex flex-col gap-1'>
+                        <span className='text-xs text-gray-400'>الثانوية</span>
+                        <span className='font-semibold border-b border-gray-300 pb-1'>{teacher.school || '—'}</span>
+                    </div>
+                    <div className='flex flex-col gap-1'>
+                        <span className='text-xs text-gray-400'>الجنسية</span>
+                        <span className='font-semibold border-b border-gray-300 pb-1'>{teacher.nationality || '—'}</span>
+                    </div>
+                    <div className='flex flex-col gap-1'>
+                        <span className='text-xs text-gray-400'>تاريخ الميلاد</span>
+                        <span className='font-semibold border-b border-gray-300 pb-1'>{teacher.birthday || '—'}</span>
+                    </div>
+                    <div className='flex flex-col gap-1'>
+                        <span className='text-xs text-gray-400'>الولاية</span>
+                        <span className='font-semibold border-b border-gray-300 pb-1'>{teacher.birthloc || '—'}</span>
+                    </div>
+                    <div className='flex flex-col gap-1'>
+                        <span className='text-xs text-gray-400'>الحالة المدنية</span>
+                        <span className='font-semibold border-b border-gray-300 pb-1'>{teacher.statu || '—'}</span>
+                    </div>
+                    <div className='flex flex-col gap-1'>
+                        <span className='text-xs text-gray-400'>البريد الإلكتروني</span>
+                        <span className='font-semibold border-b border-gray-300 pb-1'>{teacher.email || '—'}</span>
+                    </div>
+                    <div className='flex flex-col gap-1'>
+                        <span className='text-xs text-gray-400'>رقم الهاتف</span>
+                        <span className='font-semibold border-b border-gray-300 pb-1'>{teacher.phone || '—'}</span>
                     </div>
                 </div>
-                <div className='flex flex-col gap-2 px-2 py-4 text-lg'>
-                    <div>
-                        <div className='flex gap-2 border p-2'>
-                            <label htmlFor="">الاسم واللقب:</label>
-                            <input type="text" placeholder='الاسم واللقب' value={teacherInfo.name} onChange={e => setTeacherInfo({ ...teacherInfo, name: e.target.value })} />
-                        </div>
-                        <div className='flex gap-2 border p-2'>
-                            <label htmlFor="">الثانوية:</label>
-                            <input value={teacherInfo.school} onChange={e => setTeacherInfo({ ...teacherInfo, school: e.target.value })} type="text" placeholder='الثانوية' />
-                        </div>
-                        <div className='flex gap-2 border p-2'>
-                            <label htmlFor="">الجنسية:</label>
-                            <input value={teacherInfo.nationality} onChange={e => setTeacherInfo({ ...teacherInfo, nationality: e.target.value })} type="text" placeholder='الجنسية' />
-                        </div>
-                        <div className='flex gap-2 border p-2'>
-                            <label htmlFor="">تاريخ الميلاد:</label>
-                            <input value={teacherInfo.birthday} onChange={e => setTeacherInfo({ ...teacherInfo, birthday: e.target.value })} type="date" placeholder='تاريخ الميلاد' />
-                        </div>
-                        <div className='flex gap-2 border p-2'>
-                            <label htmlFor="">الولاية:</label>
-                            <input value={teacherInfo.birthloc} onChange={e => setTeacherInfo({ ...teacherInfo, birthloc: e.target.value })} type="text" placeholder='الولاية' />
-                        </div>
-                        <div className='flex gap-2 border p-2'>
-                            <label htmlFor="">الحالة المدنية:</label>
-                            <input value={teacherInfo.statu} onChange={e => setTeacherInfo({ ...teacherInfo, statu: e.target.value })} type="text" placeholder='الحالة المدنية' />
-                        </div>
-                        <div className='flex gap-2 border p-2'>
-                            <label htmlFor="">email:</label>
-                            <input value={teacherInfo.email} onChange={e => setTeacherInfo({ ...teacherInfo, email: e.target.value })} type="email" placeholder='your email' />
-                        </div>
-                        <div className='flex gap-2 border p-2'>
-                            <label htmlFor="">phone:</label>
-                            <input value={teacherInfo.phone} onChange={e => setTeacherInfo({ ...teacherInfo, phone: e.target.value })} type="number" placeholder='Your phone number' />
-                        </div>
-                    </div>
-                    <div>
-                        <div className='flex gap-2 border p-2'>
-                            <label htmlFor="">الجامعة المتحلصل فيها على شهادة ليسانس:</label>
-                            <input value={teacherInfo.univerLic} onChange={e => setTeacherInfo({ ...teacherInfo, univerLic: e.target.value })} type="text" placeholder='الجامعة' />
-                        </div>
-                        <div className='flex gap-2 border p-2'>
-                            <label htmlFor="">تاريخ شهادة ليسانس:</label>
-                            <input value={teacherInfo.anneLic} onChange={e => setTeacherInfo({ ...teacherInfo, anneLic: e.target.value })} type="number" placeholder='التاريخ' />
-                        </div>
-                    </div>
-                    <div>
-                        <div className='flex gap-2 border p-2'>
-                            <label htmlFor="">الجامعة المتحلصل فيها على شهادة الماستر:</label>
-                            <input value={teacherInfo.univerMas} onChange={e => setTeacherInfo({ ...teacherInfo, univerMas: e.target.value })} type="text" placeholder='الجامعة' />
-                        </div>
-                        <div className='flex gap-2 border p-2'>
-                            <label htmlFor="">تاريخ شهادة الماستر:</label>
-                            <input value={teacherInfo.anneMas} onChange={e => setTeacherInfo({ ...teacherInfo, anneMas: e.target.value })} type="number" placeholder='التاريخ' />
-                        </div>
-                    </div>
+
+                {/* qualifications */}
+                <div className='mb-6'>
+                    <h2 className='text-lg font-bold text-blue-600 mb-3 border-b border-blue-200 pb-1'>المؤهلات العلمية</h2>
+                    <table className='w-full border-collapse text-center'>
+                        <thead>
+                            <tr className='bg-blue-600 text-white'>
+                                <th className='border border-blue-400 py-2 px-4'>الشهادة</th>
+                                <th className='border border-blue-400 py-2 px-4'>الجامعة</th>
+                                <th className='border border-blue-400 py-2 px-4'>السنة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td className='border border-gray-300 py-2 px-4 font-semibold'>ليسانس</td>
+                                <td className='border border-gray-300 py-2 px-4'>{teacher.univerLic || '—'}</td>
+                                <td className='border border-gray-300 py-2 px-4'>{teacher.anneLic || '—'}</td>
+                            </tr>
+                            <tr className='bg-gray-50'>
+                                <td className='border border-gray-300 py-2 px-4 font-semibold'>ماستر</td>
+                                <td className='border border-gray-300 py-2 px-4'>{teacher.univerMas || '—'}</td>
+                                <td className='border border-gray-300 py-2 px-4'>{teacher.anneMas || '—'}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-            </div>
-            {/* how it look */}
-            <div dir="rtl" className='flex-1 border h-full bg-white text-black my-6 p-4' >
-                <div className='flex justify-center items-center border border-gray-400 bg-blue-600 text-white font-bold text-xl py-4 rounded-2xl my-2 ' >
-                    <h1>بطاقة المعلومات الشخصية</h1>
-                </div>
-                <div>
-                    <div className='items-center relative' >
-                        <Image className=' rounded-full flex justify-center text-center items-center  absolute left-2 top-4 object-cover lg:h-50 lg:w-50 h-20 w-20' src={teacherInfo.picture || '/placeholder.png'} alt='حمل الصورة الخاصة بك' width={200} height={200} />
-                    </div>
-                    <div className='flex flex-col justify-end my-6 gap-2 mx-2' >
-                        <p className='text-xl font-bold text-blue-600' >الاسم و اللقب: <span className='font-medium text-black mx-2' >{teacherInfo.name}</span> </p>
-                        <p className='text-xl font-bold text-blue-600' >الثانوية: <span className='font-medium text-black mx-2'>{teacherInfo.school}</span></p>
-                        <p className='text-xl font-bold text-blue-600' >الجنسية:<span className='font-medium text-black mx-2'>{teacherInfo.nationality}</span></p>
-                        <div>
-                            <p className='text-xl font-bold text-blue-600' >تاريخ الميلاد:<span className='font-medium text-black mx-2'>{teacherInfo.birthday}</span></p>
-                            <p className='text-xl font-bold text-blue-600' >الولاية:<span className='font-medium text-black mx-2'>{teacherInfo.birthloc}</span></p>
-                        </div>
-                        <p className='text-xl font-bold text-blue-600' >الحالة:<span className='font-medium text-black mx-2'>{teacherInfo.statu}</span></p>
-                        <p className='text-xl font-bold text-blue-600' >البريد الالكتروني:<span className='font-medium text-black mx-2'>{teacherInfo.email}</span></p>
-                        <p className='text-xl font-bold text-blue-600' >رقم الهاتف:<span className='font-medium text-black mx-2'>{teacherInfo.phone}</span></p>
-                        <div className='border py-2 px-4 w-30 rounded-2xl bg-green-200 border-none my-4' >
-                            <p className='text-xl flex text-center justify-center font-bold text-red-700'>المؤهلات</p>
-                        </div>
-                        <table className='border'>
-                            <thead className='border' >
-                                <tr className='border'>
-                                    <th className='border'>الشهادة</th>
-                                    <th className='border'>الجامعة </th>
-                                    <th className='border'>التاريخ</th>
-                                </tr>
-                            </thead>
-                            <tbody className='border'>
-                                <tr className='border'>
-                                    <td className='border text-center'>ليسانس</td>
-                                    <td className='border text-center'>{teacherInfo.univerLic}</td>
-                                    <td className='border text-center'>{teacherInfo.anneLic}</td>
-                                </tr>
-                                <tr className='border'>
-                                    <td className='border text-center'>ماستر</td>
-                                    <td className='border text-center'>{teacherInfo.univerMas}</td>
-                                    <td className='border text-center'>{teacherInfo.anneMas}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div className='flex justify-center text-center font-bold my-2' >
-                            <p>السنةالدراسية: 2026/2027</p>
-                        </div>
-                    </div>
+
+                {/* footer */}
+                <div className='flex justify-between items-center border-t border-gray-300 pt-4 text-sm text-gray-500'>
+                    <span>التوقيع: ___________________</span>
+                    <span>الختم</span>
                 </div>
             </div>
         </div>
