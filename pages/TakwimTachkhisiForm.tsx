@@ -1,12 +1,12 @@
-import TakwimTshHeader from '@/components/TakwimTshHeader'
+import TakwimGroupe from '@/components/TakwimGroupe'
 import TakwimTshTable from '@/components/TakwimTshTable'
-import React from 'react'
 
 const TakwimTachkhisiForm = () => {
   return (
-    <div>
-      <TakwimTshHeader />
+    <div className='flex flex-col gap-8'>
       <TakwimTshTable />
+      <hr className='border border-white w-full m-4' />
+      <TakwimGroupe />
     </div>
   )
 }

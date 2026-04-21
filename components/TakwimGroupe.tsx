@@ -4,7 +4,7 @@ import { useClasses } from "@/hooks/useClasses";
 import { useTeacher } from "@/hooks/useTeacher";
 import React, { useState } from "react"
 
-const TakwimTshTable = () => {
+const TakwimGroupe = () => {
     const { classes } = useClasses();
     const { teacher } = useTeacher();
     const [mochir, setMochir] = useState(4);
@@ -92,7 +92,7 @@ const TakwimTshTable = () => {
                     {/* title */}
                     <div className="flex justify-center items-center border border-black py-1 bg-blue-200 print:bg-blue-200 overflow-hidden">
                         <h1 className="text-sm md:text-xl font-bold text-center w-full px-2 flex flex-wrap justify-center gap-1">
-                            <span>بطاقة التقويم التشخيصي نشاط فردي :</span>
+                            <span>بطاقة التقويم التشخيصي نشاط جماعي :</span>
                             <input 
                                 className="text-center px-1 border-none text-black bg-transparent min-w-0 flex-1" 
                                 type="text" 
@@ -140,8 +140,7 @@ const TakwimTshTable = () => {
                                     <th className="border border-black" key={i} colSpan={2}>مؤشر {i + 1}</th>
                                 ))}
                                 <th className="border border-black" colSpan={3}>النسبة المئوية</th>
-                                <th className="border border-black" colSpan={3}>النتيجة الفردية</th>
-                                
+                                <th className="border border-black" colSpan={2}>المستوى </th>
                             </tr>
                             <tr className="border border-black bg-amber-100 print:bg-amber-100">
                                 <td className="border border-black"></td>
@@ -157,7 +156,7 @@ const TakwimTshTable = () => {
                                 <td className="border border-black">ت2-ت1%</td>
                                 <td className="border border-black">ت1</td>
                                 <td className="border border-black">ت2</td>
-                                <td className="border border-black">التطور الحاصل</td>
+                          
                             </tr>
                         </thead>
                         <tbody className="border border-black">
@@ -191,14 +190,26 @@ const TakwimTshTable = () => {
                                         <td className="border border-black">{percentaget2.toFixed(1)}</td>
                                         <td className="border border-black">{t2_t1.toFixed(1)}</td>
                                         <td className="border border-black">
-                                            <input type="number" className="w-10 border-none outline-none text-center bg-transparent appearance-none"
-                                                onChange={e => updateResult(studentIndex, 't1', Number(e.target.value))} />
+                                            <select className="border-none outline-none appearance-none bg-transparent w-8 text-center">
+                                                <option value="">—</option>
+                                                <option value="A">A</option>
+                                                <option value="B">B</option>
+                                                <option value="C">C</option>
+                                                <option value="D">D</option>
+                                                <option value="E">E</option>
+                                            </select>
                                         </td>
                                         <td className="border border-black">
-                                            <input type="number" className="w-10 border-none outline-none text-center bg-transparent appearance-none"
-                                                onChange={e => updateResult(studentIndex, 't2', Number(e.target.value))} />
+                                            <select className="border-none outline-none appearance-none bg-transparent w-8 text-center">
+                                                <option value="">—</option>
+                                                <option value="A">A</option>
+                                                <option value="B">B</option>
+                                                <option value="C">C</option>
+                                                <option value="D">D</option>
+                                                <option value="E">E</option>
+                                            </select>
                                         </td>
-                                        <td className="border border-black">{(student.result.t2 - student.result.t1).toFixed(1)}</td>
+                                        
                                     </tr>
                                 )
                             })}
@@ -212,7 +223,7 @@ const TakwimTshTable = () => {
                                         <td className="border border-black">{totalT2PerMochir[i].toFixed(2)}</td>
                                     </React.Fragment>
                                 ))}
-                                {Array(6).fill(0).map((_, i) => <td key={i} className="border border-black"></td>)}
+                                {Array(5).fill(0).map((_, i) => <td key={i} className="border border-black"></td>)}
                             </tr>
 
                             <tr className="border border-black">
@@ -224,7 +235,7 @@ const TakwimTshTable = () => {
                                         <td className="border border-black">{(totalT2PerMochir[i] * 100).toFixed(1)}%</td>
                                     </React.Fragment>
                                 ))}
-                                {Array(6).fill(0).map((_, i) => <td key={i} className="border border-black"></td>)}
+                                {Array(5).fill(0).map((_, i) => <td key={i} className="border border-black"></td>)}
                             </tr>
                         </tbody>
                     </table>
@@ -234,4 +245,4 @@ const TakwimTshTable = () => {
     )
 }
 
-export default TakwimTshTable
+export default TakwimGroupe

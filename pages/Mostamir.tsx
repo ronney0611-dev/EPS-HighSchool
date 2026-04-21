@@ -55,7 +55,7 @@ const Mostamir = () => {
       </div>
 
       {/* document */}
-      <div id="a4-card" className='bg-white text-black p-2 md:p-6  h-screen'>
+      <div id="a4-card" className='bg-white text-black p-2 md:p-6 '>
 
         {/* header */}
         <table className='border border-black w-full text-center text-xs '>
@@ -90,7 +90,7 @@ const Mostamir = () => {
         </table>
 
         {/* attendance table */}
-        <div className='overflow-x-auto'>
+        <div className='overflow-x-auto '>
           <table className='border border-black w-full text-center' style={{ fontSize: '7px' }}>
             <thead>
               <tr>

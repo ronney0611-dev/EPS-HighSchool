@@ -5,17 +5,54 @@
 @custom-variant dark (&:is(.dark *));
 
 @media print {
-  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-  body * { visibility: hidden; }
-  #a4-card, #a4-card * { visibility: visible; }
-  #a4-card { position: absolute; top: 0; left: 0; width: 210mm; padding: 10mm; }
-  body { background: white !important; }
-  html { background: white !important; }
+
+  td,
+  th {
+    white-space: nowrap;
+    font-size: 14px !important;
+    padding: 0.5px !important;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body {
+    background: white !important;
+    margin: 0 !important;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  #a4-card,
+  #a4-card * {
+    visibility: visible;
+  }
+
+  #a4-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 287mm;
+    min-height: 200mm;
+    padding: 5mm;
+    background: white !important;
+
+  }
+}
+
+@page {
+  size: A4 landscape;
+  margin: 5mm;
 }
 
 @media print {
-  table { page-break-inside: auto; }
-  tr { page-break-inside: avoid; }
+  tr {
+    page-break-inside: avoid;
+  }
 }
 
 svg {
@@ -152,9 +189,11 @@ body {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
   }
