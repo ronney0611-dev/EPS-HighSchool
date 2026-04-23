@@ -1,6 +1,7 @@
 'use client'
 
 import { useClasses } from "@/hooks/useClasses";
+import { saveGroupeData } from "@/hooks/useTachkhisi";
 import { useTeacher } from "@/hooks/useTeacher";
 import React, { useState } from "react"
 
@@ -8,7 +9,7 @@ const TakwimGroupe = () => {
     const { classes } = useClasses();
     const { teacher } = useTeacher();
     const [mochir, setMochir] = useState(4);
-    const [students, setStudents] = useState<{ name: string, result: { t1: number, t2: number }, score: { t1: number, t2: number }[] }[]>([]);
+    const [students, setStudents] = useState<{ name: string, result: { t1: number, t2: number }, score: { t1: number, t2: number }[], levelT2: string }[]>([]);
     const [classSelect, setClassSelect] = useState('');
     const selectedClassData = classes.find(c => c.name === classSelect);
 
@@ -19,10 +20,18 @@ const TakwimGroupe = () => {
             setStudents(found.students.map(s => ({
                 name: s.name,
                 score: Array.from({ length: mochir }, () => ({ t1: 0, t2: 0 })),
-                result: { t1: 0, t2: 0 }
+                result: { t1: 0, t2: 0 },
+                levelT2: '',
             })));
         }
     }
+
+    const updateLevelT2 = (studentIndex: number, value: string) => {
+        const updated = students.map((s, i) =>
+            i === studentIndex ? { ...s, levelT2: value } : s
+        );
+        setStudents(updated);
+    };
 
     const updateResult = (studentIndex: number, attempt: string, value: number) => {
         const updated = students.map((s, i) =>
@@ -81,6 +90,14 @@ const TakwimGroupe = () => {
                     className='bg-blue-600 text-white px-6 py-2 rounded-xl font-semibold text-sm w-full md:w-auto'>
                     طباعة 🖨️
                 </button>
+                <button
+                    onClick={() => saveGroupeData(
+                        classSelect,
+                        students.map(s => ({ name: s.name, levelT2: s.levelT2 }))
+                    )}
+                    className='bg-green-600 text-white px-6 py-2 rounded-xl font-semibold text-sm w-full md:w-auto'>
+                    حفظ ✅
+                </button>
             </div>
 
             {/* A4 document */}
@@ -88,14 +105,14 @@ const TakwimGroupe = () => {
 
                 {/* header */}
                 <div dir="rtl" className="text-black text-center bg-white w-full">
-                    
+
                     {/* title */}
                     <div className="flex justify-center items-center border border-black py-1 bg-blue-200 print:bg-blue-200 overflow-hidden">
                         <h1 className="text-sm md:text-xl font-bold text-center w-full px-2 flex flex-wrap justify-center gap-1">
                             <span>بطاقة التقويم التشخيصي نشاط جماعي :</span>
-                            <input 
-                                className="text-center px-1 border-none text-black bg-transparent min-w-0 flex-1" 
-                                type="text" 
+                            <input
+                                className="text-center px-1 border-none text-black bg-transparent min-w-0 flex-1"
+                                type="text"
                                 placeholder="النشاط" />
                         </h1>
                     </div>
@@ -156,7 +173,7 @@ const TakwimGroupe = () => {
                                 <td className="border border-black">ت2-ت1%</td>
                                 <td className="border border-black">ت1</td>
                                 <td className="border border-black">ت2</td>
-                          
+
                             </tr>
                         </thead>
                         <tbody className="border border-black">
@@ -200,7 +217,7 @@ const TakwimGroupe = () => {
                                             </select>
                                         </td>
                                         <td className="border border-black">
-                                            <select className="border-none outline-none appearance-none bg-transparent w-8 text-center">
+                                            <select onChange={e => updateLevelT2(studentIndex, e.target.value)} className="border-none outline-none appearance-none bg-transparent w-8 text-center">
                                                 <option value="">—</option>
                                                 <option value="A">A</option>
                                                 <option value="B">B</option>
@@ -209,7 +226,7 @@ const TakwimGroupe = () => {
                                                 <option value="E">E</option>
                                             </select>
                                         </td>
-                                        
+
                                     </tr>
                                 )
                             })}

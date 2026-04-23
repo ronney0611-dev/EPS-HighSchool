@@ -1,6 +1,7 @@
 'use client'
 
 import { useClasses } from "@/hooks/useClasses";
+import { saveTashkhisi } from "@/hooks/useTachkhisi";
 import { useTeacher } from "@/hooks/useTeacher";
 import React, { useState } from "react"
 
@@ -81,6 +82,20 @@ const TakwimTshTable = () => {
                     className='bg-blue-600 text-white px-6 py-2 rounded-xl font-semibold text-sm w-full md:w-auto'>
                     طباعة 🖨️
                 </button>
+                <button
+                    onClick={() => saveTashkhisi(
+                        classSelect,
+                        mochir,
+                        students.map(s => ({
+                            name: s.name,
+                            percentaget2: (s.score.reduce((a, b) => a + b.t2, 0) / mochir) * 100,
+                            resultT2: s.result.t2,
+                            tatawaor: s.result.t2 - s.result.t1,
+                        }))
+                    )}
+                    className='bg-green-600 text-white px-6 py-2 rounded-xl font-semibold text-sm w-full md:w-auto'>
+                    حفظ ✅
+                </button>
             </div>
 
             {/* A4 document */}
@@ -88,14 +103,14 @@ const TakwimTshTable = () => {
 
                 {/* header */}
                 <div dir="rtl" className="text-black text-center bg-white w-full">
-                    
+
                     {/* title */}
                     <div className="flex justify-center items-center border border-black py-1 bg-blue-200 print:bg-blue-200 overflow-hidden">
                         <h1 className="text-sm md:text-xl font-bold text-center w-full px-2 flex flex-wrap justify-center gap-1">
                             <span>بطاقة التقويم التشخيصي نشاط فردي :</span>
-                            <input 
-                                className="text-center px-1 border-none text-black bg-transparent min-w-0 flex-1" 
-                                type="text" 
+                            <input
+                                className="text-center px-1 border-none text-black bg-transparent min-w-0 flex-1"
+                                type="text"
                                 placeholder="النشاط" />
                         </h1>
                     </div>
@@ -141,7 +156,7 @@ const TakwimTshTable = () => {
                                 ))}
                                 <th className="border border-black" colSpan={3}>النسبة المئوية</th>
                                 <th className="border border-black" colSpan={3}>النتيجة الفردية</th>
-                                
+
                             </tr>
                             <tr className="border border-black bg-amber-100 print:bg-amber-100">
                                 <td className="border border-black"></td>
