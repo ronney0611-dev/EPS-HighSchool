@@ -19,7 +19,6 @@ const Navbare = () => {
                 <Link href={"/"} >Home</Link>
                 <Link href="/profile">Profile</Link>
                 <Link href="/documents">documents</Link>
-                <a href="#">About</a>
 
                 <button className="cursor-pointer px-8 py-2 bg-indigo-500 hover:bg-indigo-600 transition text-white rounded-full">
                     Login
@@ -37,9 +36,9 @@ const Navbare = () => {
 
             {/* Mobile Menu */}
             <div className={`${open ? 'flex' : 'hidden'} absolute top-15 left-0 w-full bg-black text-white z-10 shadow-md py-4 flex-col items-start gap-2 px-5 text-sm md:hidden`}>
-                <a href="#" className="block">Home</a>
-                <a href="#" className="block">About</a>
-                <a href="#" className="block">Contact</a>
+                <Link href={"/"} >Home</Link>
+                <Link href="/profile">Profile</Link>
+                <Link href="/documents">documents</Link>
                 <button className="cursor-pointer px-6 py-2 mt-2 bg-indigo-500 hover:bg-indigo-600 transition text-white rounded-full text-sm">
                     Login
                 </button>

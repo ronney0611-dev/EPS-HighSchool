@@ -1,13 +1,17 @@
 'use client'
+
 import { useClasses } from '@/hooks/useClasses';
 import { useState } from 'react'
 import { loadTashkhisi, loadGroupeData } from '@/hooks/useTachkhisi';
+import { getScore, getTawaorScore } from '@/src/config/barem';
 
 const TakwinTahsili = () => {
     const { classes } = useClasses();
     const [classSlecet, setClassSelect] = useState('');
     const [tashkhisiData, setTashkhisiData] = useState<{ name: string; percentaget2: number; resultT2: number; tatawaor: number }[]>([]);
     const [groupeData, setGroupeData] = useState<{ name: string; levelT2: string }[]>([]);
+    const [studentNotes, setStudentNotes] = useState<{ first: number; second: number; groupeNote: number }[]>([]);
+    const [activity, setActivity] = useState<'sprint' | 'longjump' | 'throw'>('sprint');
 
     const selectedClassData = classes.find(c => c.name === classSlecet);
 
@@ -30,12 +34,25 @@ const TakwinTahsili = () => {
         const groupe = loadGroupeData(className);
         if (groupe) setGroupeData(groupe.students);
         else setGroupeData([]);
+        const found = classes.find(c => c.name === className);
+        if (found) {
+            setStudentNotes(found.students.map((_, idx) => {
+                const level = groupe?.students[idx]?.levelT2 ?? '';
+                const range = levelToNote(level);
+                return { first: 0, second: 0, groupeNote: range?.default ?? 0 };
+            }));
+        }
+    };
+
+    const updateNote = (index: number, field: 'first' | 'second' | 'groupeNote', value: number) => {
+        setStudentNotes(prev => prev.map((n, i) => i === index ? { ...n, [field]: value } : n));
     };
 
     const isSecondary = ['أولى ثانوي', 'ثانية ثانوي'].includes(selectedClassData?.level || '');
 
     const cell = 'border border-black px-1 py-[2px]';
     const input = 'w-full border-none outline-none text-center bg-transparent text-xs';
+    const select = 'w-full border-none outline-none text-center bg-transparent text-xs appearance-none';
 
     return (
         <div dir="rtl" className="mx-4 mt-20">
@@ -50,6 +67,16 @@ const TakwinTahsili = () => {
                         {classes.map((c, i) => (
                             <option key={i} value={c.name}>{c.name}</option>
                         ))}
+                    </select>
+                </div>
+                <div className='flex gap-2 items-center'>
+                    <label className='font-semibold text-sm'>النشاط</label>
+                    <select
+                        className='border border-gray-300 rounded px-3 py-1 bg-white text-black text-sm'
+                        onChange={e => setActivity(e.target.value as 'sprint' | 'longjump' | 'throw')}>
+                        <option value="sprint">عدو 60م</option>
+                        <option value="longjump">الوثب الطويل</option>
+                        <option value="throw">رمي الجلة</option>
                     </select>
                 </div>
                 <button
@@ -97,7 +124,7 @@ const TakwinTahsili = () => {
                             <th className={`${cell} min-w-15`}>A/B/C/D/E</th>
                             <th className={`${cell} min-w-15`}>20</th>
                             <th className={`${cell} min-w-15`}>20</th>
-                            <th className={`${cell} min-w-7.5`}>4</th>
+                            <th className={`${cell} min-w-15`}>20</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -112,6 +139,16 @@ const TakwinTahsili = () => {
                             const level = savedGroupe?.levelT2 ?? '';
                             const noteRange = levelToNote(level);
 
+                            const sNote = studentNotes[i] ?? { first: 0, second: 0, groupeNote: noteRange?.default ?? 0 };
+
+                            const gender = s.gender === 'male' ? 'male' : 'female';
+                            const baremeScore = resultT2 > 0 ? getScore(activity, gender, resultT2) : 0;
+
+                            const tawaorScore = tatawaor > 0 ? getTawaorScore(activity, tatawaor) : 0;
+
+                            const firstResult = (note + baremeScore + tawaorScore) / 2;
+                            const finalResult = (firstResult + sNote.groupeNote) / 2;
+
                             return (
                                 <tr key={i} className="h-6">
                                     <td className={`${cell} bg-blue-200 print:bg-blue-200`}>{i + 1}</td>
@@ -119,31 +156,24 @@ const TakwinTahsili = () => {
                                     <td className={cell}>{t2Percent.toFixed(1)}</td>
                                     <td className={cell}>{note.toFixed(2)}</td>
                                     <td className={cell}>{resultT2.toFixed(2)}</td>
-                                    <td className={cell}>
-                                        <input type="text" className={input} />
-                                    </td>
+                                    <td className={cell}>{baremeScore.toFixed(2)}</td>
                                     <td className={cell}>{tatawaor.toFixed(2)}</td>
-                                    <td className={cell}>
-                                        <input type="text" className={input} />
-                                    </td>
-                                    <td className={cell}>
-                                        <input type="text" className={input} />
-                                    </td>
+                                    <td className={cell}>{tawaorScore.toFixed(1)}</td>
+                                    <td className={cell}>{firstResult.toFixed(2)}</td>
                                     <td className={cell}>{level || '—'}</td>
                                     <td className={cell}>
                                         {noteRange ? (
-                                            <input
-                                                type="number"
+                                            <select
                                                 defaultValue={noteRange.default}
-                                                min={noteRange.min}
-                                                max={noteRange.max}
-                                                className="w-10 border-none outline-none text-center bg-transparent appearance-none"
-                                            />
+                                                className={select}
+                                                onChange={e => updateNote(i, 'groupeNote', Number(e.target.value))}>
+                                                {Array.from({ length: noteRange.max - noteRange.min + 1 }, (_, j) => noteRange.min + j).map(n => (
+                                                    <option key={n} value={n}>{n}</option>
+                                                ))}
+                                            </select>
                                         ) : '—'}
                                     </td>
-                                    <td className={cell}>
-                                        <input type="text" className={input} />
-                                    </td>
+                                    <td className={`${cell} text-red-500 font-semibold`}>{finalResult.toFixed(2)}</td>
                                     <td className={cell}>
                                         <input type="text" className={input} />
                                     </td>
