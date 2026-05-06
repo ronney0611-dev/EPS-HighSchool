@@ -13,7 +13,7 @@ const CategoryPage = ({ params }: { params: Promise<{ category: string }> }) => 
   const post = allCategories[category as keyof typeof allCategories];
   return (
     <div>
-      <div className='flex flex-col md:flex-row lg:flex-row justify-center items-center gap-20 m-20 ' >
+      <div className='flex flex-col md:flex-row lg:flex-row justify-center items-center gap-20 m-4 lg:m-20 ' >
         {
           Object.values(post.files).map((doc) => {
             return (
@@ -44,10 +44,10 @@ const CategoryPage = ({ params }: { params: Promise<{ category: string }> }) => 
                         </Link>
                         <div>
                           <CurvedLoop
-                            marqueeText="اصنع ✦  الوثائق  ✦ الخاصة  ✦  بك  ✦  بلمسة زر واحدة  ✦"
+                            marqueeText=" Education ✦  physique   ✦  et  ✦  sportive  ✦ EPS ✦"
                             speed={1.6}
                             curveAmount={400}
-                            direction="right"
+                            direction="left"
                             interactive
                             className="custom-text-style"
                           />
@@ -56,7 +56,7 @@ const CategoryPage = ({ params }: { params: Promise<{ category: string }> }) => 
                         <Link className='flex justify-center cursor-pointer' href={`/documents/${category}/${key}`}>
                           <StarBorder
                             as="button"
-                            className="custom-class"
+                            className="custom-class cursor-pointer"
                             color="magenta"
                             speed="1s"
                             thickness={3}
@@ -68,7 +68,6 @@ const CategoryPage = ({ params }: { params: Promise<{ category: string }> }) => 
                     </div>
                   ))
                 }
-                <h1 className='text-xl font-semibold  mt-4' >{doc.name}</h1>
               </div>
             )
           })

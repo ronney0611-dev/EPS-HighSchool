@@ -3,7 +3,7 @@
 import { useClasses } from '@/hooks/useClasses';
 import { useState } from 'react'
 import { loadTashkhisi, loadGroupeData } from '@/hooks/useTachkhisi';
-import { getScore, getTawaorScore } from '@/src/config/barem';
+import { Gender, getScore, getTawaorScore } from '@/src/config/barem';
 
 const TakwinTahsili = () => {
     const { classes } = useClasses();
@@ -48,11 +48,11 @@ const TakwinTahsili = () => {
         setStudentNotes(prev => prev.map((n, i) => i === index ? { ...n, [field]: value } : n));
     };
 
-    const isSecondary = ['أولى ثانوي', 'ثانية ثانوي'].includes(selectedClassData?.level || '');
-
     const cell = 'border border-black px-1 py-[2px]';
     const input = 'w-full border-none outline-none text-center bg-transparent text-xs';
     const select = 'w-full border-none outline-none text-center bg-transparent text-xs appearance-none';
+
+    const isThirdYear = selectedClassData?.level === 'ثالثة ثانوي';
 
     return (
         <div dir="rtl" className="mx-4 mt-20">
@@ -117,9 +117,13 @@ const TakwinTahsili = () => {
                             <th className={`${cell} min-w-12.5`}>نتيجة%</th>
                             <th className={`${cell} min-w-12.5`}>النقطة/20</th>
                             <th className={`${cell} min-w-12.5`}>نتيجة</th>
-                            <th className={`${cell} min-w-15`}>{isSecondary ? 'النقطة 14' : 'النقطة 16'}</th>
+                            <th className={`${cell} min-w-15`}>
+                                {isThirdYear ? 'النقطة 16' : 'النقطة 14'}
+                            </th>
                             <th className={`${cell} min-w-15`}>تطور الحاصل</th>
-                            <th className={`${cell} min-w-15`}>{isSecondary ? 'نتيجة التطور 6' : 'نتيجة التطور 4'}</th>
+                            <th className={`${cell} min-w-15`}>
+                                {isThirdYear ? 'نتيجة التطور 4' : 'نتيجة التطور 6'}
+                            </th>
                             <th className={`${cell} min-w-15`}>ت تصر+ ت تحصي/2</th>
                             <th className={`${cell} min-w-15`}>A/B/C/D/E</th>
                             <th className={`${cell} min-w-15`}>20</th>
@@ -141,10 +145,10 @@ const TakwinTahsili = () => {
 
                             const sNote = studentNotes[i] ?? { first: 0, second: 0, groupeNote: noteRange?.default ?? 0 };
 
-                            const gender = s.gender === 'male' ? 'male' : 'female';
-                            const baremeScore = resultT2 > 0 ? getScore(activity, gender, resultT2) : 0;
 
-                            const tawaorScore = tatawaor > 0 ? getTawaorScore(activity, tatawaor) : 0;
+                            const gender: Gender = s.gender === 'male' ? 'male' : 'female';
+                            const baremeScore = resultT2 > 0 ? getScore(activity, gender, resultT2, isThirdYear) : 0;
+                            const tawaorScore = tatawaor > 0 ? getTawaorScore(activity, tatawaor, isThirdYear) : 0;
 
                             const firstResult = (note + baremeScore + tawaorScore) / 2;
                             const finalResult = (firstResult + sNote.groupeNote) / 2;
