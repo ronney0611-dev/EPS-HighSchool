@@ -27,7 +27,7 @@ const ClassPlan = () => {
         // attach level from تشخيصي
         const withLevel = (list: typeof students) => list.map(s => {
             const found = tashkhisi?.students.find(t => t.name === s.name)
-            return { name: s.name, gender: s.gender, level: found?.resultT2 ?? 'غير محدد' }
+            return { name: s.name, gender: s.gender, level: found?.resultT2 ? String(found.resultT2) : 'غير محدد' }
         })
 
         if (mode === 'level') {
