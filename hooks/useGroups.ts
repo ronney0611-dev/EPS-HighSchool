@@ -14,10 +14,12 @@ export type Group = {
 }
 
 export const saveGroups = (className: string, groups: Group[]) => {
+    if (typeof window === 'undefined') return
     localStorage.setItem(`groups-${className}`, JSON.stringify(groups))
 }
 
-export const loadGroups = (className: string): Group[] | null => {
+export const loadGroups = (className: string) => {
+    if (typeof window === 'undefined') return null
     const data = localStorage.getItem(`groups-${className}`)
     return data ? JSON.parse(data) : null
 }
