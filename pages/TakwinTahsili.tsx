@@ -152,35 +152,47 @@ const TakwinTahsili = () => {
 
                             const firstResult = (note + baremeScore + tawaorScore) / 2;
                             const finalResult = (firstResult + sNote.groupeNote) / 2;
+                            const isMalade = s.status === 'malade'
 
                             return (
                                 <tr key={i} className="h-6">
                                     <td className={`${cell} bg-blue-200 print:bg-blue-200`}>{i + 1}</td>
                                     <td className={`${cell} bg-amber-100 print:bg-amber-100 text-right whitespace-nowrap px-2`}>{s.name}</td>
-                                    <td className={cell}>{t2Percent.toFixed(1)}</td>
-                                    <td className={cell}>{note.toFixed(2)}</td>
-                                    <td className={cell}>{resultT2.toFixed(2)}</td>
-                                    <td className={cell}>{baremeScore.toFixed(2)}</td>
-                                    <td className={cell}>{tatawaor.toFixed(2)}</td>
-                                    <td className={cell}>{tawaorScore.toFixed(1)}</td>
-                                    <td className={cell}>{firstResult.toFixed(2)}</td>
-                                    <td className={cell}>{level || '—'}</td>
-                                    <td className={cell}>
-                                        {noteRange ? (
-                                            <select
-                                                defaultValue={noteRange.default}
-                                                className={select}
-                                                onChange={e => updateNote(i, 'groupeNote', Number(e.target.value))}>
-                                                {Array.from({ length: noteRange.max - noteRange.min + 1 }, (_, j) => noteRange.min + j).map(n => (
-                                                    <option key={n} value={n}>{n}</option>
-                                                ))}
-                                            </select>
-                                        ) : '—'}
-                                    </td>
-                                    <td className={`${cell} text-red-500 font-semibold`}>{finalResult.toFixed(2)}</td>
-                                    <td className={cell}>
-                                        <input type="text" className={input} />
-                                    </td>
+                                    {isMalade ? (
+                                        <>
+                                            {Array.from({ length: 10 }).map((_, k) => (
+                                                <td key={k} className={`${cell} text-red-500 `}>اعفاء</td>
+                                            ))}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <td className={cell}>{t2Percent.toFixed(1)}</td>
+                                            <td className={cell}>{note.toFixed(2)}</td>
+                                            <td className={cell}>{resultT2.toFixed(2)}</td>
+                                            <td className={cell}>{baremeScore.toFixed(2)}</td>
+                                            <td className={cell}>{tatawaor.toFixed(2)}</td>
+                                            <td className={cell}>{tawaorScore.toFixed(1)}</td>
+                                            <td className={cell}>{firstResult.toFixed(2)}</td>
+                                            <td className={cell}>{level || '—'}</td>
+                                            <td className={cell}>
+                                                {noteRange ? (
+                                                    <select
+                                                        defaultValue={noteRange.default}
+                                                        className={select}
+                                                        onChange={e => updateNote(i, 'groupeNote', Number(e.target.value))}>
+                                                        {Array.from({ length: noteRange.max - noteRange.min + 1 }, (_, j) => noteRange.min + j).map(n => (
+                                                            <option key={n} value={n}>{n}</option>
+                                                        ))}
+                                                    </select>
+                                                ) : '—'}
+                                            </td>
+                                            <td className={`${cell} text-red-500 font-semibold`}>{finalResult.toFixed(2)}</td>
+                                            <td className={cell}>
+                                                <input type="text" className={input} />
+                                            </td>
+                                        </>
+                                    )}
+
                                 </tr>
                             );
                         })}

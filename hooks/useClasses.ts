@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react"
 
 export type Student = {
+  id: string,
   name : string,
   gender: 'female' | 'male',
   status : 'active' | 'malade' | 'special'

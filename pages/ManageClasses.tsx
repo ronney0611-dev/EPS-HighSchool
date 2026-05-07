@@ -27,7 +27,7 @@ const ManageClasses = () => {
         if (expandedClass === null || !studentInput.trim()) return
         const updated = classes.map((c, i) =>
             i === expandedClass
-                ? { ...c, students: [...c.students, { name: studentInput.trim(), gender, status }] }
+                ? { ...c, students: [...c.students, { name: studentInput.trim(), gender, status, id: crypto.randomUUID() }] }
                 : c
         )
         setClasses(updated)

@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useClasses } from "@/hooks/useClasses"
 import { useTeacher } from "@/hooks/useTeacher"
 import { loadTashkhisi } from "@/hooks/useTachkhisi"
+import { saveGroups } from "@/hooks/useGroups"
 
 const ClassPlan = () => {
     const { classes } = useClasses()
@@ -16,8 +17,10 @@ const ClassPlan = () => {
     const [groups, setGroups] = useState<{ leader: string, students: { name: string, gender: string, level?: string }[] }[]>([])
 
     const selectedClassData = classes.find(c => c.name === selectedClass)
-    const students = selectedClassData?.students.filter(s => s.status === 'active') ?? []
+    const students = selectedClassData?.students.filter(s => s.status === 'active') ?? [];
+    const maladeStudents = selectedClassData?.students.filter(s => s.status === 'malade') ?? [];
 
+    const groupLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
     const distribute = () => {
         const tashkhisi = loadTashkhisi(selectedClass);
 
@@ -27,7 +30,7 @@ const ClassPlan = () => {
         // attach level from تشخيصي
         const withLevel = (list: typeof students) => list.map(s => {
             const found = tashkhisi?.students.find(t => t.name === s.name)
-            return { name: s.name, gender: s.gender, level: found?.resultT2 ? String(found.resultT2) : 'غير محدد' }
+            return {id: s.id, name: s.name, gender: s.gender, level: found?.resultT2 ? String(found.resultT2) : 'غير محدد' }
         })
 
         if (mode === 'level') {
@@ -59,7 +62,7 @@ const ClassPlan = () => {
         const groupsHTML = groups.map((group, i) => `
         <div style="margin-bottom: 20px; border: 1px solid #2563eb; border-radius: 10px; padding: 12px; position: relative;">
             <div style="position: absolute; top: -12px; right: 10px; background: #1e40af; color: white; padding: 2px 10px; border-radius: 8px; font-size: 11px;">
-                الفوج ${i + 1} / القائد: ${group.leader || '—'}
+                الفوج ${groupLabels[i]} / القائد: ${group.leader || '—'}
             </div>
             <ul style="margin-top: 16px; padding: 0; list-style: none;">
                 ${group.students.map((s, j) => `
@@ -103,6 +106,9 @@ const ClassPlan = () => {
             <div style="margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                 <div style="border: 1px solid #fbbf24; border-radius: 10px; padding: 10px;">
                     <strong>قائمة المعفيين :</strong>
+                    <ul>
+                           ${maladeStudents.map((s, index) => `<li> ${s.name}</li>`).join('')}
+                    </ul>
                 </div>
                 <div style="border: 1px solid #d97706; border-radius: 10px; padding: 10px; font-size: 12px;">
                     <strong>أسس تقسيم الأفواج :</strong><br/>
@@ -194,7 +200,7 @@ const ClassPlan = () => {
                         {groups.map((group, i) => (
                             <div key={i} className="border border-blue-600 rounded-xl p-3 relative">
                                 <div className="absolute -top-3.25 right-3 bg-blue-800 text-white px-3 py-0.5 rounded-lg text-xs">
-                                    الفوج {i + 1} / القائد: {group.leader || '—'}
+                                    الفوج {groupLabels[i]} / القائد: {group.leader || '—'}
                                 </div>
                                 <ul className="mt-4 flex flex-col gap-1">
                                     {group.students.map((s, j) => (
@@ -233,6 +239,15 @@ const ClassPlan = () => {
                 <div className="grid grid-cols-2 gap-4">
                     <div className="border border-amber-400 rounded-xl p-4">
                         <h2 className="font-bold mb-2">قائمة المعفيين :</h2>
+                        <ul>
+                            {
+                                maladeStudents.map((s, index) => {
+                                    return (
+                                        <li key={index} > {index + 1}. {s.name} </li>
+                                    )
+                                })
+                            }
+                        </ul>
                     </div>
                     <div className="border border-amber-600 rounded-xl p-4 text-sm">
                         <h2 className="font-bold mb-2">أسس تقسيم الأفواج :</h2>
@@ -248,9 +263,16 @@ const ClassPlan = () => {
             </div>
 
             {/* Print button */}
-            <button onClick={handlePrint} className="print:hidden bg-green-700 text-white px-6 py-2 rounded-xl self-center cursor-pointer">
-                🖨️ طباعة
-            </button>
+            <div className="flex justify-center gap-4">
+                <button onClick={() => {
+                    saveGroups(selectedClass, groups);
+                }} className="print:hidden bg-green-700 text-white px-6 py-2 rounded-xl self-center cursor-pointer">
+                    حفظ
+                </button>
+                <button onClick={handlePrint} className="print:hidden bg-green-700 text-white px-6 py-2 rounded-xl self-center cursor-pointer">
+                    🖨️ طباعة
+                </button>
+            </div>
         </div>
     )
 }

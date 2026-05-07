@@ -2,18 +2,20 @@
 import { useClasses } from '@/hooks/useClasses'
 import { useTeacher } from '@/hooks/useTeacher';
 import { useState } from 'react';
+import { loadGroups } from '@/hooks/useGroups';
 
 const Mostamir = () => {
   const { classes } = useClasses();
   const [classSelect, setClassSelect] = useState('');
   const [todaystate, setTodayState] = useState({
-    present: '1',
-    absent: 'غ',
+    present: 'P',
+    absent: 'A',
     noUniform: '0',
-    malade: 'م'
+    malade: 'M'
   });
   const { teacher } = useTeacher();
   const selectedClassData = classes.find(c => c.name === classSelect);
+  const groupLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
 
   const studentColor = (status: string, gender: string) => {
     if (status === 'malade') return 'bg-red-300 print:bg-red-600'
@@ -22,6 +24,12 @@ const Mostamir = () => {
     return 'bg-blue-100 print:bg-blue-100'
   }
 
+  const groups = loadGroups(classSelect) || [];
+  const getStudentGroup = (studentId: string) => {
+    if (!groups) return '—';
+    const groupIndex = groups.findIndex(g => g.students.some(s => s.id === studentId));
+    return groupIndex !== -1 ? groupLabels[groupIndex] : '—';
+  };
   return (
     <div dir='rtl' className='mx-2 bg-white text-black my-4'>
 
@@ -38,11 +46,7 @@ const Mostamir = () => {
             ))}
           </select>
         </div>
-        <button
-          onClick={() => window.print()}
-          className='bg-blue-600 text-white px-6 py-2 rounded-xl font-semibold text-sm'>
-          طباعة 🖨️
-        </button>
+        
         <hr className='border border-gray-200  w-full my-4' />
       </div>
 
@@ -96,6 +100,7 @@ const Mostamir = () => {
               <tr>
                 <th className='border border-black' rowSpan={3} style={{ width: '20px' }}>#</th>
                 <th className='border text-sm border-black' rowSpan={3} style={{ width: '80px' }}>الاسم واللقب</th>
+                <th className='border text-sm border-black' rowSpan={3} style={{ width: '20px' }}>الفوج</th>
                 <th className='border border-black text-sm' colSpan={36}>الشهر</th>
               </tr>
               <tr>
@@ -114,6 +119,7 @@ const Mostamir = () => {
                 <tr key={i}>
                   <td className={`border border-black font-semibold ${studentColor(s.status, s.gender)}`}>{i + 1}</td>
                   <td className={`border border-black text-right text-sm px-1 ${studentColor(s.status, s.gender)}`}>{s.name}</td>
+                  <td className={`border border-black text-sm ${studentColor(s.status, s.gender)}`}>{getStudentGroup(s.id)}</td>
                   {Array.from({ length: 36 }).map((_, j) => (
                     <td key={j} className={`border border-black ${studentColor(s.status, s.gender)}`}>
                       <select 
@@ -121,10 +127,10 @@ const Mostamir = () => {
                         className="border-none w-6 outline-none appearance-none bg-transparent text-center text-sm" 
                         name="" id="">
                         <option value=""></option>
-                        <option value="1">1</option>
-                        <option value="غ">غ</option>
+                        <option value="P">P</option>
+                        <option value="A">A</option>
                         <option value="0">0</option>
-                        <option value="م">م</option>
+                        <option value="M">M</option>
                       </select>
                     </td>
                   ))}
@@ -138,14 +144,21 @@ const Mostamir = () => {
         <table className='border border-black mt-2 mx-auto text-center bg-amber-100 print:bg-amber-100' style={{ fontSize: '8px' }}>
           <thead>
             <tr>
-              <th className='border  text-sm border-black px-2 py-1'>الحضور = 1</th>
-              <th className='border text-sm border-black px-2 py-1'>الغياب = غ</th>
+              <th className='border  text-sm border-black px-2 py-1'>الحضور = P</th>
+              <th className='border text-sm border-black px-2 py-1'>الغياب = A</th>
               <th className='border text-sm border-black px-2 py-1'>بدون بدلة = 0</th>
-              <th className='border text-sm border-black px-2 py-1'>مرض = م</th>
+              <th className='border text-sm border-black px-2 py-1'>مرض = M</th>
             </tr>
           </thead>
         </table>
 
+      </div>
+      <div className='flex justify-center my-4'>
+        <button
+          onClick={() => window.print()}
+          className='bg-blue-600 text-white px-6 py-2 rounded-xl font-semibold text-sm my-4'>
+          طباعة 🖨️
+        </button>
       </div>
     </div>
   )
