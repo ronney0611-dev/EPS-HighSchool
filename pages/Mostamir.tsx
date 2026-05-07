@@ -2,7 +2,7 @@
 import { useClasses } from '@/hooks/useClasses'
 import { useTeacher } from '@/hooks/useTeacher';
 import { useState } from 'react';
-import { loadGroups } from '@/hooks/useGroups';
+import { loadGroups, Group } from '@/hooks/useGroups'
 
 const Mostamir = () => {
   const { classes } = useClasses();
@@ -27,7 +27,7 @@ const Mostamir = () => {
   const groups = loadGroups(classSelect) || [];
   const getStudentGroup = (studentId: string) => {
     if (!groups) return '—';
-    const groupIndex = groups.findIndex(g => g.students.some(s => s.id === studentId));
+    const groupIndex = (groups as Group[]).findIndex(g => g.students.some(s => s.id === studentId));
     return groupIndex !== -1 ? groupLabels[groupIndex] : '—';
   };
   return (
