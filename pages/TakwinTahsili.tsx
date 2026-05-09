@@ -93,14 +93,12 @@ const TakwinTahsili = () => {
                         <tr>
                             <th colSpan={2}></th>
                             <th className="border border-black bg-blue-200 print:bg-blue-200" colSpan={10}>نقطة الاختبار</th>
-                            <th className="border border-black bg-blue-200 print:bg-blue-200">معدل المادة</th>
                         </tr>
                         <tr>
                             <th colSpan={2}></th>
                             <th className='border border-black' colSpan={7}>النشـــاط الفــردي</th>
                             <th className='border border-black' colSpan={2}>النشاط الجماعي</th>
                             <th className='border border-black'>النقطة</th>
-                            <th>(مس+فر+اخ*2)</th>
                         </tr>
                         <tr>
                             <th colSpan={2}></th>
@@ -109,7 +107,6 @@ const TakwinTahsili = () => {
                             <th className='border border-black'>المستوى</th>
                             <th className='border border-black'>نقطة</th>
                             <th className='border border-black'>النهائية</th>
-                            <th>/</th>
                         </tr>
                         <tr>
                             <th className={cell}>الرقم</th>
@@ -126,7 +123,6 @@ const TakwinTahsili = () => {
                             </th>
                             <th className={`${cell} min-w-15`}>ت تصر+ ت تحصي/2</th>
                             <th className={`${cell} min-w-15`}>A/B/C/D/E</th>
-                            <th className={`${cell} min-w-15`}>20</th>
                             <th className={`${cell} min-w-15`}>20</th>
                             <th className={`${cell} min-w-15`}>20</th>
                         </tr>
@@ -187,9 +183,7 @@ const TakwinTahsili = () => {
                                                 ) : '—'}
                                             </td>
                                             <td className={`${cell} text-red-500 font-semibold`}>{finalResult.toFixed(2)}</td>
-                                            <td className={cell}>
-                                                <input type="text" className={input} />
-                                            </td>
+
                                         </>
                                     )}
 
