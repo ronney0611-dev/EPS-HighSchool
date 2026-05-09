@@ -154,6 +154,20 @@ export const documentsConfig =
                 }
             },
         },
+        takwinMostamir: {
+            id: 'second',
+            name: 'التقويم المستمر',
+            image: '/images/',
+            description: 'نظام “التقويم المستمر” يهدف إلى تقييم مستوى التلاميذ أثناء عملية التعلم، من أجل تحديد نقاط القوة والضعف لديهم، وتوجيه العملية التعليمية بشكل مناسب يساعد على تحسين التعلمات ومعالجة الصعوبات بشكل مبكر.',
+            files: {
+                taqwim: {
+                    id: 'taqwim',
+                    name: 'التقويم المستمر',
+                    type: 'interactive',
+                    component: 'taqwimMostamir'
+                }
+            },
+        },
         takwini: {
             id: 'second',
             name: 'التقويم التكويني',

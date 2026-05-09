@@ -4,6 +4,7 @@ import MaterialsCalc from "@/pages/MaterialsCalc";
 import Mostamir from "@/pages/Mostamir";
 import TakwimTachkhisiForm from "@/pages/TakwimTachkhisiForm";
 import TakwinTahsili from "@/pages/TakwinTahsili";
+import TaqwimMostamir from "@/pages/TaqwimMostamir";
 import TaqwimTakwini from "@/pages/TaqwimTakwini";
 import { documentsConfig } from "@/src/config/documents";
 import React from "react"
@@ -21,6 +22,7 @@ const FilePage = ({ params }: { params: Promise<{ file: string, category: string
     { key: 'mostamir', component: <Mostamir /> },
     { key: 'taqwimTaqwini', component: <TaqwimTakwini /> },
     { key: 'taqwimTahsili', component: <TakwinTahsili /> },
+    { key: 'taqwimMostamir', component: <TaqwimMostamir /> },
   ]
 
   return (
