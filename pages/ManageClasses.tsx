@@ -1,21 +1,29 @@
 'use client'
-import { useClasses } from '@/hooks/useClasses'
+import { useClasses, Class } from '@/hooks/useClasses'
 import { useState } from 'react'
+import * as XLSX from 'xlsx'
 
-const ManageClasses = () => {
-    const { classes, setClasses } = useClasses();
+type Props = {
+    classes?: Class[]
+    setClasses?: (classes: Class[]) => void
+}
+
+const ManageClasses = ({ classes: classesProp, setClasses: setClassesProp }: Props) => {
+    const { classes: classesHook, setClasses: setClassesHook } = useClasses();
     const [classInput, setClassInput] = useState('');
+    const classes = classesProp ?? classesHook
+    const setClasses = setClassesProp ?? setClassesHook
     const [expandedClass, setExpandedClass] = useState<number | null>(null);
     const [studentInput, setStudentInput] = useState('');
     const [gender, setGender] = useState<'male' | 'female'>('male')
     const [status, setStatus] = useState<'active' | 'malade' | 'special'>('active');
 
     const getLevel = (name: string) => {
-            if (name.startsWith('1')) return 'أولى ثانوي'
-            if (name.startsWith('2')) return 'ثانية ثانوي'
-            if (name.startsWith('3')) return 'ثالثة ثانوي'
-            return ''
-        }
+        if (name.startsWith('1')) return 'أولى ثانوي'
+        if (name.startsWith('2')) return 'ثانية ثانوي'
+        if (name.startsWith('3')) return 'ثالثة ثانوي'
+        return ''
+    }
 
     const addClass = () => {
         if (!classInput.trim()) return
@@ -57,7 +65,55 @@ const ManageClasses = () => {
         setClasses(updated)
     }
 
+    const handleExcelImport = (e: React.ChangeEvent<HTMLInputElement>, classIndex: number) => {
+        const file = e.target.files?.[0]
+        if (!file) return
 
+        const reader = new FileReader()
+        reader.onload = (evt) => {
+            const data = new Uint8Array(evt.target?.result as ArrayBuffer)
+            const workbook = XLSX.read(data, { type: 'array' })
+
+            // show sheet names to teacher
+            const sheetNames = workbook.SheetNames
+            const sheetName = window.prompt(
+                `اكتب اسم الورقة:\n${sheetNames.join(', ')}`
+            )
+            if (!sheetName) return
+
+            const sheet = workbook.Sheets[sheetName]
+            if (!sheet) { alert('الورقة غير موجودة'); return }
+            const rows: string[][] = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+            console.log('rows:', rows)
+
+            console.log('sheets:', workbook.SheetNames)
+            console.log('first sheet:', workbook.Sheets[workbook.SheetNames[0]])
+
+            // find the header row (contains 'matricule')
+            const headerRowIndex = rows.findIndex(row => row.includes('matricule'))
+            if (headerRowIndex === -1) return
+
+            console.log('headerRowIndex:', headerRowIndex)
+
+            const dataRows = rows.slice(headerRowIndex + 2) // skip header + arabic header
+
+            const newStudents = dataRows
+                .filter(row => row[0] && row[1])
+                .map(row => ({
+                    id: crypto.randomUUID(),
+                    matricule: String(row[0]),
+                    name: `${row[1]} ${row[2]}`.trim(),
+                    gender: 'male' as const,
+                    status: String(row[4]) === 'اعفاء' ? 'malade' as const : 'active' as const
+                }))
+
+            const updated = classes.map((c, i) =>
+                i === classIndex ? { ...c, students: [...c.students, ...newStudents] } : c
+            )
+            setClasses(updated)
+        }
+        reader.readAsArrayBuffer(file)
+    }
 
     return (
         <div dir="rtl" className='px-4 my-8 w-full flex flex-col'>
@@ -149,6 +205,17 @@ const ManageClasses = () => {
                                         </select>
                                     </div>
                                     <button onClick={addStudent} className='bg-green-500 text-white px-4 py-2 rounded'>إضافة تلميذ</button>
+                                    <div className="flex flex-col gap-2 mt-2">
+                                        <label className="bg-purple-600 text-white px-4 py-2 rounded text-center cursor-pointer text-sm">
+                                            📥 استيراد من Excel
+                                            <input
+                                                type="file"
+                                                accept=".xlsx"
+                                                className="hidden"
+                                                onChange={e => handleExcelImport(e, i)}
+                                            />
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                         )}
