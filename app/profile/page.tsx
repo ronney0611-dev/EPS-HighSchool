@@ -7,6 +7,7 @@ import ManageClasses from '@/pages/ManageClasses'
 import GradientText from '../../components/GradientText'
 import { useState } from 'react'
 import * as XLSX from 'xlsx'
+import AllNotes from '@/components/AllNotes'
 
 const getLevel = (name: string) => {
     if (name.startsWith('1')) return 'أولى ثانوي'
@@ -238,8 +239,12 @@ const ProfilePage = () => {
                             </button>
                         </div>
                     </div>
+                    
                 </div>
             )}
+            <div className='w-full max-w-2xl'>
+                        <AllNotes />
+                    </div>
         </div>
     )
 }

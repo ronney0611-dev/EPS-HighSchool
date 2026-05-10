@@ -4,6 +4,7 @@ import { useClasses } from '@/hooks/useClasses';
 import { useState } from 'react'
 import { loadTashkhisi, loadGroupeData } from '@/hooks/useTachkhisi';
 import { Gender, getScore, getTawaorScore } from '@/src/config/barem';
+import { saveTahsili } from '@/hooks/useTahsili';
 
 const TakwinTahsili = () => {
     const { classes } = useClasses();
@@ -53,6 +54,26 @@ const TakwinTahsili = () => {
     const select = 'w-full border-none outline-none text-center bg-transparent text-xs appearance-none';
 
     const isThirdYear = selectedClassData?.level === 'ثالثة ثانوي';
+
+    const handleSave = () => {
+        if (!selectedClassData) return
+        const grades = selectedClassData.students.map((s, i) => {
+            const saved = tashkhisiData[i]
+            const t2Percent = saved?.percentaget2 ?? 0
+            const note = (t2Percent / 100) * 20
+            const resultT2 = saved?.resultT2 ?? 0
+            const tatawaor = saved?.tatawaor ?? 0
+            const gender: Gender = s.gender === 'male' ? 'male' : 'female'
+            const baremeScore = resultT2 > 0 ? getScore(activity, gender, resultT2, isThirdYear) : 0
+            const tawaorScore = tatawaor > 0 ? getTawaorScore(activity, tatawaor, isThirdYear) : 0
+            const firstResult = (note + baremeScore + tawaorScore) / 2
+            const sNote = studentNotes[i] ?? { groupeNote: 0 }
+            const finalResult = (firstResult + sNote.groupeNote) / 2
+            return { name: s.name, matricule: s.matricule ?? '', final: finalResult }
+        })
+        saveTahsili(classSlecet, grades)
+        alert('تم الحفظ ✓')
+    }
 
     return (
         <div dir="rtl" className="mx-4 mt-20">
@@ -189,10 +210,18 @@ const TakwinTahsili = () => {
 
                                 </tr>
                             );
+
                         })}
                     </tbody>
                 </table>
             </main>
+            <div className='flex justify-center my-4' >
+                <button
+                    onClick={handleSave}
+                    className='bg-blue-700 text-white px-6 py-2 rounded-xl text-sm cursor-pointer'>
+                    💾 حفظ
+                </button>
+            </div>
         </div>
     )
 }

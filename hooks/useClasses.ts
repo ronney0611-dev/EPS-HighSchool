@@ -11,20 +11,18 @@ export type Student = {
 export type Class = { name: string, level: string, students: Student[] }
 
 export const useClasses = () => {
-  const [classes, setClasses] = useState<Class[]>(() => {
-    if (typeof window === 'undefined') return []
-    const saved = localStorage.getItem('classes')
-    return saved ? JSON.parse(saved) : []
-  });
-  
+  const [classes, setClasses] = useState<Class[]>([])
+
   useEffect(() => {
-    const handler = () => {
-      const saved = localStorage.getItem('classes')
-      if (saved) setClasses(JSON.parse(saved))
-    }
-    window.addEventListener('storage', handler)
-    return () => window.removeEventListener('storage', handler)
+    const saved = localStorage.getItem('classes')
+    if (saved) setClasses(JSON.parse(saved))
   }, [])
+
+  useEffect(() => {
+    if (classes.length > 0) {
+      localStorage.setItem('classes', JSON.stringify(classes))
+    }
+  }, [classes])
 
   return { classes, setClasses }
 }
