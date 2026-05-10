@@ -215,7 +215,7 @@ const TakwinTahsili = () => {
                     </tbody>
                 </table>
             </main>
-            <div className='flex justify-center my-4' >
+            <div className='flex justify-center my-4 ' >
                 <button
                     onClick={handleSave}
                     className='bg-blue-700 text-white px-6 py-2 rounded-xl text-sm cursor-pointer'>

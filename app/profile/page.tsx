@@ -139,22 +139,8 @@ const ProfilePage = () => {
                 </div>
             </div>
 
-            {/* Excel import button */}
-            <div className='w-full max-w-2xl'>
-                <label className='flex items-center justify-center gap-2 bg-purple-700 hover:bg-purple-800 text-white px-6 py-3 rounded-xl cursor-pointer font-semibold w-full'>
-                    📥 استيراد الأقسام من Excel
-                    <input
-                        type="file"
-                        accept=".xlsx"
-                        className="hidden"
-                        onChange={handleExcelUpload}
-                    />
-                </label>
-            </div>
-
             {/* classes summary */}
             <div className='w-full max-w-2xl flex flex-col gap-3'>
-                <h2 className='text-xl font-bold text-center'>الأقسام</h2>
                 {classes.map((c, i) => (
                     <div key={i} className='bg-white text-black rounded-xl p-4 flex justify-between items-center'>
                         <span className='font-bold text-lg'>{c.name}</span>
@@ -179,8 +165,22 @@ const ProfilePage = () => {
                         ادارة الاقسام
                     </GradientText>
                 </div>
+                {/* Excel import button */}
+
                 <div className='w-full border border-gray-200 my-4 rounded-2xl overflow-hidden'>
                     <ManageClasses classes={classes} setClasses={setClasses} />
+                </div>
+                <div className='w-full max-w-2xl border border-white rounded-2xl p-8 my-8 text-center'>
+                    <h2 className='text-lg font-medium mb-2'>استيراد الأقسام و أسماء التلاميذ من ملف Excel تلقائيا</h2>
+                    <label className='flex items-center justify-center gap-2 bg-purple-700 hover:bg-purple-800 text-white px-6 py-3 rounded-xl cursor-pointer font-semibold w-full'>
+                        📥 استيراد الأقسام من Excel
+                        <input
+                            type="file"
+                            accept=".xlsx"
+                            className="hidden"
+                            onChange={handleExcelUpload}
+                        />
+                    </label>
                 </div>
                 <hr className='border border-white w-full my-4 mx-8' />
             </div>
@@ -191,9 +191,10 @@ const ProfilePage = () => {
                     alert('تم الحفظ ✓')
                     window.location.reload()
                 }}
-                className='bg-green-500 text-white px-6 py-3 rounded-xl font-bold mt-4'>
+                className='bg-green-500 text-white px-6 py-3 rounded-xl font-bold cursor-pointer'>
                 حفظ المعلومات
             </button>
+            <hr className='border border-white w-full my-4 mx-8' />
 
             {/* Modal */}
             {showModal && (
@@ -239,12 +240,12 @@ const ProfilePage = () => {
                             </button>
                         </div>
                     </div>
-                    
+
                 </div>
             )}
-            <div className='w-full max-w-2xl'>
-                        <AllNotes />
-                    </div>
+            <div className='w-full max-w-2xl border border-white rounded-2xl p-4 bg-red-100 text-black'>
+                <AllNotes />
+            </div>
         </div>
     )
 }

@@ -13,7 +13,7 @@ const AllNotes = () => {
         if (!file) return
 
         const reader = new FileReader()
-        
+
         reader.onload = (evt) => {
             const data = new Uint8Array(evt.target?.result as ArrayBuffer)
             const workbook = XLSX.read(data, { type: 'array' })
@@ -94,13 +94,15 @@ const AllNotes = () => {
             console.log('classes in app:', classes.map(c => c.name))
 
             XLSX.writeFile(workbook, 'النقاط.xlsx')
-        } 
+        }
         reader.readAsArrayBuffer(file)
     }
 
     return (
-        <div dir="rtl" className='flex flex-col gap-4 p-4'>
-            <h2 className='text-xl font-bold'>تصدير النقاط</h2>
+        <div dir="rtl" className='flex flex-col gap-4 p-4 text-center'>
+            <p className='text-xl font-bold'> ضع ملف
+                Excel الخاص بك وسيتم ملؤه بالنقاط المحصل عليها تلقائيا من طرف التطبيق.
+            </p>
             <label className='flex items-center justify-center gap-2 bg-green-700 hover:bg-green-800 text-white px-6 py-3 rounded-xl cursor-pointer font-semibold w-full'>
                 📤 رفع ملف Excel وتصدير النقاط
                 <input
@@ -110,6 +112,7 @@ const AllNotes = () => {
                     onChange={handleExcelUpload}
                 />
             </label>
+            <p className='text-sm text-red-900'>ملاحظة: يرجى التاكد من ملء جميع العلامات الخاصة بالتلاميذ في التطبيق قبل تصدير النقاط </p>
         </div>
     )
 }

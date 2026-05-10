@@ -73,7 +73,7 @@ const ManageClasses = ({ classes: classesProp, setClasses: setClassesProp }: Pro
                     type="text"
                     value={classInput}
                     onChange={(e) => setClassInput(e.target.value)}
-                    placeholder="اسم القسم"
+                    placeholder=" اسم القسم (يدويا)"
                     className='border p-2 rounded text-white'
                 />
                 <button onClick={addClass} className='bg-blue-500 text-white px-4 py-2 rounded'>إضافة قسم</button>
