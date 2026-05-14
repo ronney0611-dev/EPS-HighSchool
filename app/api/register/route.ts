@@ -1,30 +1,26 @@
-import { connectDB } from "@/src/lib/mongo";
-import User from "@/src/models/User"
+import { connectDB } from "@/app/lib/mongo";
+import User from "@/app/models/User";
 import bcrypt from "bcryptjs";
-import validator from "validator";
-
 
 export async function POST(req: Request) {
 
     const body = await req.json();
 
-        try {
+    try {
 
         await connectDB();
 
         const { email, password } = body;
-        
+
         // cheking user already exist or not
         const exist = await User.findOne({ email })
+
         if (exist) return Response.json({ message: 'User already exists' }, { status: 400 });
 
-        // validating email format and strong password
-        if(!validator.isEmail(email)) {
-            return Response.json({success: false, message: "please enter a valid email"}, {status: 400});
-        }
 
-        if(password.length < 6) {
-            return Response.json({success: false, message: "password must be at least 6 characters"}, {status: 400});
+
+        if (password.length < 6) {
+            return Response.json({ success: false, message: "password must be at least 6 characters" }, { status: 400 });
         }
 
         //hashing password 
@@ -38,10 +34,11 @@ export async function POST(req: Request) {
 
         const user = await newUser.save();
 
-        return Response.json({ success: true }) 
+        return Response.json({ success: true })
     } catch (error) {
+        console.log(body);
         console.error(error);
-        return Response.json({ success: false, message: "Server error" }, {status : 400});
+        return Response.json({ success: false, message: "Server error" }, { status: 400 });
     }
 
 }

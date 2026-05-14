@@ -1,11 +1,10 @@
-import NextAuth from 'next-auth'
+import NextAuth, { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
-import { connectDB } from '@/src/lib/mongo'
-import User from '@/src/models/User'
+import { connectDB } from '@/app/lib/mongo'
+import User from '@/app/models/User'
 
-
-const handler = NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: 'credentials',
@@ -15,14 +14,11 @@ const handler = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null
-
-        await connectDB();
+        await connectDB()
         const user = await User.findOne({ email: credentials.email })
         if (!user) return null
-
         const isValid = await bcrypt.compare(credentials.password, user.password)
         if (!isValid) return null
-
         return {
           id: user._id.toString(),
           email: user.email,
@@ -36,22 +32,21 @@ const handler = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id
-        token.isPaid = (user).isPaid
-        token.paidUntil = (user).paidUntil
+        token.isPaid = user.isPaid
+        token.paidUntil = user.paidUntil
       }
       return token
     },
     async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id as string
-        session.user.isPaid = token.isPaid as boolean
-        session.user.paidUntil = token.paidUntil as Date
-      }
+      session.user.id = token.id
+      session.user.isPaid = token.isPaid
+      session.user.paidUntil = token.paidUntil
       return session
     }
   },
   session: { strategy: 'jwt' },
   pages: { signIn: '/login' }
-})
+}
 
+const handler = NextAuth(authOptions)
 export { handler as GET, handler as POST }

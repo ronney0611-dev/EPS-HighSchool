@@ -1,12 +1,10 @@
-import ManageTeacherProfile from '@/pages/ManageTeacherClass'
-import React from 'react'
+import { getServerSession } from 'next-auth'
+import { redirect } from 'next/navigation'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import ManageProfileClient from './ManageProfileClient'
 
-const page = () => {
-  return (
-    <div>
-      <ManageTeacherProfile />
-    </div>
-  )
+export default async function ProfilePage() {
+    const session = await getServerSession(authOptions)
+    if (!session) redirect('/login')
+    return <ManageProfileClient />
 }
-
-export default page

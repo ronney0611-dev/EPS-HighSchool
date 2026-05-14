@@ -1,19 +1,12 @@
 'use client'
-import { useClasses, Class } from '@/hooks/useClasses'
+import { useClasses } from '@/hooks/useClasses'
 import { useState } from 'react'
-import * as XLSX from 'xlsx'
 
-type Props = {
-    classes?: Class[]
-    setClasses?: (classes: Class[]) => void
-}
 
-const ManageClasses = ({ classes: classesProp, setClasses: setClassesProp }: Props) => {
-    const { classes: classesHook, setClasses: setClassesHook } = useClasses();
+const ManageClasses = () => {
+    const { classes, studentsByClass, fetchStudents, addClass, deleteClass, addStudent, deleteStudent, updateStudent } = useClasses();
+    const [expandedClassId, setExpandedClassId] = useState<string | null>(null)
     const [classInput, setClassInput] = useState('');
-    const classes = classesProp ?? classesHook
-    const setClasses = setClassesProp ?? setClassesHook
-    const [expandedClass, setExpandedClass] = useState<number | null>(null);
     const [studentInput, setStudentInput] = useState('');
     const [gender, setGender] = useState<'male' | 'female'>('male')
     const [status, setStatus] = useState<'active' | 'malade' | 'special'>('active');
@@ -25,44 +18,34 @@ const ManageClasses = ({ classes: classesProp, setClasses: setClassesProp }: Pro
         return ''
     }
 
-    const addClass = () => {
+    const addClasses = () => {
         if (!classInput.trim()) return
-        setClasses([...classes, { name: classInput, level: getLevel(classInput), students: [] }])
+        const level = getLevel(classInput)
+        if (!level) {
+            alert('اسم القسم يجب أن يبدأ بـ 1 أو 2 أو 3')
+            return
+        }
+        addClass({ name: classInput, level })
         setClassInput("")
     }
 
-    const addStudent = () => {
-        if (expandedClass === null || !studentInput.trim()) return
-        const updated = classes.map((c, i) =>
-            i === expandedClass
-                ? { ...c, students: [...c.students, { name: studentInput.trim(), gender, status, id: crypto.randomUUID() }] }
-                : c
-        )
-        setClasses(updated)
+    const addStudents = () => {
+        if (!expandedClassId || !studentInput.trim()) return
+        addStudent(expandedClassId, { name: studentInput.trim(), gender, status })
         setStudentInput('')
     }
 
-    const updateStudent = (classIndex: number, studentIndex: number, field: 'gender' | 'status', value: string) => {
-        const updated = classes.map((c, i) =>
-            i === classIndex
-                ? { ...c, students: c.students.map((s, j) => j === studentIndex ? { ...s, [field]: value } : s) }
-                : c
-        )
-        setClasses(updated)
+    const updateStudents = (classId: string, studentId: string, field: 'gender' | 'status', value: string) => {
+        updateStudent(classId, studentId, { [field]: value })
     }
 
-    const deleteClass = (classIndex: number) => {
-        setClasses(classes.filter((_, i) => i !== classIndex))
-        if (expandedClass === classIndex) setExpandedClass(null)
+    const deleteClasses = (classId: string) => {
+        deleteClass(classId)
+        if (expandedClassId === classId) setExpandedClassId(null)
     }
 
-    const deleteStudent = (classIndex: number, studentIndex: number) => {
-        const updated = classes.map((c, i) =>
-            i === classIndex
-                ? { ...c, students: c.students.filter((_, j) => j !== studentIndex) }
-                : c
-        )
-        setClasses(updated)
+    const deleteStudents = (classId: string, studentId: string) => {
+        deleteStudent(classId, studentId)
     }
 
     return (
@@ -76,32 +59,39 @@ const ManageClasses = ({ classes: classesProp, setClasses: setClassesProp }: Pro
                     placeholder=" اسم القسم (يدويا)"
                     className='border p-2 rounded text-white'
                 />
-                <button onClick={addClass} className='bg-blue-500 text-white px-4 py-2 rounded'>إضافة قسم</button>
+                <button onClick={addClasses} className='bg-blue-500 text-white px-4 py-2 rounded'>إضافة قسم</button>
             </div>
 
             {/* Classes list */}
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 '>
-                {classes.map((c, i) => (
-                    <div key={i} className='bg-white text-black border border-gray-400 '>
+                {classes.map((c) => (
+                    <div key={c._id} className='bg-white text-black border border-gray-400'>
 
                         {/* header */}
                         <div
-                            onClick={() => setExpandedClass(expandedClass === i ? null : i)}
+                            onClick={() => {
+                                if (expandedClassId === c._id) {
+                                    setExpandedClassId(null)
+                                } else {
+                                    setExpandedClassId(c._id)
+                                    fetchStudents(c._id)
+                                }
+                            }}
                             className='flex justify-between items-center p-2 cursor-pointer'>
                             <h2 className='font-bold text-lg bg-blue-500 text-white rounded py-1 flex-1 text-center'>{c.name}</h2>
                             <button
-                                onClick={e => { e.stopPropagation(); deleteClass(i) }}
+                                onClick={e => { e.stopPropagation(); deleteClasses(c._id) }}
                                 className='text-red-600 font-bold px-2 text-xl'>✕</button>
                         </div>
 
                         {/* expanded content */}
-                        {expandedClass === i && (
+                        {expandedClassId === c._id && (
                             <div className='p-2'>
                                 <ul className='flex flex-col gap-1'>
-                                    {c.students.map((s, j) => (
-                                        <li key={j}
+                                    {(studentsByClass[c._id] || []).map((s, j) => (
+                                        <li key={s._id}
                                             className={`flex flex-wrap items-center gap-1 px-1 py-1 rounded text-xs
-                                                ${s.status === 'malade' ? 'bg-red-300' :
+                ${s.status === 'malade' ? 'bg-red-300' :
                                                     s.status === 'special' ? 'bg-yellow-300' :
                                                         s.gender === 'female' ? 'bg-pink-200' : 'bg-blue-200'}`}>
                                             <span className='border border-black rounded px-1 font-bold min-w-6 text-center'>{j + 1}</span>
@@ -109,20 +99,20 @@ const ManageClasses = ({ classes: classesProp, setClasses: setClassesProp }: Pro
                                             <select
                                                 className='border border-gray-400 rounded text-xs px-1 py-0.5 bg-white'
                                                 value={s.gender}
-                                                onChange={e => { e.stopPropagation(); updateStudent(i, j, 'gender', e.target.value) }}>
+                                                onChange={e => { e.stopPropagation(); updateStudents(c._id, s._id, 'gender', e.target.value) }}>
                                                 <option value="male">ذكر</option>
                                                 <option value="female">أنثى</option>
                                             </select>
                                             <select
                                                 className='border border-gray-400 rounded text-xs px-1 py-0.5 bg-white'
                                                 value={s.status}
-                                                onChange={e => { e.stopPropagation(); updateStudent(i, j, 'status', e.target.value) }}>
+                                                onChange={e => { e.stopPropagation(); updateStudents(c._id, s._id, 'status', e.target.value) }}>
                                                 <option value="active">عادي</option>
                                                 <option value="malade">اعفاء</option>
                                                 <option value="special">حالة شاذة</option>
                                             </select>
                                             <button
-                                                onClick={e => { e.stopPropagation(); deleteStudent(i, j) }}
+                                                onClick={e => { e.stopPropagation(); deleteStudents(c._id, s._id) }}
                                                 className='text-red-600 font-bold px-1'>✕</button>
                                         </li>
                                     ))}
@@ -154,7 +144,7 @@ const ManageClasses = ({ classes: classesProp, setClasses: setClassesProp }: Pro
                                             <option value="special">حالة شاذة</option>
                                         </select>
                                     </div>
-                                    <button onClick={addStudent} className='bg-green-500 text-white px-4 py-2 rounded'>إضافة تلميذ</button>
+                                    <button onClick={addStudents} className='bg-green-500 text-white px-4 py-2 rounded'>إضافة تلميذ</button>
                                 </div>
                             </div>
                         )}
