@@ -3,10 +3,10 @@
 import { useClasses } from "@/hooks/useClasses";
 import { saveTashkhisi } from "@/hooks/useTachkhisi";
 import { useTeacher } from "@/hooks/useTeacher";
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 
 const TakwimTshTable = () => {
-    const { classes } = useClasses();
+    const { classes, fetchStudents, studentsByClass } = useClasses();
     const { teacher } = useTeacher();
     const [mochir, setMochir] = useState(4);
     const [students, setStudents] = useState<{ name: string, result: { t1: number, t2: number }, score: { t1: number, t2: number }[] }[]>([]);
@@ -16,14 +16,22 @@ const TakwimTshTable = () => {
     const handleClassSelect = (className: string) => {
         setClassSelect(className);
         const found = classes.find(c => c.name === className);
-        if (found) {
-            setStudents(found.students.map(s => ({
+        if (found) fetchStudents(found._id);
+    }
+
+    useEffect(() => {
+        if (!classSelect) return;
+        const found = classes.find(c => c.name === classSelect);
+        if (!found) return;
+        const foundStudents = studentsByClass[found._id] || [];
+        setTimeout(() => {
+            setStudents(foundStudents.map(s => ({
                 name: s.name,
                 score: Array.from({ length: mochir }, () => ({ t1: 0, t2: 0 })),
                 result: { t1: 0, t2: 0 }
             })));
-        }
-    }
+        }, 0);
+    }, [studentsByClass, classSelect]);
 
     const updateResult = (studentIndex: number, attempt: string, value: number) => {
         const updated = students.map((s, i) =>

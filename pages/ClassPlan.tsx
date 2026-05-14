@@ -7,7 +7,7 @@ import { loadTashkhisi } from "@/hooks/useTachkhisi"
 import { saveGroups } from "@/hooks/useGroups"
 
 const ClassPlan = () => {
-    const { classes } = useClasses()
+    const { classes, studentsByClass, fetchStudents } = useClasses()
     const { teacher } = useTeacher()
 
     const [selectedClass, setSelectedClass] = useState('')
@@ -17,8 +17,9 @@ const ClassPlan = () => {
     const [groups, setGroups] = useState<{ leader: string, students: { name: string, gender: string, level?: string }[] }[]>([])
 
     const selectedClassData = classes.find(c => c.name === selectedClass)
-    const students = selectedClassData?.students.filter(s => s.status === 'active') ?? [];
-    const maladeStudents = selectedClassData?.students.filter(s => s.status === 'malade') ?? [];
+    const classStudents = selectedClassData ? (studentsByClass[selectedClassData._id] || []) : [];
+    const students = classStudents.filter(s => s.status === 'active');
+    const maladeStudents = classStudents.filter(s => s.status === 'malade');
 
     const groupLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
     const distribute = () => {
@@ -30,7 +31,7 @@ const ClassPlan = () => {
         // attach level from تشخيصي
         const withLevel = (list: typeof students) => list.map(s => {
             const found = tashkhisi?.students.find(t => t.name === s.name)
-            return {id: s.id, name: s.name, gender: s.gender, level: found?.resultT2 ? String(found.resultT2) : 'غير محدد' }
+            return { id: s._id, name: s.name, gender: s.gender, level: found?.resultT2 ? String(found.resultT2) : 'غير محدد' }
         })
 
         if (mode === 'level') {
@@ -107,7 +108,7 @@ const ClassPlan = () => {
                 <div style="border: 1px solid #fbbf24; border-radius: 10px; padding: 10px;">
                     <strong>قائمة المعفيين :</strong>
                     <ul>
-                           ${maladeStudents.map((s, index) => `<li> ${s.name}</li>`).join('')}
+                           ${maladeStudents.map((s) => `<li> ${s.name}</li>`).join('')}
                     </ul>
                 </div>
                 <div style="border: 1px solid #d97706; border-radius: 10px; padding: 10px; font-size: 12px;">
@@ -136,7 +137,11 @@ const ClassPlan = () => {
                 {/* Class select */}
                 <div className="flex gap-4 items-center">
                     <label>القسم :</label>
-                    <select className="bg-white border px-2 py-1" value={selectedClass} onChange={e => setSelectedClass(e.target.value)}>
+                    <select className="bg-white border px-2 py-1" value={selectedClass} onChange={e => {
+                        setSelectedClass(e.target.value)
+                        const found = classes.find(c => c.name === e.target.value)
+                        if (found) fetchStudents(found._id)
+                    }}>
                         <option value="">-- اختر القسم --</option>
                         {classes.map(c => <option key={c.name} value={c.name}>{c.name}</option>)}
                     </select>

@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { loadGroups, Group } from '@/hooks/useGroups'
 
 const Mostamir = () => {
-  const { classes } = useClasses();
+  const { classes, studentsByClass, fetchStudents } = useClasses();
   const [classSelect, setClassSelect] = useState('');
   const [todaystate, setTodayState] = useState({
     present: 'P',
@@ -15,6 +15,7 @@ const Mostamir = () => {
   });
   const { teacher } = useTeacher();
   const selectedClassData = classes.find(c => c.name === classSelect);
+  const classStudents = selectedClassData ? (studentsByClass[selectedClassData._id] || []) : [];
   const groupLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
 
   const studentColor = (status: string, gender: string) => {
@@ -39,26 +40,30 @@ const Mostamir = () => {
           <label className='font-semibold text-sm'>اختر القسم</label>
           <select
             className='border border-gray-300 rounded px-3 py-1 bg-white text-black text-sm'
-            onChange={e => setClassSelect(e.target.value)}>
+            onChange={e => {
+              setClassSelect(e.target.value)
+              const found = classes.find(c => c.name === e.target.value)
+              if (found) fetchStudents(found._id)
+            }} >
             <option value="">— اختر —</option>
-            {classes.map((c, i) => (
-              <option key={i} value={c.name}>{c.name}</option>
-            ))}
-          </select>
-        </div>
-        
-        <hr className='border border-gray-200  w-full my-4' />
+          {classes.map((c, i) => (
+            <option key={i} value={c.name}>{c.name}</option>
+          ))}
+        </select>
       </div>
 
-      {/* legend */}
-      <div className='print:hidden mb-4 flex text-black flex-wrap gap-2 text-sm px-8'>
-        <span className='bg-blue-100 px-2 py-1 rounded'>ذكر</span>
-        <span className='bg-pink-200 px-2 py-1 rounded'>أنثى</span>
-        <span className='bg-red-300 px-2 py-1 rounded'>معفى</span>
-        <span className='bg-yellow-200 px-2 py-1 rounded'>حالة شاذة</span>
-      </div>
+      <hr className='border border-gray-200  w-full my-4' />
+    </div>
 
-      {/* document */}
+      {/* legend */ }
+  <div className='print:hidden mb-4 flex text-black flex-wrap gap-2 text-sm px-8'>
+    <span className='bg-blue-100 px-2 py-1 rounded'>ذكر</span>
+    <span className='bg-pink-200 px-2 py-1 rounded'>أنثى</span>
+    <span className='bg-red-300 px-2 py-1 rounded'>معفى</span>
+    <span className='bg-yellow-200 px-2 py-1 rounded'>حالة شاذة</span>
+  </div>
+
+  {/* document */ }
       <div id="a4-card" className='bg-white text-black p-2 md:p-6 '>
 
         {/* header */}
@@ -115,11 +120,11 @@ const Mostamir = () => {
               </tr>
             </thead>
             <tbody>
-              {selectedClassData?.students.map((s, i) => (
+              {classStudents.map((s, i) => (
                 <tr key={i}>
                   <td className={`border border-black font-semibold ${studentColor(s.status, s.gender)}`}>{i + 1}</td>
                   <td className={`border border-black text-right text-sm px-1 ${studentColor(s.status, s.gender)}`}>{s.name}</td>
-                  <td className={`border border-black text-sm ${studentColor(s.status, s.gender)}`}>{getStudentGroup(s.id)}</td>
+                  <td className={`border border-black text-sm ${studentColor(s.status, s.gender)}`}>{getStudentGroup(s._id)}</td>
                   {Array.from({ length: 36 }).map((_, j) => (
                     <td key={j} className={`border border-black ${studentColor(s.status, s.gender)}`}>
                       <select 
@@ -160,7 +165,7 @@ const Mostamir = () => {
           طباعة 🖨️
         </button>
       </div>
-    </div>
+    </div >
   )
 }
 

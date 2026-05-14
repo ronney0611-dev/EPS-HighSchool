@@ -1,4 +1,3 @@
-import { Student } from './useClasses'
 
 export type GroupStudent = {
     id?: string

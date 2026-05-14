@@ -3,27 +3,37 @@
 import { useClasses } from "@/hooks/useClasses";
 import { saveGroupeData } from "@/hooks/useTachkhisi";
 import { useTeacher } from "@/hooks/useTeacher";
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 
 const TakwimGroupe = () => {
-    const { classes } = useClasses();
+    const { classes, studentsByClass, fetchStudents } = useClasses();
     const { teacher } = useTeacher();
     const [mochir, setMochir] = useState(4);
     const [students, setStudents] = useState<{ name: string, result: { t1: number, t2: number }, score: { t1: number, t2: number }[], levelT2: string }[]>([]);
     const [classSelect, setClassSelect] = useState('');
     const selectedClassData = classes.find(c => c.name === classSelect);
 
-    const handleClassSelect = (className: string) => {
-        setClassSelect(className);
-        const found = classes.find(c => c.name === className);
-        if (found) {
-            setStudents(found.students.map(s => ({
+    useEffect(() => {
+        if (!classSelect) return;
+        const found = classes.find(c => c.name === classSelect);
+        if (!found) return;
+        const students = studentsByClass[found._id] || [];
+        setTimeout(() => {
+            setStudents(students.map(s => ({
                 name: s.name,
                 score: Array.from({ length: mochir }, () => ({ t1: 0, t2: 0 })),
                 result: { t1: 0, t2: 0 },
                 levelT2: '',
             })));
-        }
+        }, 0);
+    }, [studentsByClass, classSelect]);
+
+
+
+    const handleClassSelect = (className: string) => {
+        setClassSelect(className);
+        const found = classes.find(c => c.name === className);
+        if (found) fetchStudents(found._id);
     }
 
     const updateLevelT2 = (studentIndex: number, value: string) => {
@@ -32,13 +42,6 @@ const TakwimGroupe = () => {
         );
         setStudents(updated);
     };
-
-    const updateResult = (studentIndex: number, attempt: string, value: number) => {
-        const updated = students.map((s, i) =>
-            i === studentIndex ? { ...s, result: { ...s.result, [attempt]: value } } : s
-        )
-        setStudents(updated)
-    }
 
     const updateScore = (studentIndex: number, scoreIndex: number, attempt: string, value: number) => {
         const newStudents = [...students];

@@ -3,14 +3,15 @@
 import { useClasses } from "@/hooks/useClasses"
 import { useTeacher } from "@/hooks/useTeacher";
 import { loadGroups, Group } from '@/hooks/useGroups'
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { saveMostamir, loadMostamir } from '@/hooks/useMostamir'
 
 const TaqwimMostamir = () => {
 
   const [classSelect, setClassSelect] = useState('');
-  const { classes } = useClasses();
+  const { classes, studentsByClass, fetchStudents } = useClasses();
   const selectedClassData = classes.find(c => c.name === classSelect);
+  const classStudents = selectedClassData ? (studentsByClass[selectedClassData._id] || []) : [];
   const { teacher } = useTeacher();
 
   const groups = loadGroups(classSelect) || [];
@@ -25,18 +26,28 @@ const TaqwimMostamir = () => {
   const [scores, setScores] = useState<number[][]>([])
 
   const handleClassSelect = (className: string) => {
-    setClassSelect(className)
-    const found = classes.find(c => c.name === className)
-    if (found) setScores(found.students.map(() => [5, 5, 5, 5]));
-    const saved = loadMostamir(className)
-    if (found) setScores(saved ?? found.students.map(() => [5, 5, 5, 5]))
+    setClassSelect(className);
+    const found = classes.find(c => c.name === className);
+    if (found) fetchStudents(found._id);
   }
+
+  useEffect(() => {
+    if (!classSelect) return;
+    const found = classes.find(c => c.name === classSelect);
+    if (!found) return;
+    const foundStudents = studentsByClass[found._id] || [];
+    if (foundStudents.length === 0) return;
+    const saved = loadMostamir(classSelect);
+    setTimeout(() => {
+      setScores(saved ?? foundStudents.map(() => [5, 5, 5, 5]));
+    }, 0);
+  }, [studentsByClass, classSelect]);
 
   const handlePrint = () => {
     const win = window.open('', '_blank')
     if (!win) return
 
-    const rowsHTML = selectedClassData?.students.map((student, index) => {
+    const rowsHTML = classStudents.map((student, index) => {
       const isMalade = student.status === 'malade'
       const total = scores[index]?.reduce((a, b) => a + b, 0) ?? 20
       const rowColor = isMalade ? '#fca5a5' : student.status === 'special' ? '#fde68a' : student.gender === 'female' ? '#fbcfe8' : '#bfdbfe'
@@ -44,7 +55,7 @@ const TaqwimMostamir = () => {
         <tr style="background: ${rowColor};">
           <td style="border:1px solid black; padding:4px; text-align:center;">${index + 1}</td>
           <td style="border:1px solid black; padding:4px; text-align:right;">${student.name}</td>
-          <td style="border:1px solid black; padding:4px; text-align:center;">${getStudentGroup(student.id)}</td>
+          <td style="border:1px solid black; padding:4px; text-align:center;">${getStudentGroup(student._id)}</td>
           ${isMalade
           ? `<td colspan="5" style="border:1px solid black; padding:4px; text-align:center; color:#dc2626; font-weight:bold;">اعفاء</td>`
           : `
@@ -180,7 +191,7 @@ const TaqwimMostamir = () => {
               </tr>
             </thead>
             <tbody>
-              {selectedClassData?.students.map((student, index) => {
+              {classStudents.map((student, index) => {
                 const isMalade = student.status === 'malade'
                 const rowColor = isMalade ? 'bg-red-200' : student.status === 'special' ? 'bg-yellow-200' : student.gender === 'female' ? 'bg-pink-200' : 'bg-blue-100'
                 const total = scores[index]?.reduce((a, b) => a + b, 0) ?? 20
@@ -189,7 +200,7 @@ const TaqwimMostamir = () => {
                   <tr key={index} className={rowColor}>
                     <td className={cell}>{index + 1}</td>
                     <td className={`${cell} text-right whitespace-nowrap px-2`}>{student.name}</td>
-                    <td className={cell}>{getStudentGroup(student.id)}</td>
+                    <td className={cell}>{getStudentGroup(student._id)}</td>
                     {isMalade ? (
                       <td className={`${cell} text-red-600 font-bold`} colSpan={5}>اعفاء</td>
                     ) : (

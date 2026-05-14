@@ -1,13 +1,13 @@
 'use client'
 
 import { useClasses } from '@/hooks/useClasses';
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { loadTashkhisi, loadGroupeData } from '@/hooks/useTachkhisi';
 import { Gender, getScore, getTawaorScore } from '@/src/config/barem';
 import { saveTahsili } from '@/hooks/useTahsili';
 
 const TakwinTahsili = () => {
-    const { classes } = useClasses();
+    const { classes, studentsByClass, fetchStudents } = useClasses();
     const [classSlecet, setClassSelect] = useState('');
     const [tashkhisiData, setTashkhisiData] = useState<{ name: string; percentaget2: number; resultT2: number; tatawaor: number }[]>([]);
     const [groupeData, setGroupeData] = useState<{ name: string; levelT2: string }[]>([]);
@@ -15,6 +15,7 @@ const TakwinTahsili = () => {
     const [activity, setActivity] = useState<'sprint' | 'longjump' | 'throw'>('sprint');
 
     const selectedClassData = classes.find(c => c.name === classSlecet);
+    const classStudents = selectedClassData ? (studentsByClass[selectedClassData._id] || []) : [];
 
     const levelToNote = (level: string) => {
         switch (level) {
@@ -37,7 +38,9 @@ const TakwinTahsili = () => {
         else setGroupeData([]);
         const found = classes.find(c => c.name === className);
         if (found) {
-            setStudentNotes(found.students.map((_, idx) => {
+            fetchStudents(found._id);
+            const foundStudents = studentsByClass[found._id] || [];
+            setStudentNotes(foundStudents.map((_, idx) => {
                 const level = groupe?.students[idx]?.levelT2 ?? '';
                 const range = levelToNote(level);
                 return { first: 0, second: 0, groupeNote: range?.default ?? 0 };
@@ -45,19 +48,34 @@ const TakwinTahsili = () => {
         }
     };
 
+    useEffect(() => {
+        if (!classSlecet) return;
+        const found = classes.find(c => c.name === classSlecet);
+        if (!found) return;
+        const foundStudents = studentsByClass[found._id] || [];
+        if (foundStudents.length === 0) return;
+        const groupe = loadGroupeData(classSlecet);
+        setTimeout(() => {
+            setStudentNotes(foundStudents.map((_, idx) => {
+                const level = groupe?.students[idx]?.levelT2 ?? '';
+                const range = levelToNote(level);
+                return { first: 0, second: 0, groupeNote: range?.default ?? 0 };
+            }));
+        }, 0);
+    }, [studentsByClass, classSlecet]);
+
     const updateNote = (index: number, field: 'first' | 'second' | 'groupeNote', value: number) => {
         setStudentNotes(prev => prev.map((n, i) => i === index ? { ...n, [field]: value } : n));
     };
 
     const cell = 'border border-black px-1 py-[2px]';
-    const input = 'w-full border-none outline-none text-center bg-transparent text-xs';
     const select = 'w-full border-none outline-none text-center bg-transparent text-xs appearance-none';
 
     const isThirdYear = selectedClassData?.level === 'ثالثة ثانوي';
 
     const handleSave = () => {
         if (!selectedClassData) return
-        const grades = selectedClassData.students.map((s, i) => {
+        const grades = classStudents.map((s, i) => {
             const saved = tashkhisiData[i]
             const t2Percent = saved?.percentaget2 ?? 0
             const note = (t2Percent / 100) * 20
@@ -149,7 +167,7 @@ const TakwinTahsili = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {selectedClassData?.students.map((s, i) => {
+                        {classStudents.map((s, i) => {
                             const saved = tashkhisiData[i];
                             const t2Percent = saved?.percentaget2 ?? 0;
                             const note = (t2Percent / 100) * 20;
