@@ -1,7 +1,6 @@
 'use client'
 import { useClasses } from '@/hooks/useClasses'
 import { loadTahsili } from '@/hooks/useTahsili'
-import { loadMostamir } from '@/hooks/useMostamir'
 import * as XLSX from 'xlsx'
 
 const AllNotes = () => {

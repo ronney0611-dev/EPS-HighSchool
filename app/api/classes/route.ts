@@ -9,8 +9,8 @@ export async function GET(req: Request) {
     try {
         const session = await getServerSession(authOptions);
         if (!session) return Response.json({ message: 'Unauthorized' }, { status: 401 });
-        const classes = await Class.find({teacher : session.user.id})
-        return Response.json({ success: true, classes })
+        const classes = await Class.find({teacher : session.user.id});
+        return Response.json({ success: true, classes });
     } catch (error) {
         console.error(error);
         return Response.json({ message: 'Server error' }, { status: 500 });

@@ -4,17 +4,18 @@ import { useState } from "react"
 import { useClasses } from "@/hooks/useClasses"
 import { useTeacher } from "@/hooks/useTeacher"
 import { loadTashkhisi } from "@/hooks/useTachkhisi"
-import { saveGroups } from "@/hooks/useGroups"
+import { useGroupe } from "@/hooks/useGroupe"
 
 const ClassPlan = () => {
-    const { classes, studentsByClass, fetchStudents } = useClasses()
-    const { teacher } = useTeacher()
+    const { classes, studentsByClass, fetchStudents } = useClasses();
+    const { teacher } = useTeacher();
 
-    const [selectedClass, setSelectedClass] = useState('')
-    const [numberOfGroups, setNumberOfGroups] = useState(2)
-    const [mode, setMode] = useState<'random' | 'gender' | 'level'>('random')
-    const [genderMix, setGenderMix] = useState<'mixed' | 'separated'>('mixed')
-    const [groups, setGroups] = useState<{ leader: string, students: { name: string, gender: string, level?: string }[] }[]>([])
+    const [selectedClass, setSelectedClass] = useState('');
+    const [numberOfGroups, setNumberOfGroups] = useState(2);
+    const [mode, setMode] = useState<'random' | 'gender' | 'level'>('random');
+    const [genderMix, setGenderMix] = useState<'mixed' | 'separated'>('mixed');
+    // const [groups, setGroups] = useState<{ leader: string, students: { name: string, gender: string, level?: string }[] }[]>([]);
+    const { fetchGroupes, creatGroupes, groupe, setGroupe } = useGroupe();
 
     const selectedClassData = classes.find(c => c.name === selectedClass)
     const classStudents = selectedClassData ? (studentsByClass[selectedClassData._id] || []) : [];
@@ -37,8 +38,8 @@ const ClassPlan = () => {
         if (mode === 'level') {
             const ranked = withLevel(students).sort((a, b) => (a.level ?? '').localeCompare(b.level ?? ''))
             const newGroups = Array.from({ length: numberOfGroups }, () => ({ leader: '', students: [] as { name: string, gender: string, level?: string }[] }))
-            ranked.forEach((s, i) => newGroups[i % numberOfGroups].students.push(s))
-            setGroups(newGroups)
+            ranked.forEach((s, i) => newGroups[i % numberOfGroups].students.push(s));
+            setGroupe(newGroups);
         } else if (mode === 'gender' && genderMix === 'separated') {
             const allGroups = []
             const boyGroups = Math.ceil(numberOfGroups / 2)
@@ -47,28 +48,28 @@ const ClassPlan = () => {
             const gList = withLevel(girls)
             for (let i = 0; i < boyGroups; i++) allGroups.push({ leader: '', students: bList.filter((_, j) => j % boyGroups === i) })
             for (let i = 0; i < girlGroups; i++) allGroups.push({ leader: '', students: gList.filter((_, j) => j % girlGroups === i) })
-            setGroups(allGroups)
+            setGroupe(allGroups)
         } else {
             // random or mixed gender
             const shuffled = withLevel([...students]).sort(() => Math.random() - 0.5)
             const newGroups = Array.from({ length: numberOfGroups }, () => ({ leader: '', students: [] as { name: string, gender: string, level?: string }[] }))
             shuffled.forEach((s, i) => newGroups[i % numberOfGroups].students.push(s))
-            setGroups(newGroups)
+            setGroupe(newGroups)
         }
     }
     const handlePrint = () => {
         const win = window.open('', '_blank')
         if (!win) return
 
-        const groupsHTML = groups.map((group, i) => `
+        const groupsHTML = groupe.map((group, i) => `
         <div style="margin-bottom: 20px; border: 1px solid #2563eb; border-radius: 10px; padding: 12px; position: relative;">
             <div style="position: absolute; top: -12px; right: 10px; background: #1e40af; color: white; padding: 2px 10px; border-radius: 8px; font-size: 11px;">
                 الفوج ${groupLabels[i]} / القائد: ${group.leader || '—'}
             </div>
             <ul style="margin-top: 16px; padding: 0; list-style: none;">
-                ${group.students.map((s, j) => `
+                ${group.students?.map((s, j) => `
                     <li style="color: ${s.gender === 'male' ? '#1d4ed8' : '#db2777'}; font-size: 12px; padding: 2px 0;">
-                        ${j + 1}. ${s.name} ${group.leader === s.name ? '⭐' : ''}
+                        ${j + 1}. ${s.name} ${group.leader === s.id ? '⭐' : ''}
                     </li>
                 `).join('')}
             </ul>
@@ -140,7 +141,10 @@ const ClassPlan = () => {
                     <select className="bg-white border px-2 py-1" value={selectedClass} onChange={e => {
                         setSelectedClass(e.target.value)
                         const found = classes.find(c => c.name === e.target.value)
-                        if (found) fetchStudents(found._id)
+                        if (found) {
+                            fetchStudents(found._id)
+                            fetchGroupes(found._id)
+                        }
                     }}>
                         <option value="">-- اختر القسم --</option>
                         {classes.map(c => <option key={c.name} value={c.name}>{c.name}</option>)}
@@ -200,34 +204,34 @@ const ClassPlan = () => {
                 </div>
 
                 {/* Groups grid */}
-                {groups.length > 0 ? (
+                {groupe.length > 0 ? (
                     <div className="grid grid-cols-1 lg:grid-cols-2 print:grid-cols-2 gap-4">
-                        {groups.map((group, i) => (
+                        {groupe.map((group, i) => (
                             <div key={i} className="border border-blue-600 rounded-xl p-3 relative">
                                 <div className="absolute -top-3.25 right-3 bg-blue-800 text-white px-3 py-0.5 rounded-lg text-xs">
-                                    الفوج {groupLabels[i]} / القائد: {group.leader || '—'}
+                                    الفوج {groupLabels[i]} /القائد: {group.students?.find(s => s.id === group.leader)?.name || '—'}
                                 </div>
                                 <ul className="mt-4 flex flex-col gap-1">
-                                    {group.students.map((s, j) => (
+                                    {group.students?.map((s, j) => (
                                         <li key={j} className="flex justify-between items-center text-sm">
                                             <span className={s.gender === 'male' ? 'text-blue-700' : 'text-pink-600'}>
                                                 {j + 1}. {s.name} {group.leader === s.name ? '⭐' : ''}
                                             </span>
                                             <div className="flex gap-2 print:hidden">
                                                 <button onClick={() => {
-                                                    const updated = [...groups]
-                                                    updated[i].leader = s.name
-                                                    setGroups(updated)
+                                                    const updated = [...groupe]
+                                                    updated[i].leader = s.id
+                                                    setGroupe(updated)
                                                 }} className="text-xs bg-yellow-400 px-2 rounded cursor-pointer">قائد</button>
                                                 <select className="text-xs border bg-white" onChange={e => {
                                                     const target = Number(e.target.value)
                                                     if (target === i) return
-                                                    const updated = [...groups]
+                                                    const updated = [...groupe]
                                                     updated[i].students = updated[i].students.filter(st => st.name !== s.name)
                                                     updated[target].students.push(s)
-                                                    setGroups([...updated])
+                                                    setGroupe([...updated])
                                                 }} defaultValue={i}>
-                                                    {groups.map((_, idx) => <option key={idx} value={idx}>فوج {idx + 1}</option>)}
+                                                    {groupe.map((_, idx) => <option key={idx} value={idx}>فوج {idx + 1}</option>)}
                                                 </select>
                                             </div>
                                         </li>
@@ -270,7 +274,7 @@ const ClassPlan = () => {
             {/* Print button */}
             <div className="flex justify-center gap-4">
                 <button onClick={() => {
-                    saveGroups(selectedClass, groups);
+                    if (selectedClassData) creatGroupes(selectedClassData._id, groupe);
                 }} className="print:hidden bg-green-700 text-white px-6 py-2 rounded-xl self-center cursor-pointer">
                     حفظ
                 </button>
@@ -278,7 +282,7 @@ const ClassPlan = () => {
                     🖨️ طباعة
                 </button>
             </div>
-        </div>
+        </div >
     )
 }
 

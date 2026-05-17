@@ -1,3 +1,6 @@
+'use client'
+
+import axios from "axios"
 import { useEffect, useState } from "react"
 
 export type Teacher = {
@@ -17,15 +20,40 @@ const defaultTeacher: Teacher = {
 }
 
 export const useTeacher = () => {
-    const [teacher, setTeacher] = useState<Teacher>(() => {
-        if (typeof window === 'undefined') return defaultTeacher
-        const saved = localStorage.getItem('teacher')
-        return saved ? JSON.parse(saved) : defaultTeacher
-    })
+    const [teacher , setTeacher] = useState<Teacher>(defaultTeacher);
+    const [loading, setLoading] = useState(false);
+
+    const fetchTeacher = async () => {
+        setLoading(true);
+        try {
+            const response = await axios.get('/api/teacher');
+            const photo = localStorage.getItem('teacher-photo') || ''
+            setTeacher({ ...response.data.teacher, photo })
+        } catch (error) {
+            console.error('Error fetching classes:', error);
+        } finally {
+            setLoading(false);
+        }
+    }
 
     useEffect(() => {
-        localStorage.setItem('teacher', JSON.stringify(teacher))
-    }, [teacher])
+        fetchTeacher();
+    }, []);
 
-    return { teacher, setTeacher }
+    const updateTeacher = async (data: Partial<Teacher>) => {
+        try {
+            const { photo, ...rest } = data;
+            const response = await axios.patch('/api/teacher', rest);
+            if (photo) localStorage.setItem('teacher-photo', photo);
+            setTeacher({ ...response.data.teacher, photo: photo || localStorage.getItem('teacher-photo') || '' })
+        } catch (error) {
+            console.error('Error updating teacher:', error)
+        }
+    }
+
+    return {
+        fetchTeacher, teacher, setTeacher, loading, setLoading, updateTeacher
+    }
 }
+
+

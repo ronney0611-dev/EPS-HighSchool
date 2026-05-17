@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 
 export async function DELETE(req: Request, { params }: { params: { classId: string, studentId: string } }) {
     await connectDB();
-    const { classId, studentId } = await params;
+    const { studentId } = await params;
     try {
         const session = await getServerSession(authOptions);
         if (!session) return Response.json({ message: 'Unauthorized' }, { status: 401 });
@@ -20,7 +20,7 @@ export async function DELETE(req: Request, { params }: { params: { classId: stri
 
 export async function PATCH(req: Request, { params }: { params: { classId: string, studentId: string } }) {
     await connectDB();
-    const { classId, studentId } = await params;
+    const { studentId } = await params;
     const body = await req.json();
     try {
         const session = await getServerSession(authOptions);

@@ -2,9 +2,8 @@
 
 import { useClasses } from "@/hooks/useClasses"
 import { useTeacher } from "@/hooks/useTeacher";
-import { loadGroups, Group } from '@/hooks/useGroups'
+import { useGroupe } from '@/hooks/useGroupe'
 import { useEffect, useState } from "react";
-import { saveMostamir, loadMostamir } from '@/hooks/useMostamir'
 
 const TaqwimMostamir = () => {
 
@@ -14,12 +13,14 @@ const TaqwimMostamir = () => {
   const classStudents = selectedClassData ? (studentsByClass[selectedClassData._id] || []) : [];
   const { teacher } = useTeacher();
 
-  const groups = loadGroups(classSelect) || [];
+  const { groupe, fetchGroupes } = useGroupe();
   const groupLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
 
   const getStudentGroup = (studentId: string) => {
-    if (!groups) return '—';
-    const groupIndex = (groups as Group[]).findIndex(g => g.students.some(s => s.id === studentId));
+    if (!groupe || groupe.length === 0) return '—';
+    const groupIndex = groupe.findIndex(g =>
+      g.students.some(s => s.id === studentId || s._id?.toString() === studentId)
+    );
     return groupIndex !== -1 ? groupLabels[groupIndex] : '—';
   };
 
@@ -143,7 +144,14 @@ const TaqwimMostamir = () => {
           <label className='font-semibold text-sm'>اختر القسم</label>
           <select
             className='border border-gray-300 rounded px-3 py-1 bg-white text-black text-sm'
-            onChange={e => handleClassSelect(e.target.value)}>
+            onChange={e => {
+              handleClassSelect(e.target.value);
+              const found = classes.find(c => c.name === e.target.value)
+              if (found) {
+                fetchStudents(found._id);
+                fetchGroupes(found._id);
+              }
+            }}>
             <option value="">— اختر —</option>
             {classes.map((c, i) => (
               <option key={i} value={c.name}>{c.name}</option>

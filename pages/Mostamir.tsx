@@ -1,18 +1,15 @@
 'use client'
 import { useClasses } from '@/hooks/useClasses'
+import { useGroupe } from '@/hooks/useGroupe';
+import { Sessions, useAttendance } from '@/hooks/useMostamir';
 import { useTeacher } from '@/hooks/useTeacher';
-import { useState } from 'react';
-import { loadGroups, Group } from '@/hooks/useGroups'
+import { useEffect, useState } from 'react';
 
 const Mostamir = () => {
   const { classes, studentsByClass, fetchStudents } = useClasses();
   const [classSelect, setClassSelect] = useState('');
-  const [todaystate, setTodayState] = useState({
-    present: 'P',
-    absent: 'A',
-    noUniform: '0',
-    malade: 'M'
-  });
+  const { attendance, fetcheAttendance, updateAttendance } = useAttendance();
+  const [grid, setGrid] = useState<Record<string, string>>({});
   const { teacher } = useTeacher();
   const selectedClassData = classes.find(c => c.name === classSelect);
   const classStudents = selectedClassData ? (studentsByClass[selectedClassData._id] || []) : [];
@@ -25,10 +22,35 @@ const Mostamir = () => {
     return 'bg-blue-100 print:bg-blue-100'
   }
 
-  const groups = loadGroups(classSelect) || [];
+  const toFlat = (data: Sessions[]) => {
+    const flat: Record<string, string> = {}
+    data.forEach(row => {
+      row.sessions.forEach((val, j) => {
+        flat[`${row.studentId}-${j}`] = val
+      })
+    })
+    return flat
+  }
+
+  const toSessions = (flat: Record<string, string>): Sessions[] => {
+    return classStudents.map(s => ({
+      studentId: s._id,
+      sessions: Array.from({ length: 36 }, (_, j) => flat[`${s._id}-${j}`] || '')
+    }))
+  }
+
+  useEffect(() => {
+    if (attendance.length > 0) {
+      setTimeout(() => setGrid(toFlat(attendance)), 0)
+    }
+  }, [attendance])
+
+  const { groupe, fetchGroupes } = useGroupe();
   const getStudentGroup = (studentId: string) => {
-    if (!groups) return '—';
-    const groupIndex = (groups as Group[]).findIndex(g => g.students.some(s => s.id === studentId));
+    if (!groupe || groupe.length === 0) return '—';
+    const groupIndex = groupe.findIndex(g =>
+      g.students.some(s => s.id === studentId || s._id?.toString() === studentId)
+    );
     return groupIndex !== -1 ? groupLabels[groupIndex] : '—';
   };
   return (
@@ -41,29 +63,33 @@ const Mostamir = () => {
           <select
             className='border border-gray-300 rounded px-3 py-1 bg-white text-black text-sm'
             onChange={e => {
-              setClassSelect(e.target.value)
+              setClassSelect(e.target.value);
               const found = classes.find(c => c.name === e.target.value)
-              if (found) fetchStudents(found._id)
+              if (found) {
+                fetchStudents(found._id);
+                fetchGroupes(found._id);
+                fetcheAttendance(found._id);
+              }
             }} >
             <option value="">— اختر —</option>
-          {classes.map((c, i) => (
-            <option key={i} value={c.name}>{c.name}</option>
-          ))}
-        </select>
+            {classes.map((c, i) => (
+              <option key={i} value={c.name}>{c.name}</option>
+            ))}
+          </select>
+        </div>
+
+        <hr className='border border-gray-200  w-full my-4' />
       </div>
 
-      <hr className='border border-gray-200  w-full my-4' />
-    </div>
+      {/* legend */}
+      <div className='print:hidden mb-4 flex text-black flex-wrap gap-2 text-sm px-8'>
+        <span className='bg-blue-100 px-2 py-1 rounded'>ذكر</span>
+        <span className='bg-pink-200 px-2 py-1 rounded'>أنثى</span>
+        <span className='bg-red-300 px-2 py-1 rounded'>معفى</span>
+        <span className='bg-yellow-200 px-2 py-1 rounded'>حالة شاذة</span>
+      </div>
 
-      {/* legend */ }
-  <div className='print:hidden mb-4 flex text-black flex-wrap gap-2 text-sm px-8'>
-    <span className='bg-blue-100 px-2 py-1 rounded'>ذكر</span>
-    <span className='bg-pink-200 px-2 py-1 rounded'>أنثى</span>
-    <span className='bg-red-300 px-2 py-1 rounded'>معفى</span>
-    <span className='bg-yellow-200 px-2 py-1 rounded'>حالة شاذة</span>
-  </div>
-
-  {/* document */ }
+      {/* document */}
       <div id="a4-card" className='bg-white text-black p-2 md:p-6 '>
 
         {/* header */}
@@ -127,9 +153,10 @@ const Mostamir = () => {
                   <td className={`border border-black text-sm ${studentColor(s.status, s.gender)}`}>{getStudentGroup(s._id)}</td>
                   {Array.from({ length: 36 }).map((_, j) => (
                     <td key={j} className={`border border-black ${studentColor(s.status, s.gender)}`}>
-                      <select 
-                        onChange={e => setTodayState({...todaystate, [`${i}-${j}`]: e.target.value})}
-                        className="border-none w-6 outline-none appearance-none bg-transparent text-center text-sm" 
+                      <select
+                        value={grid[`${s._id}-${j}`] ?? ''}
+                        onChange={e => setGrid(prev => ({ ...prev, [`${s._id}-${j}`]: e.target.value }))}
+                        className="border-none w-6 outline-none appearance-none bg-transparent text-center text-sm"
                         name="" id="">
                         <option value=""></option>
                         <option value="P">P</option>
@@ -158,7 +185,12 @@ const Mostamir = () => {
         </table>
 
       </div>
-      <div className='flex justify-center my-4'>
+      <div className='flex justify-center my-4 gap-4'>
+        <button onClick={() => {
+          if (selectedClassData) updateAttendance(selectedClassData._id, toSessions(grid));
+        }} className="print:hidden bg-green-700 text-white px-6 py-2 rounded-xl self-center cursor-pointer">
+          حفظ
+        </button>
         <button
           onClick={() => window.print()}
           className='bg-blue-600 text-white px-6 py-2 rounded-xl font-semibold text-sm my-4'>
