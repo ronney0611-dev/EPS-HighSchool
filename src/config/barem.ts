@@ -1,11 +1,6 @@
-// src/config/bareme.ts
 
 export type Activity = 'sprint' | 'longjump' | 'throw';
 export type Gender = 'male' | 'female';
-
-// Each entry: { performance, score }
-// Sprint: performance = max time to get this score (lower is better)
-// Longjump/Throw: performance = min distance to get this score (higher is better)
 
 export const bareme: Record<Activity, Record<Gender, { performance: number; score: number }[]>> = {
   sprint: {
@@ -173,12 +168,11 @@ export const bareme: Record<Activity, Record<Gender, { performance: number; scor
       { performance: 8.40, score: 6 },
       { performance: 8.15, score: 5.50 },
       { performance: 7.05, score: 5 },
-      { performance: 6.80, score: 4.50 },
-      { performance: 6.75, score: 4 },
-      { performance: 7.55, score: 3.50 },
-      { performance: 7.35, score: 3 },
-      { performance: 6.15, score: 2.50 },
-      { performance: 5.95, score: 2 },
+      { performance: 6.80, score: 4.38 },
+      { performance: 6.55, score: 3.75 },
+      { performance: 6.30, score: 3.13 },
+      { performance: 6.15, score: 2.5 },
+      { performance: 5.95, score: 1.88 },
       { performance: 5.75, score: 1.50 },
       { performance: 5.55, score: 1 },
       { performance: 5.35, score: 0.50 },
