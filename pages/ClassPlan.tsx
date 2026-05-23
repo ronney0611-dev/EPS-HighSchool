@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { useClasses } from "@/hooks/useClasses"
 import { useTeacher } from "@/hooks/useTeacher"
-import { loadTashkhisi } from "@/hooks/useTachkhisi"
 import { useGroupe } from "@/hooks/useGroupe"
 
 const ClassPlan = () => {

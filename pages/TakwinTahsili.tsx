@@ -2,7 +2,6 @@
 
 import { useClasses } from '@/hooks/useClasses';
 import { useEffect, useState } from 'react'
-import { loadTashkhisi, loadGroupeData } from '@/hooks/useTachkhisi';
 import { Gender, getScore, getTawaorScore } from '@/src/config/barem';
 import { saveTahsili } from '@/hooks/useTahsili';
 

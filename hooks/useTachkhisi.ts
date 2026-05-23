@@ -1,29 +1,97 @@
+'use client'
 
-export const saveTashkhisi = (
-    className : string,
-    mochir : number,
-    students : {name : string, percentaget2: number, resultT2: number, tatawaor: number}[]
-)=>{
-    localStorage.setItem(`tachkhisi-${className}`,
-        JSON.stringify({mochir, students}));
-};
+import axios from "axios";
+import { useState } from "react";
 
-export const loadTashkhisi = (className : string)=>{
-    const data = localStorage.getItem(`tachkhisi-${className}`);
-    return data ? JSON.parse(data) as { mochir: number; students: { name: string; percentaget2: number; resultT2: number; tatawaor: number }[] } : null;
-};
+interface ICriteriaScore {
+    t1: number;
+    t2: number;
+}
 
-export const saveGroupeData = (
-  className: string,
-  students: { name: string; levelT2: string }[]
-) => {
-  localStorage.setItem(
-    `tashkhisi_groupe_${className}`,
-    JSON.stringify({ students })
-  );
-};
+interface INumericalResult {
+    t1: number;
+    t2: number;
+}
 
-export const loadGroupeData = (className: string) => {
-  const data = localStorage.getItem(`tashkhisi_groupe_${className}`);
-  return data ? JSON.parse(data) as { students: { name: string; levelT2: string }[] } : null;
+interface IStudentEvaluation {
+    name: string;
+    score: ICriteriaScore[];
+    result?: INumericalResult;
+    percentaget1: number;
+    percentaget2: number;
+    tatawaor: number;
+}
+
+interface IMochirAverage {
+    t1: number;
+    t2: number;
+}
+
+interface TachkhisiData {
+    classId: string;
+    sportKey: string;
+    sportType: 'fardi' | 'groupe';
+    mochirCount: number;
+    selectedIndicatorIds: number[];
+    students: IStudentEvaluation[];
+    mochirAverages: IMochirAverage[];
+}
+
+export const useTachkhisi = () => {
+    const [tachkhisi, setTachkhisi] = useState<TachkhisiData | null>(null);
+    const [loading, setLoading] = useState(false);
+
+    const fetchTachkhisi = async (
+        classId: string,
+        sportKey: string,
+        sportType: 'fardi' | 'groupe'
+    ) => {
+        setLoading(true);
+        try {
+            const res = await axios.get(`/api/tachkhisi/${classId}`, {
+                params: { sportKey, sportType }
+            });
+            setTimeout(() => setTachkhisi(res.data), 0);
+        } catch (err) {
+            console.error("fetchTachkhisi error:", err);
+            setTimeout(() => setTachkhisi(null), 0);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const saveTachkhisi = async (
+        classId: string,
+        sportKey: string,
+        sportType: 'fardi' | 'groupe',
+        mochirCount: number,
+        selectedIndicatorIds: number[],
+        students: IStudentEvaluation[],
+        mochirAverages: IMochirAverage[]
+    ) => {
+        setLoading(true);
+        try {
+            const res = await axios.post(`/api/tachkhisi/${classId}`, {
+                sportKey,
+                sportType,
+                mochirCount,
+                selectedIndicatorIds,
+                students,
+                mochirAverages,
+            });
+            setTimeout(() => setTachkhisi(res.data), 0);
+        } catch (err) {
+            console.error("saveTachkhisi error:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return {
+        tachkhisi,
+        setTachkhisi,
+        loading,
+        fetchTachkhisi,
+        saveTachkhisi,
+    };
 };

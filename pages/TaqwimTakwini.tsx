@@ -3,17 +3,16 @@ import { useClasses } from "@/hooks/useClasses"
 import { useGroupe } from "@/hooks/useGroupe";
 import React, { useState } from "react"
 import { Gender, getScore } from "@/src/config/barem2"
+import { useTakwini } from "@/hooks/useTakwini";
 
 const TaqwimTakwini = () => {
     const { classes, studentsByClass, fetchStudents } = useClasses();
     const [classSelect, setClassSelect] = useState('');
     const { groupe, fetchGroupes } = useGroupe();
+    const { saveTakwini, fetchTakwini, performances, setPerformances,
+        groupLevels, setGroupLevels,
+        groupNotes, setGroupNotes, } = useTakwini();
     const [activity, setActivity] = useState<'sprint' | 'longjump' | 'throw'>('sprint');
-
-    // State bindings
-    const [performances, setPerformances] = useState<Record<string, string>>({});
-    const [groupLevels, setGroupLevels] = useState<Record<string, string>>({});
-    const [groupNotes, setGroupNotes] = useState<Record<string, number>>({});
 
     const selectedClassData = classes.find(c => c.name === classSelect);
     const isThirdYear = selectedClassData?.name.startsWith('3') ?? false;
@@ -26,6 +25,10 @@ const TaqwimTakwini = () => {
             g.students.some(s => s.id === studentId || s._id?.toString() === studentId)
         );
     };
+
+    const classId = selectedClassData?._id ?? '';
+    const studentIds = classStudents.map(s => s._id);
+    const genders = Object.fromEntries(classStudents.map(s => [s._id, s.gender as Gender]));
 
     const levelToNote = (level: string) => {
         switch (level) {
@@ -54,22 +57,19 @@ const TaqwimTakwini = () => {
 
     const getJamaiNote = (groupIndex: number): number => {
         if (groupIndex === -1) return 0;
-
-        // Scans the 6 sessions to find the latest active group grade assigned
-        let latestNote = 0;
-        for (let gi = 5; gi >= 0; gi--) {
+        let best = 0;
+        for (let gi = 0; gi < 6; gi++) {
             const key = `${groupIndex}-${gi}`;
-            if (groupNotes[key] !== undefined) {
-                latestNote = groupNotes[key];
-                break;
+            if (groupNotes[key] !== undefined && groupNotes[key] > best) {
+                best = groupNotes[key];
             }
         }
-        return latestNote;
+        return best;
     };
 
     const cell = 'border border-black px-1 py-[2px]';
     const inputCls = 'w-full border-none outline-none text-center bg-transparent text-xs';
-    const select = 'w-full border-none outline-none text-center bg-transparent text-xs appearance-none';
+    const select = 'w-full border-none outline-none text-center bg-transparent text-xs appearance-none font-semibold text-blue-700';
 
     return (
         <div dir="rtl" className='m-2 md:m-4 flex flex-col items-center'>
@@ -103,17 +103,16 @@ const TaqwimTakwini = () => {
                     <select
                         className='border border-gray-300 rounded px-3 py-1 bg-white text-black text-sm'
                         value={activity}
-                        onChange={e => setActivity(e.target.value as 'sprint' | 'longjump' | 'throw')}>
+                        onChange={e => {
+                            const newActivity = e.target.value as 'sprint' | 'longjump' | 'throw';
+                            setActivity(newActivity);
+                            if (classSelect) fetchTakwini(selectedClassData?._id ?? '', newActivity);
+                        }}>
                         <option value="sprint">عدو 60م</option>
                         <option value="longjump">الوثب الطويل</option>
                         <option value="throw">رمي الجلة</option>
                     </select>
                 </div>
-                <button
-                    onClick={() => window.print()}
-                    className='bg-blue-600 text-white px-6 py-2 rounded-xl font-semibold text-sm w-full md:w-auto'>
-                    طباعة 🖨️
-                </button>
             </div>
 
             {/* Document Grid */}
@@ -137,7 +136,7 @@ const TaqwimTakwini = () => {
                                 ))}
                                 <th className="border border-black bg-blue-200 print:bg-blue-200">علامة النشاط الفردي</th>
                                 <th colSpan={6} className="border border-black bg-blue-200 print:bg-blue-200 p-1 text-xs">
-                                    المستوى (A +17) / (B 15-17) / (C 11-14) / (D 07-10) / (E 03-06)
+                                    A / B / C / D / E
                                 </th>
                                 <th className="border border-black bg-blue-200 print:bg-blue-200">علامة النشاط الجماعي</th>
                                 <th className="border border-black bg-blue-200 print:bg-blue-200">العلامة</th>
@@ -172,13 +171,14 @@ const TaqwimTakwini = () => {
                                 // Find the latest assigned group level to offer fine-tuning drop-downs
                                 let currentGroupLevel = '';
                                 let latestGroupSessionKey = '';
+                                let bestNote = 0;
                                 if (groupIndex !== -1) {
-                                    for (let gi = 5; gi >= 0; gi--) {
+                                    for (let gi = 0; gi < 6; gi++) {
                                         const key = `${groupIndex}-${gi}`;
-                                        if (groupLevels[key]) {
+                                        if (groupLevels[key] && groupNotes[key] !== undefined && groupNotes[key] >= bestNote) {
+                                            bestNote = groupNotes[key];
                                             currentGroupLevel = groupLevels[key];
                                             latestGroupSessionKey = key;
-                                            break;
                                         }
                                     }
                                 }
@@ -317,8 +317,21 @@ const TaqwimTakwini = () => {
                         </tbody>
                     </table>
                 </div>
+
             </div>
-        </div>
+            <div className="my-6 flex gap-4" >
+                <button
+                    onClick={() => saveTakwini(classId, activity, studentIds, genders, isThirdYear)}
+                    className='bg-green-600 text-white px-6 py-2 rounded-xl font-semibold text-sm w-full md:w-auto cursor-pointer'>
+                    حفظ
+                </button>
+                <button
+                    onClick={() => window.print()}
+                    className='bg-blue-600 text-white px-6 py-2 rounded-xl font-semibold text-sm w-full md:w-auto cursor-pointer'>
+                    طباعة 🖨️
+                </button>
+            </div>
+        </div >
     )
 }
 
