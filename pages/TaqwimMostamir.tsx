@@ -2,7 +2,8 @@
 
 import { useClasses } from "@/hooks/useClasses"
 import { useTeacher } from "@/hooks/useTeacher";
-import { useGroupe } from '@/hooks/useGroupe'
+import { useGroupe } from '@/hooks/useGroupe';
+import { useMostamir } from '@/hooks/useTakwimMostamir';
 import { useEffect, useState } from "react";
 
 const TaqwimMostamir = () => {
@@ -12,9 +13,10 @@ const TaqwimMostamir = () => {
   const selectedClassData = classes.find(c => c.name === classSelect);
   const classStudents = selectedClassData ? (studentsByClass[selectedClassData._id] || []) : [];
   const { teacher } = useTeacher();
-
+  const { mostamir, fetchMostamir, saveMostamir } = useMostamir();
   const { groupe, fetchGroupes } = useGroupe();
   const groupLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
+  const [scores, setScores] = useState<number[][]>([]);
 
   const getStudentGroup = (studentId: string) => {
     if (!groupe || groupe.length === 0) return '—';
@@ -24,13 +26,15 @@ const TaqwimMostamir = () => {
     return groupIndex !== -1 ? groupLabels[groupIndex] : '—';
   };
 
-  const [scores, setScores] = useState<number[][]>([])
-
   const handleClassSelect = (className: string) => {
     setClassSelect(className);
     const found = classes.find(c => c.name === className);
-    if (found) fetchStudents(found._id);
-  }
+    if (found) {
+      fetchStudents(found._id);
+      fetchGroupes(found._id);
+      fetchMostamir(found._id);
+    }
+  };
 
   useEffect(() => {
     if (!classSelect) return;
@@ -38,20 +42,24 @@ const TaqwimMostamir = () => {
     if (!found) return;
     const foundStudents = studentsByClass[found._id] || [];
     if (foundStudents.length === 0) return;
-    const saved = loadMostamir(classSelect);
+
     setTimeout(() => {
-      setScores(saved ?? foundStudents.map(() => [5, 5, 5, 5]));
+      if (mostamir.length > 0) {
+        setScores(mostamir.map(s => s.scores));
+      } else {
+        setScores(foundStudents.map(() => [5, 5, 5, 5]));
+      }
     }, 0);
-  }, [studentsByClass, classSelect]);
+  }, [mostamir, studentsByClass, classSelect]);
 
   const handlePrint = () => {
-    const win = window.open('', '_blank')
-    if (!win) return
+    const win = window.open('', '_blank');
+    if (!win) return;
 
     const rowsHTML = classStudents.map((student, index) => {
-      const isMalade = student.status === 'malade'
-      const total = scores[index]?.reduce((a, b) => a + b, 0) ?? 20
-      const rowColor = isMalade ? '#fca5a5' : student.status === 'special' ? '#fde68a' : student.gender === 'female' ? '#fbcfe8' : '#bfdbfe'
+      const isMalade = student.status === 'malade';
+      const total = scores[index]?.reduce((a, b) => a + b, 0) ?? 20;
+      const rowColor = isMalade ? '#fca5a5' : student.status === 'special' ? '#fde68a' : student.gender === 'female' ? '#fbcfe8' : '#bfdbfe';
       return `
         <tr style="background: ${rowColor};">
           <td style="border:1px solid black; padding:4px; text-align:center;">${index + 1}</td>
@@ -68,8 +76,8 @@ const TaqwimMostamir = () => {
             `
         }
         </tr>
-      `
-    }).join('')
+      `;
+    }).join('');
 
     win.document.write(`
       <html>
@@ -125,51 +133,38 @@ const TaqwimMostamir = () => {
         </table>
       </body>
       </html>
-    `)
-    win.document.close()
-    win.focus()
-    win.print()
-    win.close()
-  }
+    `);
+    win.document.close();
+    win.focus();
+    win.print();
+    win.close();
+  };
 
-  const cell = 'border border-black px-1 py-1 text-center text-xs'
-  const th = 'border border-black px-1 py-1 text-center text-xs bg-blue-200'
+  const cell = 'border border-black px-1 py-1 text-center text-xs';
+  const th = 'border border-black px-1 py-1 text-center text-xs bg-blue-200';
 
   return (
     <div dir='rtl' className="mx-2 lg:mx-20 my-6 flex flex-col gap-4">
 
-      {/* Controls */}
       <div className='print:hidden flex flex-wrap gap-4 items-center border border-gray-300 rounded-xl p-4'>
         <div className='flex gap-2 items-center'>
           <label className='font-semibold text-sm'>اختر القسم</label>
           <select
             className='border border-gray-300 rounded px-3 py-1 bg-white text-black text-sm'
-            onChange={e => {
-              handleClassSelect(e.target.value);
-              const found = classes.find(c => c.name === e.target.value)
-              if (found) {
-                fetchStudents(found._id);
-                fetchGroupes(found._id);
-              }
-            }}>
+            onChange={e => handleClassSelect(e.target.value)}>
             <option value="">— اختر —</option>
             {classes.map((c, i) => (
               <option key={i} value={c.name}>{c.name}</option>
             ))}
           </select>
         </div>
-
       </div>
 
-      {/* Document */}
       <div id="a4-card" className="bg-white text-black p-4 lg:p-8 border border-gray-300 shadow-md flex flex-col gap-4">
-
-        {/* Header */}
         <div className="text-center border-b-2 border-gray-400 pb-3">
           <h1 className="text-lg font-bold">علامة المراقبة المستمرة</h1>
         </div>
 
-        {/* Info */}
         <div className="grid grid-cols-2 border border-gray-400 text-sm">
           <div className="border-l border-gray-400 p-2">المؤسسة : {teacher.school || '—'}</div>
           <div className="p-2">المستوى : {selectedClassData?.level || '—'}</div>
@@ -177,7 +172,6 @@ const TaqwimMostamir = () => {
           <div className="border-t border-gray-400 p-2">القسم : {classSelect || '—'}</div>
         </div>
 
-        {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full border-collapse border border-black text-xs">
             <thead>
@@ -200,9 +194,9 @@ const TaqwimMostamir = () => {
             </thead>
             <tbody>
               {classStudents.map((student, index) => {
-                const isMalade = student.status === 'malade'
-                const rowColor = isMalade ? 'bg-red-200' : student.status === 'special' ? 'bg-yellow-200' : student.gender === 'female' ? 'bg-pink-200' : 'bg-blue-100'
-                const total = scores[index]?.reduce((a, b) => a + b, 0) ?? 20
+                const isMalade = student.status === 'malade';
+                const rowColor = isMalade ? 'bg-red-200' : student.status === 'special' ? 'bg-yellow-200' : student.gender === 'female' ? 'bg-pink-200' : 'bg-blue-100';
+                const total = scores[index]?.reduce((a, b) => a + b, 0) ?? 20;
 
                 return (
                   <tr key={index} className={rowColor}>
@@ -216,13 +210,13 @@ const TaqwimMostamir = () => {
                         {Array.from({ length: 4 }).map((_, i) => (
                           <td key={i} className={cell}>
                             <select
-                              defaultValue="5"
+                              value={scores[index]?.[i] ?? 5}
                               className="bg-transparent border-none outline-none text-center text-xs w-full appearance-none"
                               onChange={e => {
                                 const updated = scores.map((s, si) =>
                                   si === index ? s.map((v, vi) => vi === i ? Number(e.target.value) : v) : s
-                                )
-                                setScores(updated)
+                                );
+                                setScores(updated);
                               }}>
                               {[5, 4, 3, 2, 1, 0].map(n => (
                                 <option key={n} value={n}>{n}</option>
@@ -234,7 +228,7 @@ const TaqwimMostamir = () => {
                       </>
                     )}
                   </tr>
-                )
+                );
               })}
             </tbody>
           </table>
@@ -244,9 +238,18 @@ const TaqwimMostamir = () => {
           <div className="text-center text-gray-400 my-6">اختر القسم لعرض التلاميذ</div>
         )}
       </div>
-      <div className="flex justify-center gap-4" >
+
+      <div className="flex justify-center gap-4">
         <button
-          onClick={() => saveMostamir(classSelect, scores)}
+          onClick={() => {
+            if (!selectedClassData) return;
+            saveMostamir(selectedClassData._id, classStudents.map((s, i) => ({
+              studentId: s._id,
+              name: s.name,
+              scores: scores[i] ?? [5, 5, 5, 5],
+              total: scores[i]?.reduce((a, b) => a + b, 0) ?? 20,
+            })));
+          }}
           className='bg-blue-700 text-white px-6 py-2 rounded-xl text-sm cursor-pointer'>
           💾 حفظ
         </button>
@@ -258,7 +261,7 @@ const TaqwimMostamir = () => {
       </div>
 
     </div>
-  )
-}
+  );
+};
 
-export default TaqwimMostamir
+export default TaqwimMostamir;

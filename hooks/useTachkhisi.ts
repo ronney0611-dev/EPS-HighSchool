@@ -17,9 +17,11 @@ interface IStudentEvaluation {
     name: string;
     score: ICriteriaScore[];
     result?: INumericalResult;
-    percentaget1: number;
     percentaget2: number;
+    percentaget1: number;
     tatawaor: number;
+    levelT1?: string;  // جماعي only
+    levelT2?: string;  // جماعي only
 }
 
 interface IMochirAverage {

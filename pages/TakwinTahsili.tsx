@@ -3,15 +3,18 @@
 import { useClasses } from '@/hooks/useClasses';
 import { useEffect, useState } from 'react'
 import { Gender, getScore, getTawaorScore } from '@/src/config/barem';
-import { saveTahsili } from '@/hooks/useTahsili';
+import { useTahsili } from '@/hooks/useTahsili';
+import { useTachkhisi } from '@/hooks/useTachkhisi';
 
 const TakwinTahsili = () => {
     const { classes, studentsByClass, fetchStudents } = useClasses();
     const [classSlecet, setClassSelect] = useState('');
-    const [tashkhisiData, setTashkhisiData] = useState<{ name: string; percentaget2: number; resultT2: number; tatawaor: number }[]>([]);
-    const [groupeData, setGroupeData] = useState<{ name: string; levelT2: string }[]>([]);
-    const [studentNotes, setStudentNotes] = useState<{ first: number; second: number; groupeNote: number }[]>([]);
     const [activity, setActivity] = useState<'sprint' | 'longjump' | 'throw'>('sprint');
+    const [studentNotes, setStudentNotes] = useState<{ first: number; second: number; groupeNote: number }[]>([]);
+
+    const { saveTahsili } = useTahsili();
+    const { tachkhisi: fardiData, fetchTachkhisi: fetchFardi } = useTachkhisi();
+    const { tachkhisi: groupeDataRaw, fetchTachkhisi: fetchGroupe } = useTachkhisi();
 
     const selectedClassData = classes.find(c => c.name === classSlecet);
     const classStudents = selectedClassData ? (studentsByClass[selectedClassData._id] || []) : [];
@@ -27,41 +30,33 @@ const TakwinTahsili = () => {
         }
     };
 
-    const handleClassSelect = (className: string) => {
+    const handleClassSelect = async (className: string) => {
         setClassSelect(className);
-        const saved = loadTashkhisi(className);
-        if (saved) setTashkhisiData(saved.students);
-        else setTashkhisiData([]);
-        const groupe = loadGroupeData(className);
-        if (groupe) setGroupeData(groupe.students);
-        else setGroupeData([]);
         const found = classes.find(c => c.name === className);
-        if (found) {
-            fetchStudents(found._id);
-            const foundStudents = studentsByClass[found._id] || [];
-            setStudentNotes(foundStudents.map((_, idx) => {
-                const level = groupe?.students[idx]?.levelT2 ?? '';
-                const range = levelToNote(level);
-                return { first: 0, second: 0, groupeNote: range?.default ?? 0 };
-            }));
-        }
+        if (!found) return;
+        fetchStudents(found._id);
+        await fetchFardi(found._id, activity, 'fardi');
+        await fetchGroupe(found._id, activity, 'groupe');
     };
 
+    // refetch when activity changes
     useEffect(() => {
-        if (!classSlecet) return;
-        const found = classes.find(c => c.name === classSlecet);
-        if (!found) return;
-        const foundStudents = studentsByClass[found._id] || [];
-        if (foundStudents.length === 0) return;
-        const groupe = loadGroupeData(classSlecet);
+        if (!selectedClassData) return;
+        fetchFardi(selectedClassData._id, activity, 'fardi');
+        fetchGroupe(selectedClassData._id, activity, 'groupe');
+    }, [activity]);
+
+    // rebuild studentNotes when groupeData or students load
+    useEffect(() => {
+        if (classStudents.length === 0) return;
         setTimeout(() => {
-            setStudentNotes(foundStudents.map((_, idx) => {
-                const level = groupe?.students[idx]?.levelT2 ?? '';
+            setStudentNotes(classStudents.map((_, idx) => {
+                const level = groupeDataRaw?.students[idx]?.levelT2 ?? '';
                 const range = levelToNote(level);
                 return { first: 0, second: 0, groupeNote: range?.default ?? 0 };
             }));
         }, 0);
-    }, [studentsByClass, classSlecet]);
+    }, [groupeDataRaw, studentsByClass, classSlecet]);
 
     const updateNote = (index: number, field: 'first' | 'second' | 'groupeNote', value: number) => {
         setStudentNotes(prev => prev.map((n, i) => i === index ? { ...n, [field]: value } : n));
@@ -70,31 +65,30 @@ const TakwinTahsili = () => {
     const cell = 'border border-black px-1 py-[2px]';
     const select = 'w-full border-none outline-none text-center bg-transparent text-xs appearance-none';
 
-    const isThirdYear = selectedClassData?.level === 'ثالثة ثانوي';
-
+    const isThirdYear = selectedClassData?.name.startsWith('3') ?? false;
+    
     const handleSave = () => {
-        if (!selectedClassData) return
+        if (!selectedClassData) return;
         const grades = classStudents.map((s, i) => {
-            const saved = tashkhisiData[i]
-            const t2Percent = saved?.percentaget2 ?? 0
-            const note = (t2Percent / 100) * 20
-            const resultT2 = saved?.resultT2 ?? 0
-            const tatawaor = saved?.tatawaor ?? 0
-            const gender: Gender = s.gender === 'male' ? 'male' : 'female'
-            const baremeScore = resultT2 > 0 ? getScore(activity, gender, resultT2, isThirdYear) : 0
-            const tawaorScore = tatawaor > 0 ? getTawaorScore(activity, tatawaor, isThirdYear) : 0
-            const firstResult = (note + baremeScore + tawaorScore) / 2
-            const sNote = studentNotes[i] ?? { groupeNote: 0 }
-            const finalResult = (firstResult + sNote.groupeNote) / 2
-            return { name: s.name, matricule: s.matricule ?? '', final: finalResult }
-        })
-        saveTahsili(classSlecet, grades)
-        alert('تم الحفظ ✓')
-    }
+            const saved = fardiData?.students[i];
+            const t2Percent = saved?.percentaget2 ?? 0;
+            const note = (t2Percent / 100) * 20;
+            const resultT2 = saved?.result?.t2 ?? 0;
+            const tatawaor = saved?.tatawaor ?? 0;
+            const gender: Gender = s.gender === 'male' ? 'male' : 'female';
+            const baremeScore = resultT2 > 0 ? getScore(activity, gender, resultT2, isThirdYear) : 0;
+            const tawaorScore = tatawaor > 0 ? getTawaorScore(activity, tatawaor, isThirdYear) : 0;
+            const firstResult = (note + baremeScore + tawaorScore) / 2;
+            const sNote = studentNotes[i] ?? { groupeNote: 0 };
+            const finalResult = (firstResult + sNote.groupeNote) / 2;
+            return { name: s.name, matricule: s.matricule ?? '', final: finalResult };
+        });
+        saveTahsili(selectedClassData._id, activity, grades);
+        alert('تم الحفظ ✓');
+    };
 
     return (
         <div dir="rtl" className="mx-4 mt-20">
-            {/* controls */}
             <div className="print:hidden flex flex-col md:flex-row flex-wrap gap-3 items-center border rounded-xl p-4 w-full mb-6">
                 <div className='flex gap-2 items-center'>
                     <label className='font-semibold text-sm'>اختر القسم</label>
@@ -124,7 +118,6 @@ const TakwinTahsili = () => {
                 </button>
             </div>
 
-            {/* the form */}
             <main id="a4-card" dir="rtl" className='w-full bg-white text-black p-2 md:p-6 overflow-x-auto'>
                 <table className="w-full border-collapse border border-black text-center text-xs">
                     <thead className='border border-black'>
@@ -152,13 +145,9 @@ const TakwinTahsili = () => {
                             <th className={`${cell} min-w-12.5`}>نتيجة%</th>
                             <th className={`${cell} min-w-12.5`}>النقطة/20</th>
                             <th className={`${cell} min-w-12.5`}>نتيجة</th>
-                            <th className={`${cell} min-w-15`}>
-                                {isThirdYear ? 'النقطة 16' : 'النقطة 14'}
-                            </th>
+                            <th className={`${cell} min-w-15`}>{isThirdYear ? 'النقطة 16' : 'النقطة 14'}</th>
                             <th className={`${cell} min-w-15`}>تطور الحاصل</th>
-                            <th className={`${cell} min-w-15`}>
-                                {isThirdYear ? 'نتيجة التطور 4' : 'نتيجة التطور 6'}
-                            </th>
+                            <th className={`${cell} min-w-15`}>{isThirdYear ? 'نتيجة التطور 4' : 'نتيجة التطور 6'}</th>
                             <th className={`${cell} min-w-15`}>ت تصر+ ت تحصي/2</th>
                             <th className={`${cell} min-w-15`}>A/B/C/D/E</th>
                             <th className={`${cell} min-w-15`}>20</th>
@@ -167,26 +156,24 @@ const TakwinTahsili = () => {
                     </thead>
                     <tbody>
                         {classStudents.map((s, i) => {
-                            const saved = tashkhisiData[i];
+                            const saved = fardiData?.students[i];
                             const t2Percent = saved?.percentaget2 ?? 0;
                             const note = (t2Percent / 100) * 20;
-                            const resultT2 = saved?.resultT2 ?? 0;
+                            const resultT2 = saved?.result?.t2 ?? 0;
                             const tatawaor = saved?.tatawaor ?? 0;
 
-                            const savedGroupe = groupeData[i];
+                            const savedGroupe = groupeDataRaw?.students[i];
                             const level = savedGroupe?.levelT2 ?? '';
                             const noteRange = levelToNote(level);
 
                             const sNote = studentNotes[i] ?? { first: 0, second: 0, groupeNote: noteRange?.default ?? 0 };
 
-
                             const gender: Gender = s.gender === 'male' ? 'male' : 'female';
                             const baremeScore = resultT2 > 0 ? getScore(activity, gender, resultT2, isThirdYear) : 0;
                             const tawaorScore = tatawaor > 0 ? getTawaorScore(activity, tatawaor, isThirdYear) : 0;
-
                             const firstResult = (note + baremeScore + tawaorScore) / 2;
                             const finalResult = (firstResult + sNote.groupeNote) / 2;
-                            const isMalade = s.status === 'malade'
+                            const isMalade = s.status === 'malade';
 
                             return (
                                 <tr key={i} className="h-6">
@@ -195,7 +182,7 @@ const TakwinTahsili = () => {
                                     {isMalade ? (
                                         <>
                                             {Array.from({ length: 10 }).map((_, k) => (
-                                                <td key={k} className={`${cell} text-red-500 `}>اعفاء</td>
+                                                <td key={k} className={`${cell} text-red-500`}>اعفاء</td>
                                             ))}
                                         </>
                                     ) : (
@@ -221,18 +208,15 @@ const TakwinTahsili = () => {
                                                 ) : '—'}
                                             </td>
                                             <td className={`${cell} text-red-500 font-semibold`}>{finalResult.toFixed(2)}</td>
-
                                         </>
                                     )}
-
                                 </tr>
                             );
-
                         })}
                     </tbody>
                 </table>
             </main>
-            <div className='flex justify-center my-4 ' >
+            <div className='flex justify-center my-4'>
                 <button
                     onClick={handleSave}
                     className='bg-blue-700 text-white px-6 py-2 rounded-xl text-sm cursor-pointer'>
@@ -240,7 +224,7 @@ const TakwinTahsili = () => {
                 </button>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default TakwinTahsili
+export default TakwinTahsili;

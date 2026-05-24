@@ -5,8 +5,6 @@ import Link from "next/link";
 import React from "react";
 
 const Hero = () => {
-    const [mobileOpen, setMobileOpen] = React.useState(false);
-
     return (
         <>
             <style>

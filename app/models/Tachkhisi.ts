@@ -13,10 +13,12 @@ interface INumericalResult {
 interface IStudentEvaluation {
   name: string;
   score: ICriteriaScore[];
-  result?: INumericalResult; // only for فردي
+  result?: INumericalResult;
   percentaget1: number;
   percentaget2: number;
   tatawaor: number;
+  levelT1?: string;
+  levelT2?: string;
 }
 
 interface IMochirAverage {

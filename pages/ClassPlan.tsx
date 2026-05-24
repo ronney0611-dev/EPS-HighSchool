@@ -23,16 +23,15 @@ const ClassPlan = () => {
 
     const groupLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
     const distribute = () => {
-        const tashkhisi = loadTashkhisi(selectedClass);
-
         const boys = students.filter(s => s.gender === 'male')
         const girls = students.filter(s => s.gender === 'female')
 
-        // attach level from تشخيصي
-        const withLevel = (list: typeof students) => list.map(s => {
-            const found = tashkhisi?.students.find(t => t.name === s.name)
-            return { id: s._id, name: s.name, gender: s.gender, level: found?.resultT2 ? String(found.resultT2) : 'غير محدد' }
-        })
+        const withLevel = (list: typeof students) => list.map(s => ({
+            id: s._id,
+            name: s.name,
+            gender: s.gender,
+            level: 'غير محدد'
+        }))
 
         if (mode === 'level') {
             const ranked = withLevel(students).sort((a, b) => (a.level ?? '').localeCompare(b.level ?? ''))
