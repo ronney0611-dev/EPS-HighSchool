@@ -3,7 +3,10 @@ import { connectDB } from "@/app/lib/mongo";
 import Student from "@/app/models/Student";
 import { getServerSession } from "next-auth";
 
-export async function DELETE(req: Request, { params }: { params: { classId: string, studentId: string } }) {
+export async function DELETE(
+    req: Request,
+    { params }: { params: Promise<{ classId: string; studentId: string }> }
+) {
     await connectDB();
     const { studentId } = await params;
     try {
@@ -18,7 +21,10 @@ export async function DELETE(req: Request, { params }: { params: { classId: stri
     }
 }
 
-export async function PATCH(req: Request, { params }: { params: { classId: string, studentId: string } }) {
+export async function PATCH(
+    req: Request,
+    { params }: { params: Promise<{ classId: string; studentId: string }> }
+) {
     await connectDB();
     const { studentId } = await params;
     const body = await req.json();

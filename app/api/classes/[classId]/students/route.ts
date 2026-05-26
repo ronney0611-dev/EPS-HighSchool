@@ -4,7 +4,7 @@ import Student from "@/app/models/Student";
 import { getServerSession } from "next-auth";
 
 
-export async function GET(req: Request, { params }: { params: { classId: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ classId: string }> }) {
     await connectDB();
     const { classId } = await params;
     try {
@@ -18,7 +18,7 @@ export async function GET(req: Request, { params }: { params: { classId: string 
     }
 }
 
-export async function POST(req:Request, {params} : {params : {classId : string}}) {
+export async function POST(req: Request, { params }: { params: Promise<{ classId: string }> }) {
     await connectDB();
     const { classId } = await params;
     const body = await req.json();
@@ -26,10 +26,10 @@ export async function POST(req:Request, {params} : {params : {classId : string}}
         const session = await getServerSession(authOptions);
         if (!session) return Response.json({ message: 'Unauthorized' }, { status: 401 });
         const newStudent = new Student({
-            ...body , classId
+            ...body, classId
         });
         const saveStudent = await newStudent.save();
-        return Response.json({ success: true, student : saveStudent });
+        return Response.json({ success: true, student: saveStudent });
     } catch (error) {
         console.error(error);
         return Response.json({ message: 'Server error' }, { status: 500 });
