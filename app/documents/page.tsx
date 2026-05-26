@@ -2,7 +2,6 @@ import { documentsConfig } from '@/src/config/documents';
 import Image from 'next/image';
 import Link from 'next/link';
 import GradientText from '../../components/GradientText'
-import ManageClasses from '@/pages/ManageClasses';
 
 const DocumentsPage = () => {
 

@@ -37,22 +37,6 @@ export const documentsConfig =
                 },
             }
         },
-        timeCard: {
-            id: 'first',
-            name: 'استعمال الزمن',
-            image: '/images/time.png',
-            description: 'نظام مخصص لتنظيم وتوزيع الحصص الدراسية الخاصة بالمعلم بشكل دقيق ومنظم، يتيح عرض الجدول الأسبوعي أو اليومي بطريقة واضحة تساعد على تتبع أوقات التدريس، وتسهيل إدارة المهام التعليمية داخل المؤسسة بشكل فعال.',
-            files: {
-                mokhatat1: {
-                    id: 's1',
-                    name: 'استعمال الزمن',
-                    description: "This is the first mokhatat document",
-                    type: 'static',
-                    src: '/documents/barmaja/1.pdf',
-                    thumbnail: '/documents/barmaja/barmaja.png'
-                },
-            }
-        },
         barmaja: {
             id: 'first',
             name: 'البرمجة السنوية',
@@ -106,6 +90,21 @@ export const documentsConfig =
                     type: 'static',
                     src: '/documents/plan/2.pdf',
                     thumbnail: '/images/plan.png'
+                },
+            }
+        },
+        wahda: {
+            id: 'first',
+            name: 'الوحدة التعلمية',
+            image: '/images/calc.png',
+            description: 'نظام “الوحدة التعلمية” هو أداة تنظيم وإدارة تساعد المعلمين والطلاب على تتبّع المواد والمعدات والموارد الدراسية بشكل دقيق وفعّال، مما يسهل عملية الجرد والمتابعة اليومية ويضمن تنظيمًا أفضل داخل البيئة التعليمية.',
+            files: {
+                wahda1: {
+                    id: 's1',
+                    name: 'الوحدة التعلمية',
+                    description: "This is the first mokhatat document",
+                    type: 'interactive',
+                    component: 'wahda',
                 },
             }
         },

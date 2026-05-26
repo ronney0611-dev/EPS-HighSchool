@@ -6,6 +6,7 @@ import TakwimTachkhisiForm from "@/pages/TakwimTachkhisiForm";
 import TakwinTahsili from "@/pages/TakwinTahsili";
 import TaqwimMostamir from "@/pages/TaqwimMostamir";
 import TaqwimTakwini from "@/pages/TaqwimTakwini";
+import WahdaT from "@/pages/WahdaT";
 import { documentsConfig } from "@/src/config/documents";
 import React from "react"
 
@@ -23,6 +24,7 @@ const FilePage = ({ params }: { params: Promise<{ file: string, category: string
     { key: 'taqwimTaqwini', component: <TaqwimTakwini /> },
     { key: 'taqwimTahsili', component: <TakwinTahsili /> },
     { key: 'taqwimMostamir', component: <TaqwimMostamir /> },
+    { key: 'wahda', component: <WahdaT /> },
   ]
 
   return (
