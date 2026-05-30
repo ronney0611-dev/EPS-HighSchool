@@ -24,15 +24,15 @@ const Navbare = () => {
             <div className="hidden sm:flex items-center gap-8">
                 <Link className='flex flex-col items-center' href={"/"} >
                     <House className='my-1' />
-                    <p>Home</p>
+                    <p>الواجهة</p>
                 </Link>
                 <Link className='flex flex-col items-center' href="/profile">
                     <CircleUserRound className='my-1' />
-                    <p>Profile</p>
+                    <p>الحساب</p>
                 </Link>
                 <Link className='flex flex-col items-center' href="/documents">
                     <BookText className='my-1' />
-                    <p>Documents</p>
+                    <p>الوثائق</p>
                 </Link>
 
                 {/* 👈 Dynamic Authentication UI Check */}
@@ -49,7 +49,7 @@ const Navbare = () => {
                 ) : (
                     <Link href="/login">
                         <button className="cursor-pointer px-8 py-2 bg-indigo-500 hover:bg-indigo-600 transition text-white rounded-full">
-                            Login
+                            تسجيل الدخول
                         </button>
                     </Link>
                 )}
@@ -75,7 +75,7 @@ const Navbare = () => {
                     ) : (
                         <Link href="/login">
                             <button className="cursor-pointer my-0.5 px-6 py-2 bg-indigo-500 hover:bg-indigo-600 transition text-white rounded-full text-sm">
-                                Login
+                               دخول
                             </button>
                         </Link>
                     )

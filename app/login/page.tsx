@@ -121,7 +121,7 @@ export default function Login() {
                                     className="w-full h-12 bg-white/3 border border-white/8 focus:border-emerald-500/40 focus:bg-emerald-500/2 focus:ring-4 focus:ring-emerald-500/10 rounded-xl pr-11 pl-4 text-white text-sm outline-none transition-all duration-200"
                                     type="text"
                                     name="name"
-                                    placeholder="الأستاذ(ة) محمد بن علي"
+                                    placeholder="الأستاذ(ة)"
                                     value={formData.name}
                                     onChange={handleChange}
                                     required

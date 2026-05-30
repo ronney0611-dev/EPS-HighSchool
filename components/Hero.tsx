@@ -1,8 +1,7 @@
 'use client'
 
-import Image from "next/image";
-import Link from "next/link";
-import React from "react";
+import { assets } from "@/public/videos/assets";
+import BorderAnimationButton from "@/src/components/nurui/border-button";
 
 const Hero = () => {
     return (
@@ -39,68 +38,51 @@ const Hero = () => {
 
             <header dir="rtl" className='bg-black lg:mt-[-20] lg:mb-[-100] text-white flex flex-col items-center bg-[url("https://assets.prebuiltui.com/images/components/hero-section/hero-background-image.png")] bg-cover bg-center bg-no-repeat pb-10'>
 
-                <div className="rainbow relative z-0 bg-white/15 overflow-hidden p-px flex items-center justify-center rounded-full transition duration-300 active:scale-100 mt-8 md:mt-32">
+                <div className="rainbow mt-8 lg:mt-20 relative z-0 bg-white/15 overflow-hidden p-px flex items-center justify-center rounded-full transition duration-300 active:scale-100 md:mt-32">
                     <button className="flex items-center justify-center gap-3 pl-4 pr-6 py-3 text-white rounded-full font-medium bg-gray-900/80 backdrop-blur">
                         <div className="relative flex size-3.5 items-center justify-center">
                             <span className="absolute inline-flex h-full w-full rounded-full bg-[#A6FF5D] opacity-75 animate-ping duration-300"></span>
                             <span className="relative inline-flex size-2 rounded-full bg-[#A6FF5D]"></span>
                         </div>
-                        <span className='text-xs'>Designed for Sport Teachers</span>
+                        <span className='text-xs'>designed for Sport Teachers</span>
                     </button>
                 </div>
 
-                <h1 className="text-4xl md:text-[64px]/[82px] text-center max-w-4xl mt-5 bg-clip-text leading-tight px-4">
-                    أدر وثائقك البيداغوجية بسهولة | بطاقات التقويم، البرمجة السنوية، والتمارين، كل شيء في مكان واحد
+                <h1 className="text-3xl md:text-5xl font-extrabold text-center max-w-4xl tracking-wide leading-tight px-4 mt-8 bg-linear-to-b from-white to-gray-300 bg-clip-text text-transparent font-['Cairo',sans-serif]">
+                    مستقبل التعليم بين يديك.<span className="text-red-500"> قف في الملعب</span>، ودع تطبيقنا يتولى صياغة وثائقك البيداغوجية في ثوان.
                 </h1>
-                <p className="text-center text-xl text-gray-200 my-6">
-                    منصة رقمية مخصصة لأساتذة التربية البدنية والرياضية في الجزائر. أنشئ بطاقات التقويم، برمج حصصك، وولّد تمارينك بضغطة زر واحدة.
+                <p className="text-center text-sm md:text-lg text-gray-400 max-w-2xl mx-auto mt-6 px-6 leading-relaxed font-['Tajawal',sans-serif]">
+                    ودع الأوراق المبعثرة وساعات الصياغة الطويلة. ركّز جهدك على تدريب وتطوير طلابك، ونحن من نتكفل بجميع الوثائق؛ من قوائم الأقسام والتلاميذ إلى رصد النقاط وإرسالها للإدارة.
                 </p>
 
-                <div className="mx-4 my-10 grid lg:grid-cols-2 gap-6 sm:grid-rows-2">
-                    <div className="flex flex-col items-center text-center border border-gray-500 rounded-2xl py-2 transition-transform duration-300 hover:scale-102 " >
-                        <Link href={`/documents`} >
-                            <Image src={'/images/Entraîneur avec un clipboard sur le terrain.png'} alt="sport teacher" width={'200'} height={100}
-                                className="rounded-2xl my-2" />
+                <div className='flex flex-col sm:flex-row gap-4 md:gap-6 my-10 justify-center items-center mx-4 [font-family:\ Cairo\,sans-serif]'>
 
-                        </Link>
-                        <div>
-                            <p className="text-lg my-2 px-4" >
-                                أنشئ بطاقات تقويم رسمية بسرعة | أدخل أسماء التلاميذ، سجّل النتائج، واحسب النسب المئوية تلقائياً ثم صدّرها كملف
-                                PDF جاهز للطباعة |
-                                نماذج البرمجة السنوية والمخططات الجاهزة لجميع المستويات — حمّلها مباشرة ووفّر وقتك
-                            </p>
-                        </div>
-                        <Link href={`/documents`} className="rainbow my-4 relative z-0 bg-white/15 overflow-hidden p-px flex items-center justify-center rounded-full transition duration-300 active:scale-100">
-                            <button className="flex items-center justify-center gap-3 cursor-pointer pl-4 pr-6 py-3 text-white rounded-full font-medium bg-gray-900/80 backdrop-blur">
-                                <div className="relative flex size-3.5 items-center justify-center">
-                                    <span className="absolute inline-flex h-full w-full rounded-full bg-[#A6FF5D] opacity-75 animate-ping duration-300"></span>
-                                    <span className="relative inline-flex size-2 rounded-full bg-[#A6FF5D]"></span>
-                                </div>
-                                <span className='text-lg px-4'>اكتشف المزيد</span>
-                            </button>
-                        </Link>
+                    <div className="text-center w-full sm:w-auto" onClick={() => document.getElementById('features-section')?.scrollIntoView({ behavior: 'smooth' })}>
+                        <BorderAnimationButton text="تصفح العروض والخدمات 📋" />
                     </div>
-                    <div className="flex flex-col items-center text-center border border-gray-500 rounded-2xl py-2  transition-transform duration-300 hover:scale-102" >
-                        <Link href={`/exercises`} >
-                            <Image src={'/images/Sports en action.png'} alt="sport teacher" width={200} height={100}
-                                className="rounded-2xl my-2 object-contain" />
-                        </Link>
-                        <div>
-                            <p className="text-lg my-2 px-4 flex text-center  " >
-                                - تمارين جاهزة لكل نشاط -
-                                كرة الطائرة، كرة السلة، كرة اليد، الجري السريع والمزيد <br /> اختر النشاط، صف ما تحتاجه، <br /> وذكاؤنا الاصطناعي يقترح عليك التمارين المناسبة فوراً.
-                            </p>
-                        </div>
-                        <Link href={`/exercises`} className="rainbow my-4 relative z-0 bg-white/15 overflow-hidden p-px flex items-center justify-center rounded-full transition duration-300 active:scale-100">
-                            <button className="flex items-center justify-center gap-3 cursor-pointer pl-4 pr-6 py-3 text-white rounded-full font-medium bg-gray-900/80 backdrop-blur">
-                                <div className="relative flex size-3.5 items-center justify-center">
-                                    <span className="absolute inline-flex h-full w-full rounded-full bg-[#A6FF5D] opacity-75 animate-ping duration-300"></span>
-                                    <span className="relative inline-flex size-2 rounded-full bg-[#A6FF5D]"></span>
-                                </div>
-                                <span className='text-lg px-4'>اكتشف المزيد</span>
-                            </button>
-                        </Link>
-                    </div>
+
+                    {/* الزر الثاني: التواصل المباشر لحل مشاكل الدفع أو الإجابة على استفسارات الأساتذة */}
+                    <a
+                        href="https://wa.me/+213558241309?text=مرحباً،%20أريد%20الاستفسار%20عن%20تطبيق%20الوثائق%20البيداغوجية"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-center w-full sm:w-auto block"
+                    >
+                        <BorderAnimationButton text="تواصل معنا عبر واتساب 💬" />
+                    </a>
+
+                </div>
+
+                <div className=" lg:my-10 w-full max-w-4xl mx-auto px-4  relative flex items-center justify-center">
+                    {/* Video with spinning glow border */}
+                    <video controls loop playsInline
+                        className='rounded-3xl w-full relative'
+                        style={{
+                            zIndex: 1,
+                            animation: 'glowSpin 4s linear infinite',
+                        }}>
+                        <source src={assets.video} type="video/mp4" />
+                    </video>
                 </div>
 
 

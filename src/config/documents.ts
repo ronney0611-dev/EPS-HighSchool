@@ -9,7 +9,7 @@ export const documentsConfig =
     teacherclass: {
         informationCard: {
             id: 'first',
-            image: '/images/information.png',
+            image: '/images/info.jpg',
             name: 'بطاقة المعلومات الشخصية',
             description: 'نظام “بطاقة المعلومات الشخصية” يتيح للمعلم أو الطالب إدخال وعرض البيانات الأساسية بشكل منظم وسهل الوصول، مثل الاسم والمعلومات العامة ووسائل الاتصال، مما يساعد على إدارة المعلومات الشخصية داخل النظام التعليمي بكفاءة ووضوح.',
             files: {
@@ -40,7 +40,7 @@ export const documentsConfig =
         barmaja: {
             id: 'first',
             name: 'البرمجة السنوية',
-            image: '/images/barmajax.png',
+            image: '/images/barmaja.jpg',
             description: '“البرمجة السنوية” يتيح للمعلم إعداد وتنظيم التخطيط السنوي للمقررات الدراسية بشكل منظم ودقيق، من خلال توزيع الدروس والوحدات على مدار السنة الدراسية، مما يساعد على تتبع التقدم وضمان إنجاز الأهداف التعليمية في الوقت المحدد.',
             files: {
                 barmaja1: {
@@ -72,7 +72,7 @@ export const documentsConfig =
         planOfTheYear: {
             id: 'first',
             name: 'المخطط السنوي',
-            image: '/images/planx.png',
+            image: '/images/plany.jpg',
             description: 'نظام “المخطط السنوي” يساعد المعلم على إعداد خطة سنوية شاملة لتوزيع الدروس والوحدات الدراسية على مدار السنة، مما يضمن تنظيم العملية التعليمية بشكل متوازن وتتبع الأهداف التربوية وتحقيقها في الوقت المناسب.',
             files: {
                 mokhatat1: {
@@ -96,7 +96,7 @@ export const documentsConfig =
         wahda: {
             id: 'first',
             name: 'الوحدة التعلمية',
-            image: '/images/calc.png',
+            image: '/images/wihda.jpg',
             description: 'نظام “الوحدة التعلمية” هو أداة تنظيم وإدارة تساعد المعلمين والطلاب على تتبّع المواد والمعدات والموارد الدراسية بشكل دقيق وفعّال، مما يسهل عملية الجرد والمتابعة اليومية ويضمن تنظيمًا أفضل داخل البيئة التعليمية.',
             files: {
                 wahda1: {
@@ -142,7 +142,7 @@ export const documentsConfig =
         bita9ata9wim: {
             id: 'second',
             name: 'التقويم التشخيصي / التحصيلي',
-            image: '/images/ta9wim.png',
+            image: '/images/ch.jpg',
             description: 'نظام “التقويم التشخيصي” يهدف إلى تقييم مستوى التلاميذ في بداية التعلم أو قبل درس معين، من أجل تحديد نقاط القوة والضعف لديهم، وتوجيه العملية التعليمية بشكل مناسب يساعد على تحسين التعلمات ومعالجة الصعوبات بشكل مبكر.',
             files: {
                 taqwim: {
@@ -156,7 +156,7 @@ export const documentsConfig =
         takwinMostamir: {
             id: 'second',
             name: 'التقويم المستمر',
-            image: '/images/',
+            image: '/images/m.jpg',
             description: 'نظام “التقويم المستمر” يهدف إلى تقييم مستوى التلاميذ أثناء عملية التعلم، من أجل تحديد نقاط القوة والضعف لديهم، وتوجيه العملية التعليمية بشكل مناسب يساعد على تحسين التعلمات ومعالجة الصعوبات بشكل مبكر.',
             files: {
                 taqwim: {
@@ -170,7 +170,7 @@ export const documentsConfig =
         takwini: {
             id: 'second',
             name: 'التقويم التكويني',
-            image: '/images/testx.png',
+            image: '/images/t.jpg',
             description: 'نظام “التقويم التكويني” يتيح للمعلم متابعة تقدم التلاميذ بشكل مستمر أثناء عملية التعلم، من خلال تقييمات دورية وأنشطة تعليمية تساعد على قياس مدى استيعابهم ',
             files: {
                 taqwim: {
@@ -184,7 +184,7 @@ export const documentsConfig =
         ta7sili: {
             id: 'second',
             name: 'نقطة الاختبار',
-            image: '/images/final.png',
+            image: '/images/f.jpg',
             description: 'نظام “التقويم التحصيلي” يهدف إلى قياس مدى تحقيق التلاميذ للأهداف التعليمية في نهاية وحدة أو فصل دراسي، من خلال اختبارات أو أنشطة تقييمية شاملة تساعد على تحديد مستوى التحصيل الدراسي وتوثيق النتائج بشكل دقيق ومنظم.',
             files: {
                 ta7sili: {

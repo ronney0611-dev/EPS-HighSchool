@@ -2,6 +2,86 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  html {
+    @apply font-sans;
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+  }
+}
+
+@keyframes marquee-vertical {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(calc(-100% - var(--gap)));
+  }
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(1turn);
+  }
+}
+
+.rainbow {
+  position: relative;
+  overflow: hidden;
+}
+
+.rainbow::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: -100%;
+  top: -100%;
+  width: 300%;
+  height: 300%;
+  background-image: conic-gradient(#392ca0, #ff9ffc, #fe8a76, #392ca0);
+  animation: rotate 4s linear infinite;
+}
+
+@keyframes glowSpin {
+  0% {
+    box-shadow: 0 0 20px 4px #a855f7, 0 0 40px 8px #a855f700;
+  }
+
+  25% {
+    box-shadow: 0 0 20px 4px #ec4899, 0 0 40px 8px #ec489900;
+  }
+
+  50% {
+    box-shadow: 0 0 20px 4px #3b82f6, 0 0 40px 8px #3b82f600;
+  }
+
+  75% {
+    box-shadow: 0 0 20px 4px #06b6d4, 0 0 40px 8px #06b6d400;
+  }
+
+  100% {
+    box-shadow: 0 0 20px 4px #a855f7, 0 0 40px 8px #a855f700;
+  }
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @media print {
