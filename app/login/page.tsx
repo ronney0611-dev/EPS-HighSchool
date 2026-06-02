@@ -34,8 +34,7 @@ export default function Login() {
                 if (res?.error) {
                     setError('البريد الإلكتروني أو كلمة المرور غير صحيحة')
                 } else {
-                    router.push('/profile')
-                    router.refresh()
+                    window.location.href = '/profile'
                 }
             } else {
                 const response = await axios.post('/api/register', formData)
