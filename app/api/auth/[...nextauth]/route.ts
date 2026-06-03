@@ -12,6 +12,7 @@ declare module "next-auth" {
       id: string;
       isPaid: boolean;
       paidUntil: string | Date | null;
+      role: 'user' | 'admin';
     } & DefaultSession["user"]
   }
 
@@ -19,6 +20,7 @@ declare module "next-auth" {
     id: string;
     isPaid: boolean;
     paidUntil: string | Date | null;
+    role: 'user' | 'admin';
   }
 }
 
@@ -27,6 +29,7 @@ declare module "next-auth/jwt" {
     id: string;
     isPaid: boolean;
     paidUntil: string | Date | null;
+    role: 'user' | 'admin';
   }
 }
 
@@ -51,6 +54,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           isPaid: user.isPaid,
           paidUntil: user.paidUntil,
+          role: user.role,
         }
       }
     })
@@ -60,16 +64,20 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }: { token: JWT; user?: NextAuthUser }) {
       if (user) {
         token.id = user.id
+        token.role = user.role;
         token.isPaid = user.isPaid
         token.paidUntil = user.paidUntil
+        token.role = user.role 
       }
       return token
     },
     async session({ session, token }: { session: Session; token: JWT }) {
       if (session.user) {
         session.user.id = token.id
+        session.user.role = token.role;
         session.user.isPaid = token.isPaid
         session.user.paidUntil = token.paidUntil
+        session.user.role = token.role 
       }
       return session
     }

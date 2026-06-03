@@ -17,7 +17,7 @@ const Navbare = () => {
         <nav className=" print:hidden w-full fixed z-100 bg-black text-white top-0  h-20 flex items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 border-b border-gray-300  transition-all">
 
             <Link href="/">
-                <Image src={images.logo} width="157" height="40" className='  lg:w-50 lg:h-30 object-contain mt-4' alt='EpsLogo' />
+                <Image src={images.logo} priority width="157" height="40" className='  lg:w-50 lg:h-30 object-contain mt-4' alt='EpsLogo' />
             </Link>
 
             {/* Desktop Menu */}
