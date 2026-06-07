@@ -10,6 +10,7 @@ const TakwinTahsili = () => {
     const { classes, studentsByClass, fetchStudents } = useClasses();
     const [classSlecet, setClassSelect] = useState('');
     const [activity, setActivity] = useState<'sprint' | 'longjump' | 'throw'>('sprint');
+    const [groupeSport, setGroupeSport] = useState<'basketball' | 'volleyball' | 'handball'>('basketball');
     const [studentNotes, setStudentNotes] = useState<{ first: number; second: number; groupeNote: number }[]>([]);
 
     const { saveTahsili } = useTahsili();
@@ -18,6 +19,10 @@ const TakwinTahsili = () => {
 
     const selectedClassData = classes.find(c => c.name === classSlecet);
     const classStudents = selectedClassData ? (studentsByClass[selectedClassData._id] || []) : [];
+    console.log('groupeDataRaw:', groupeDataRaw);
+    console.log('groupeSport:', groupeSport);
+    console.log('students[0]:', groupeDataRaw?.students?.[0]);
+    console.log('students[0]:', groupeDataRaw?.students?.[0]?.levelT2);
 
     const levelToNote = (level: string) => {
         switch (level) {
@@ -36,15 +41,15 @@ const TakwinTahsili = () => {
         if (!found) return;
         fetchStudents(found._id);
         await fetchFardi(found._id, activity, 'fardi');
-        await fetchGroupe(found._id, activity, 'groupe');
+        await fetchGroupe(found._id, groupeSport, 'groupe');
     };
 
     // refetch when activity changes
     useEffect(() => {
         if (!selectedClassData) return;
         fetchFardi(selectedClassData._id, activity, 'fardi');
-        fetchGroupe(selectedClassData._id, activity, 'groupe');
-    }, [activity]);
+        fetchGroupe(selectedClassData._id, groupeSport, 'groupe');
+    }, [activity, groupeSport]);
 
     // rebuild studentNotes when groupeData or students load
     useEffect(() => {
@@ -66,7 +71,7 @@ const TakwinTahsili = () => {
     const select = 'w-full border-none outline-none text-center bg-transparent text-xs appearance-none';
 
     const isThirdYear = selectedClassData?.name.startsWith('3') ?? false;
-    
+
     const handleSave = () => {
         if (!selectedClassData) return;
         const grades = classStudents.map((s, i) => {
@@ -102,13 +107,33 @@ const TakwinTahsili = () => {
                     </select>
                 </div>
                 <div className='flex gap-2 items-center'>
-                    <label className='font-semibold text-sm'>النشاط</label>
+                    <label className='font-semibold text-sm'>النشاط الفردي</label>
                     <select
                         className='border border-gray-300 rounded px-3 py-1 bg-white text-black text-sm'
-                        onChange={e => setActivity(e.target.value as 'sprint' | 'longjump' | 'throw')}>
+                        onChange={e => {
+                            setActivity(e.target.value as 'sprint' | 'longjump' | 'throw')
+                            console.log('fetching groupe with:', e.target.value, selectedClassData?._id)
+                        }
+                        }>
                         <option value="sprint">عدو 60م</option>
                         <option value="longjump">الوثب الطويل</option>
                         <option value="throw">رمي الجلة</option>
+                    </select>
+                </div>
+                <div className='flex gap-2 items-center'>
+                    <label className='font-semibold text-sm'>النشاط الجماعي</label>
+                    <select
+                        className='border border-gray-300 rounded px-3 py-1 bg-white text-black text-sm'
+                        value={groupeSport}
+                        onChange={e => {
+                            setGroupeSport(e.target.value as 'basketball' | 'volleyball' | 'handball');
+                            if (selectedClassData) {
+                                fetchGroupe(selectedClassData._id, e.target.value, 'groupe');
+                            }
+                        }}>
+                        <option value="basketball">كرة السلة</option>
+                        <option value="volleyball">كرة الطائرة</option>
+                        <option value="handball">كرة اليد</option>
                     </select>
                 </div>
                 <button
@@ -223,7 +248,7 @@ const TakwinTahsili = () => {
                     💾 حفظ
                 </button>
             </div>
-        </div>
+        </div >
     );
 };
 

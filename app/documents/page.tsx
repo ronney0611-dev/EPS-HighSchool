@@ -10,7 +10,7 @@ const DocumentsPage = () => {
       <div className='flex flex-col justify-center items-center' >
         <div className='flex justify-center text-center '>
           <GradientText
-            colors={["#ffffff", "#1600eb", "#ffffff"]}
+            colors={["#ffffff", "#ff0000", "#ffffff"]}
             animationSpeed={5}
             showBorder={false}
             className="custom-class my-6 text-5xl md:text-6xl lg:text-6xl"
@@ -35,11 +35,11 @@ const DocumentsPage = () => {
           }
         </div>
       </div>
-      
+
       <div className='flex flex-col justify-center items-center'>
         <div className='flex justify-center text-center '>
           <GradientText
-            colors={["#ffffff", "#1600eb", "#ffffff"]}
+            colors={["#ffffff", "#ff0000", "#ffffff"]}
             animationSpeed={5}
             showBorder={false}
             className="custom-class my-6 text-5xl md:text-6xl lg:text-6xl"
@@ -64,7 +64,6 @@ const DocumentsPage = () => {
           }
         </div>
       </div>
-
     </div>
   )
 }

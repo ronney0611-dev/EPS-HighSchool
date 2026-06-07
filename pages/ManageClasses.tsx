@@ -49,9 +49,10 @@ const ManageClasses = () => {
     }
 
     return (
-        <div dir="rtl" className='px-4 my-8 w-full flex flex-col'>
+        <div dir="rtl" className='w-full flex flex-col'>
             {/* Add Class */}
-            <div className='flex text-white flex-wrap justify-center items-center gap-2 mb-6'>
+            <div className='w-full border border-white rounded-2xl p-8 my-8 text-center' >
+                <h1 className='text-lg font-bold mb-4'> في حالة عدم توفر ملف Excel من طرف الادارة. يمكنك ادخال الأقسام والتلاميذ يدوياً </h1>
                 <input
                     type="text"
                     value={classInput}
@@ -59,11 +60,11 @@ const ManageClasses = () => {
                     placeholder=" اسم القسم (يدويا)"
                     className='border p-2 rounded text-white'
                 />
-                <button onClick={addClasses} className='bg-blue-500 text-white px-4 py-2 rounded'>إضافة قسم</button>
+                <button onClick={addClasses} className='bg-blue-500 hover:bg-blue-600 cursor-pointer text-white m-2 px-4 py-2 rounded'>إضافة قسم</button>
             </div>
 
             {/* Classes list */}
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 '>
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
                 {classes.map((c) => (
                     <div key={c._id} className='bg-white text-black border border-gray-400'>
 

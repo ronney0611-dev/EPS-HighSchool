@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react'
 import * as XLSX from 'xlsx'
 import AllNotes from '@/components/AllNotes'
 
-
 const getLevel = (name: string) => {
     if (name.startsWith('1')) return 'أولى ثانوي'
     if (name.startsWith('2')) return 'ثانية ثانوي'
@@ -160,27 +159,24 @@ const ProfilePage = () => {
                 ))}
             </div>
 
-            <div className='flex w-full flex-col justify-center items-center'>
+            <div className='flex w-full flex-col  justify-center items-center'>
                 <hr className='border border-white w-full my-4 mx-8' />
-                <div className='flex justify-center text-center'>
+                <div className='flex justify-center text-center w-full'>
                     <GradientText
-                        colors={["#ffffff", "#1600eb", "#ffffff"]}
+                        colors={["#ffffff", "#ff0000", "#ffffff"]}
                         animationSpeed={5}
                         showBorder={false}
                         className="custom-class my-6 text-5xl md:text-6xl lg:text-6xl"
                     >
-                        ادارة الاقسام
+                        ادخال الاقسام و التلاميذ
                     </GradientText>
                 </div>
                 {/* Excel import button */}
 
-                <div className='w-full border border-gray-200 my-4 rounded-2xl overflow-hidden'>
-                    <ManageClasses />
-                </div>
-                <div className='w-full max-w-2xl border border-white rounded-2xl p-8 my-8 text-center'>
-                    <h2 className='text-lg font-medium mb-2'>استيراد الأقسام و أسماء التلاميذ من ملف Excel تلقائيا</h2>
-                    <label className='flex items-center justify-center gap-2 bg-purple-700 hover:bg-purple-800 text-white px-6 py-3 rounded-xl cursor-pointer font-semibold w-full'>
-                        📥 استيراد الأقسام من Excel
+                <div className='w-full border border-white rounded-2xl p-8 my-8 text-center'>
+                    <h2 className='text-lg font-medium mb-2'>ادخل الأقسام و أسماء التلاميذ من ملف Excel تلقائيا</h2>
+                    <label className='flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl cursor-pointer font-semibold w-full'>
+                        📥 ادخل الأقسام من Excel
                         <input
                             type="file"
                             accept=".xlsx"
@@ -189,10 +185,8 @@ const ProfilePage = () => {
                         />
                     </label>
                 </div>
-                <hr className='border border-white w-full my-4 mx-8' />
+                <ManageClasses />
             </div>
-
-            <hr className='border border-white w-full my-4 mx-8' />
 
             {/* Modal */}
             {showModal && (
@@ -241,8 +235,22 @@ const ProfilePage = () => {
 
                 </div>
             )}
-            <div className='w-full max-w-2xl border border-white rounded-2xl p-4 bg-red-100 text-black'>
-                <AllNotes />
+            <hr className='border border-white w-full my-4 mx-8' />
+
+            <div className='flex flex-col justify-center items-center' >
+                <div className='flex justify-center text-center '>
+                    <GradientText
+                        colors={["#ffffff", "#ff0000", "#ffffff"]}
+                        animationSpeed={5}
+                        showBorder={false}
+                        className="custom-class my-6 text-5xl md:text-6xl lg:text-6xl"
+                    >
+                        ملئ دفتر التنقيط تلقائيا
+                    </GradientText>
+                </div>
+                <div className='w-full max-w-2xl border border-white rounded-2xl p-4 bg-red-100 text-black'>
+                    <AllNotes />
+                </div>
             </div>
         </div>
     )

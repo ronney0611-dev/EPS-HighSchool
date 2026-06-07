@@ -2,6 +2,7 @@
 
 import { assets } from "@/public/videos/assets";
 import BorderAnimationButton from "@/src/components/nurui/border-button";
+import Offers from "./Offers";
 
 const Hero = () => {
     return (
@@ -38,17 +39,7 @@ const Hero = () => {
 
             <header dir="rtl" className='bg-black lg:mt-[-20] lg:mb-[-100] text-white flex flex-col items-center bg-[url("https://assets.prebuiltui.com/images/components/hero-section/hero-background-image.png")] bg-cover bg-center bg-no-repeat pb-10'>
 
-                <div className="rainbow mt-8 lg:mt-20 relative z-0 bg-white/15 overflow-hidden p-px flex items-center justify-center rounded-full transition duration-300 active:scale-100 md:mt-32">
-                    <button className="flex items-center justify-center gap-3 pl-4 pr-6 py-3 text-white rounded-full font-medium bg-gray-900/80 backdrop-blur">
-                        <div className="relative flex size-3.5 items-center justify-center">
-                            <span className="absolute inline-flex h-full w-full rounded-full bg-[#A6FF5D] opacity-75 animate-ping duration-300"></span>
-                            <span className="relative inline-flex size-2 rounded-full bg-[#A6FF5D]"></span>
-                        </div>
-                        <span className='text-xs'>designed for Sport Teachers</span>
-                    </button>
-                </div>
-
-                <h1 className="text-3xl md:text-5xl font-extrabold text-center max-w-4xl tracking-wide leading-tight px-4 mt-8 bg-linear-to-b from-white to-gray-300 bg-clip-text text-transparent font-['Cairo',sans-serif]">
+                <h1 className="text-3xl mt-20 md:text-5xl font-extrabold text-center max-w-4xl tracking-wide leading-tight px-4 bg-linear-to-b from-white to-gray-300 bg-clip-text text-transparent font-['Cairo',sans-serif]">
                     مستقبل التعليم بين يديك.<span className="text-red-500"> قف في الملعب</span>، ودع تطبيقنا يتولى صياغة وثائقك البيداغوجية في ثوان.
                 </h1>
                 <p className="text-center text-sm md:text-lg text-gray-400 max-w-2xl mx-auto mt-6 px-6 leading-relaxed font-['Tajawal',sans-serif]">
@@ -63,7 +54,7 @@ const Hero = () => {
 
                     {/* الزر الثاني: التواصل المباشر لحل مشاكل الدفع أو الإجابة على استفسارات الأساتذة */}
                     <a
-                        href="https://wa.me/+213558241309?text=مرحباً،%20أريد%20الاستفسار%20عن%20تطبيق%20الوثائق%20البيداغوجية"
+                        href="https://wa.me/+213795972858?text=مرحباً،%20أريد%20الاستفسار%20عن%20تطبيق%20الوثائق%20البيداغوجية"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-center w-full sm:w-auto block"
@@ -84,8 +75,7 @@ const Hero = () => {
                         <source src={assets.video} type="video/mp4" />
                     </video>
                 </div>
-
-
+                <Offers />
             </header >
         </>
     )

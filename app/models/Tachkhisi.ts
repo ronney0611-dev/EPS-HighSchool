@@ -80,6 +80,8 @@ const TachkhisiDocSchema: Schema<ITachkhisiDoc> = new Schema(
         percentaget1: { type: Number, default: 0 },
         percentaget2: { type: Number, default: 0 },
         tatawaor: { type: Number, default: 0 },
+        levelT1: { type: String, default: '' },  
+        levelT2: { type: String, default: '' },
       },
     ],
     mochirAverages: [

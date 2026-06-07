@@ -47,7 +47,7 @@ const TakwimGroupe = () => {
         levelT1: string;
         levelT2: string;
     }[]>([]);
-    const [sportSelect, setSportSelect] = useState<string>('sprint');
+    const [sportSelect, setSportSelect] = useState<string>('basketball');
     const [mochirCount, setMochirCount] = useState<number>(4); // العدد الذي يختاره الأستاذ
 
     const selectedClassData = classes.find(c => c.name === classSelect);
@@ -67,13 +67,12 @@ const TakwimGroupe = () => {
     const activeSportConfig = activeLevelConfig?.sports?.[sportSelect];
     const [selectedIndicatorIds, setSelectedIndicatorIds] = useState<number[]>([0, 1, 2, 3]);
 
-    // Sync student arrays when class changes or indicators count gets modified
     useEffect(() => {
         if (!classSelect) return;
         const found = classes.find(c => c.name === classSelect);
         if (!found) return;
-
         const hookStudents = studentsByClass[found._id] || [];
+        if (hookStudents.length === 0) return;
         setTimeout(() => {
             setStudents(hookStudents.map(s => ({
                 name: s.name,
@@ -83,14 +82,14 @@ const TakwimGroupe = () => {
                 levelT2: '',
             })));
         }, 0);
-    }, [classSelect, mochirCount, studentsByClass, classes]);
+    }, [classSelect, mochirCount, studentsByClass[selectedClassData?._id ?? '']?.length]);
 
     const handleClassSelect = (className: string) => {
         setClassSelect(className);
         const found = classes.find(c => c.name === className);
         if (found) {
             fetchStudents(found._id);
-            fetchTachkhisi(found._id, sportSelect, 'fardi');
+            fetchTachkhisi(found._id, sportSelect, 'groupe');
         }
     };
 
@@ -151,7 +150,7 @@ const TakwimGroupe = () => {
                             onChange={e => {
                                 setSportSelect(e.target.value);
                                 const found = classes.find(c => c.name === classSelect);
-                                if (found) fetchTachkhisi(found._id, e.target.value, 'fardi');
+                                if (found) fetchTachkhisi(found._id, e.target.value, 'groupe');
                             }}>
                             <optgroup label="الألعاب الفردية">
                                 <option value="basketball">كرة السلة </option>
@@ -181,7 +180,7 @@ const TakwimGroupe = () => {
                             onChange={e => {
                                 handleClassSelect(e.target.value);
                                 const found = classes.find(c => c.name === e.target.value);
-                                if (found) fetchTachkhisi(found._id, sportSelect, 'fardi');
+                                if (found) fetchTachkhisi(found._id, sportSelect, 'groupe');
                             }}>
                             <option value="">— اختر القسم —</option>
                             {classes.map((c, i) => (
@@ -388,7 +387,7 @@ const TakwimGroupe = () => {
                         saveTachkhisi(
                             found._id,
                             sportSelect,
-                            'fardi',
+                            'groupe',
                             mochirCount,
                             selectedIndicatorIds,
                             students.map(s => ({
@@ -398,6 +397,8 @@ const TakwimGroupe = () => {
                                 percentaget1: (s.score.reduce((a, b) => a + b.t1, 0) / mochirCount) * 100,
                                 percentaget2: (s.score.reduce((a, b) => a + b.t2, 0) / mochirCount) * 100,
                                 tatawaor: s.result.t2 - s.result.t1,
+                                levelT1: s.levelT1,
+                                levelT2: s.levelT2,
                             })),
                             totalT2PerMochir.map((t2, i) => ({
                                 t1: totalT1PerMochir[i],

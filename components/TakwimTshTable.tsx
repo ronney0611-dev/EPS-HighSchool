@@ -178,8 +178,8 @@ const TakwimTshTable = () => {
                             }}>
                             <optgroup label="الألعاب الفردية">
                                 <option value="sprint">سباق السرعة </option>
-                                <option value="long_jump">الوثب الطويل </option>
-                                <option value="shot_put">رمي الجلة </option>
+                                <option value="longjump">الوثب الطويل </option>
+                                <option value="throw">رمي الجلة </option>
                             </optgroup>
                         </select>
                     </div>

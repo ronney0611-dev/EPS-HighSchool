@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from "react"
 import axios from "axios"
 import { useRouter } from "next/navigation"
 import { useSessionRefresh } from "@/hooks/useSessionRefresh";
+import { useSession } from 'next-auth/react';
 
 type PaymentMethod = 'BARIDIMOB' | 'CHARGILY'
 
@@ -33,6 +34,16 @@ export default function Payment() {
             }
         });
     }, []);
+
+    const {  status } = useSession();
+
+    useEffect(() => {
+        if (status === 'unauthenticated') {
+            router.push('/login?callbackUrl=/payment');
+        }
+    }, [status]);
+
+    if (status === 'loading' || status === 'unauthenticated') return null;
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]

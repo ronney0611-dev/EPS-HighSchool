@@ -48,15 +48,16 @@ export const useTachkhisi = () => {
         sportKey: string,
         sportType: 'fardi' | 'groupe'
     ) => {
+        console.log('FETCH CALLED:', sportKey, sportType);
         setLoading(true);
         try {
             const res = await axios.get(`/api/tachkhisi/${classId}`, {
                 params: { sportKey, sportType }
             });
-            setTimeout(() => setTachkhisi(res.data), 0);
+            setTachkhisi(res.data)
         } catch (err) {
             console.error("fetchTachkhisi error:", err);
-            setTimeout(() => setTachkhisi(null), 0);
+            setTachkhisi(null);
         } finally {
             setLoading(false);
         }
@@ -81,7 +82,7 @@ export const useTachkhisi = () => {
                 students,
                 mochirAverages,
             });
-            setTimeout(() => setTachkhisi(res.data), 0);
+            setTachkhisi(res.data);
         } catch (err) {
             console.error("saveTachkhisi error:", err);
         } finally {

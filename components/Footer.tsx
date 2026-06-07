@@ -3,31 +3,63 @@ import { faFacebook, faInstagram, faTiktok, faWhatsapp } from '@fortawesome/free
 
 const Footer = () => {
     return (
-        <div className=' mx-10 lg:mx-20 my-5 body print:hidden ' >
-            <hr className='my-5 border-gray-500 ' />
+        <footer className='print:hidden max-w-7xl mx-auto w-full px-6 pb-8 font-["Noto_Kufi_Arabic","Cairo",sans-serif]'>
+            {/* Divider line */}
+            <hr className='my-5 border-gray-300' />
 
-            <div className='lg:flex lg:justify-end justify-center' >
-                <div className='text-start text-sm' >© 2026 Mohammed B | ronneyDev. All rights rederved.</div>
-
-                <div>
-                    <div className='text-white mx-20 w-2/3 flex justify-between' >
-                        <a className='mx-1v' href="https://www.facebook.com/benhammada.mohamed/" target="_blank" rel="noopener noreferrer">
-                            <FontAwesomeIcon icon={faFacebook} size='xl' />
+            {/* Layout Container */}
+            <div className='flex flex-col mx-10 sm:flex-row justify-between items-center gap-4 text-center sm:text-start' >
+                
+                {/* Copyright Text */}
+                <div className='text-gray-500 text-sm tracking-wide order-2 sm:order-1' dir="ltr">
+                    © 2026 BENHAMADA M | ronneyDev. All rights reserved.
+                </div>
+                
+                {/* Social Media Links Container */}
+                <div className='order-1 sm:order-2'>
+                    <div className='flex items-center gap-4 text-gray-500' >
+                        <a 
+                            className='hover:text-blue-600 transition-colors p-1' 
+                            href="https://www.facebook.com/benhammada.mohamed/" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            aria-label="Facebook"
+                        >
+                            <FontAwesomeIcon icon={faFacebook} className="w-5 h-5 block" />
                         </a>
-                        <a className='mx-1' href="https://instagram.com/rney.mo/" target="_blank" rel="noopener noreferrer">
-                            <FontAwesomeIcon icon={faInstagram} size='xl' />
+                        <a 
+                            className='hover:text-pink-600 transition-colors p-1' 
+                            href="https://instagram.com/rney.mo/" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            aria-label="Instagram"
+                        >
+                            <FontAwesomeIcon icon={faInstagram} className="w-5 h-5 block" />
                         </a>
-                        <a className='mx-1' href="https://www.tiktok.com/@rney.mo" target="_blank" rel="noopener noreferrer">
-                            <FontAwesomeIcon icon={faTiktok} size='xl' />
+                        <a 
+                            className='hover:text-white transition-colors p-1' 
+                            href="https://www.tiktok.com/@rney.mo" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            aria-label="TikTok"
+                        >
+                            <FontAwesomeIcon icon={faTiktok} className="w-5 h-5 block" />
                         </a>
-                        <a className='mx-1 ' href="https://wa.me/+213795972858" target="_blank" rel="noopener noreferrer">
-                            <FontAwesomeIcon icon={faWhatsapp} size='xl' />
+                        <a 
+                            className='hover:text-green-500 transition-colors p-1' 
+                            href="https://wa.me/+213795972858" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            aria-label="WhatsApp"
+                        >
+                            <FontAwesomeIcon icon={faWhatsapp} className="w-5 h-5 block" />
                         </a>
-
                     </div>
                 </div>
+
             </div>
-        </div>
-    )
-}
-export default Footer
+        </footer>
+    );
+};
+
+export default Footer;
