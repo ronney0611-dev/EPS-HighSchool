@@ -11,6 +11,7 @@ export const documentsConfig =
             id: 'first',
             image: '/images/info.jpg',
             name: 'بطاقة المعلومات الشخصية',
+            levels: ['lycee', 'cem', 'primaire'],
             description: 'أدخل معلوماتك الشخصية والمهنية مرة واحدة — الاسم، الثانوية، الولاية، المؤهلات — وستظهر تلقائياً في كل الوثائق التي تطبعها. لا حاجة لإعادة الكتابة في كل مرة.',
             files: {
                 informationCard: {
@@ -21,11 +22,12 @@ export const documentsConfig =
                     component: 'informationCard',
                 },
             }
-        },
+        }, 
         jardCard: {
             id: 'first',
             name: 'بطاقة الجرد',
             image: '/images/calc.png',
+            levels: ['lycee', 'cem', 'primaire'],
             description: 'سجّل المعدات الرياضية والوسائل التعليمية الخاصة بمؤسستك. بطاقة جرد منظمة وجاهزة للطباعة في أي وقت، بدون أوراق مبعثرة أو جداول يدوية.',
             files: {
                 materialsCalc: {
@@ -41,55 +43,63 @@ export const documentsConfig =
             id: 'first',
             name: 'البرمجة السنوية',
             image: '/images/barmaja.jpg',
+            levels: ['lycee', 'cem'],
             description: 'حمّل البرمجة السنوية الجاهزة والمطابقة للمنهاج الرسمي لكل مستوى — أولى، ثانية، ثالثة ثانوي — بنقرة واحدة..',
             files: {
                 barmaja1: {
                     id: 's1',
-                    name: "البرمجة السنوية الاولى ثانوي",
-                    description: "حمّل البرمجة السنوية لمستوى أولى ثانوي جاهزة للطباعة",
-                    type: 'static',
-                    src: '/documents/barmaja/1.pdf',
-                    thumbnail: '/documents/barmaja/barmaja.png'
+                    name: 'البرمجة السنوية',
+                    description: "أنشئ barmaja السنوي واطبعها مباشرة",
+                    type: 'interactive',
+                    component: { lycee: 'barmaja', cem: 'barmajaCem'},
                 },
-                barmaja2: {
-                    id: 's2',
-                    name: "البرمجة السنوية ثانية ثانوي",
-                    description: "حمّل البرمجة السنوية لمستوى ثانية ثانوي جاهزة للطباعة",
-                    type: 'static',
-                    src: '/documents/barmaja/2.pdf',
-                    thumbnail: '/documents/barmaja/barmaja.png'
-                },
-                barmaja3: {
-                    id: 's3',
-                    name: "البرمجة السنوية ثالثة ثانوي",
-                    description: "حمّل البرمجة السنوية لمستوى ثالثة ثانوي جاهزة للطباعة",
-                    type: 'static',
-                    src: '/documents/barmaja/3.pdf',
-                    thumbnail: '/documents/barmaja/barmaja.png'
-                }
             },
+        },
+        mokhatat: {
+            id: 'first',
+            name: ' المخطط السنوي الابتدائي',
+            image: '/images/wihda.jpg',
+            levels: ['primaire'],
+            description: 'أنشئ وحداتك التعلمية بشكل تفاعلي —  بعد التقويم التشخيصي اختر النشاط وطبع الوحدة جاهزة بناء على مستويات الاقسام. كل شيء مرتبط بالمنهاج الرسمي تلقائياً.',
+            files: {
+                mokhatat1: {
+                    id: 's1',
+                    name: 'المخطط السنوي',
+                    description: "أنشئ المخطط السنوي واطبعها مباشرة",
+                    type: 'interactive',
+                    component: 'mokhatat',
+                },
+            }
         },
         planOfTheYear: {
             id: 'first',
             name: 'المخطط السنوي',
             image: '/images/plany.jpg',
+            levels: ['lycee', 'cem'],
             description: 'المخطط السنوي جاهز ومنسق وفق البرنامج الرسمي. حمّله مباشرة واطبعه — لا حاجة لإنشائه من الصفر كل سنة.',
             files: {
-                mokhatat1: {
+                planOfYear1: {
                     id: 's1',
-                    name: 'المخطط السنوي',
-                    description: "حمّل المخطط السنوي جاهزاً للطباعة",
-                    type: 'static',
-                    src: '/documents/plan/1.pdf',
-                    thumbnail: '/images/plan.png'
+                    name: 'plan of the year',
+                    description: "أنشئ التوزيع السنوي واطبعها مباشرة",
+                    type: 'interactive',
+                    component:{lycee: 'planOfYear', cem: 'planOfYearCem'},
                 },
-                mokhatat2: {
-                    id: 's2',
-                    name: "المخطط السنوي الثالثة ثانوي",
-                    description: "حمّل المخطط السنوي لمستوى ثالثة ثانوي",
-                    type: 'static',
-                    src: '/documents/plan/2.pdf',
-                    thumbnail: '/images/plan.png'
+            }
+        },
+        tawzi3: {
+            id: 'first',
+            name: 'التوزيع السنوي',
+            image: '/images/wihda.jpg',
+            levels: ['primaire'],
+            description: 'أنشئ وحداتك التعلمية بشكل تفاعلي —  بعد التقويم التشخيصي اختر النشاط وطبع الوحدة جاهزة بناء على مستويات الاقسام. كل شيء مرتبط بالمنهاج الرسمي تلقائياً.',
+            files: {
+                tawzi31: {
+                    id: 's1',
+                    name: 'التوزيع السنوي',
+                    description: "أنشئ التوزيع السنوي واطبعها مباشرة",
+                    type: 'interactive',
+                    component: 'tawzi3',
                 },
             }
         },
@@ -97,6 +107,7 @@ export const documentsConfig =
             id: 'first',
             name: 'الوحدة التعلمية',
             image: '/images/wihda.jpg',
+            levels: ['lycee', 'cem', 'primaire'],
             description: 'أنشئ وحداتك التعلمية بشكل تفاعلي —  بعد التقويم التشخيصي اختر النشاط وطبع الوحدة جاهزة بناء على مستويات الاقسام. كل شيء مرتبط بالمنهاج الرسمي تلقائياً.',
             files: {
                 wahda1: {
@@ -104,7 +115,7 @@ export const documentsConfig =
                     name: 'الوحدة التعلمية',
                     description: "أنشئ وحدتك التعلمية واطبعها مباشرة",
                     type: 'interactive',
-                    component: 'wahda',
+                    component: { lycee: 'wahda', cem: 'wahdaCem', primaire: 'wahdaPrimaire'},
                 },
             }
         },
@@ -114,6 +125,7 @@ export const documentsConfig =
             id: 'first',
             name: 'تفويج القسم',
             image: '/images/groupe4.png',
+            levels: ['lycee', 'cem'],
             description: ' اختر القسم وسنوزّع التلاميذ على مجموعات بشكل منظم واطبع بطاقة التفويج جاهزة. يعتمد على قائمة التلاميذ التي أدخلتها مسبقاً — لا إعادة كتابة.',
             files: {
                 classPlan: {
@@ -121,7 +133,23 @@ export const documentsConfig =
                     name: 'تفويج القسم',
                     description: "وزّع التلاميذ على المجموعات واطبع بطاقة التفويج",
                     type: 'interactive',
-                    component: 'classPlan',
+                    component: { lycee: 'classPlan', cem: 'classPlan' },
+                },
+            }
+        },
+        baladiyat: {
+            id: 'first',
+            name: 'البلديات التربوية',
+            image: '/images/groupe4.png',
+            levels: ['primaire'],
+            description: ' اختر القسم وسنوزّع التلاميذ على مجموعات بشكل منظم واطبع بطاقة التفويج جاهزة. يعتمد على قائمة التلاميذ التي أدخلتها مسبقاً — لا إعادة كتابة.',
+            files: {
+                baladiyat: {
+                    id: 's1',
+                    name: 'البلديات التربوية',
+                    description: "وزّع التلاميذ على المجموعات واطبع بطاقة البلديات",
+                    type: 'interactive',
+                    component: { primaire: 'baladiyat' },
                 },
             }
         },
@@ -129,13 +157,14 @@ export const documentsConfig =
             id: 'second',
             name: 'بطاقة الحضور والمتابعة',
             image: '/images/7odorx.png',
+            levels: ['lycee', 'cem', 'primaire'],
             description: 'سجّل الحضور والغياب لكل قسم بسرعة، وتابع الحالات الخاصة والإعفاءات. البطاقة جاهزة للطباعة في أي وقت وتحتوي تلقائياً على أسماء تلاميذك.',
             files: {
                 mostamir: {
                     id: 'noting',
                     name: 'بطاقة الحضور والمتابعة',
                     type: 'interactive',
-                    component: 'mostamir',
+                    component: { lycee: 'mostamir', cem: 'mostamir', primaire: 'mostamirPrimaire' },
                 }
             },
         },
@@ -143,13 +172,14 @@ export const documentsConfig =
             id: 'second',
             name: 'التقويم التشخيصي / التحصيلي',
             image: '/images/ch.jpg',
+            levels: ['lycee', 'cem', 'primaire'],
             description: 'سجّل أداء التلاميذ في الأنشطة الفردية والجماعية — المؤشرات، النسب، المستويات النوعية — والمنصة تحسب كل شيء تلقائياً. بطاقة جاهزة للطباعة فور الانتهاء.',
             files: {
                 taqwim: {
                     id: 'taqwim',
                     name: 'التقويم التشخيصي',
                     type: 'interactive',
-                    component: 'taqwimTach'
+                    component: { lycee: 'taqwimTach', cem: 'taqwimTachCem', primaire: 'taqwimTachPrimaire' }
                 }
             },
         },
@@ -157,13 +187,14 @@ export const documentsConfig =
             id: 'second',
             name: 'التقويم المستمر',
             image: '/images/m.jpg',
+            levels: ['lycee', 'cem', 'primaire'],
             description: 'تابع تطور كل تلميذ خلال الفصل الدراسي. سجّل الملاحظات والنقاط الدورية واحصل على تقرير المتابعة جاهزاً للطباعة بدون أي حسابات يدوية.',
             files: {
                 taqwim: {
                     id: 'taqwim',
                     name: 'التقويم المستمر',
                     type: 'interactive',
-                    component: 'taqwimMostamir'
+                    component: { lycee: 'taqwimMostamir', cem: 'taqwimMostamir', primaire: 'taqwimMostamirPrimaire' }
                 }
             },
         },
@@ -171,13 +202,14 @@ export const documentsConfig =
             id: 'second',
             name: 'التقويم التكويني',
             image: '/images/t.jpg',
+            levels: ['lycee', 'cem'],
             description: 'قيّم تلاميذك أثناء التعلم وسجّل مدى تحكمهم في الكفاءات. المنصة تحسب تضع النقاط تلقائياً وتولّد بطاقة التقويم جاهزة للطباعة.',
             files: {
                 taqwim: {
                     id: 'cbhh',
                     name: 'التقويم التكويني',
                     type: 'interactive',
-                    component: 'taqwimTaqwini'
+                    component: { lycee: 'taqwimTakwini', cem: 'taqwimTakwiniCem'}
                 }
             },
         },
@@ -185,13 +217,14 @@ export const documentsConfig =
             id: 'second',
             name: 'نقطة الاختبار',
             image: '/images/f.jpg',
+            levels: ['lycee', 'cem'],
             description: 'اختر القسم و المنصة تنقط و تحسب النقطة النهائية تلقائياً بناءً على البارام من المنهاج الرسمي. الجدول جاهز للطباعة في ثوانٍ.',
             files: {
                 ta7sili: {
                     id: 'taqwim',
                     name: 'التقويم التحصيلي',
                     type: 'interactive',
-                    component: 'taqwimTahsili'
+                    component: { lycee: 'taqwimTahsili', cem: 'taqwimTahsiliCem'}
                 }
             },
         },

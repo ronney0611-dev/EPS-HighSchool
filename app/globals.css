@@ -85,42 +85,37 @@
 @custom-variant dark (&:is(.dark *));
 
 @media print {
-
-  td,
-  th {
-    white-space: nowrap;
-    font-size: 14px !important;
-    padding: 0.5px !important;
-  }
-
-  * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  body {
-    background: white !important;
-    margin: 0 !important;
-  }
-
-  body * {
+  body:has(.plan-of-year-wrapper) * {
     visibility: hidden;
   }
 
-  #a4-card,
-  #a4-card * {
-    visibility: visible;
+  body:has(.plan-of-year-wrapper) .plan-of-year-wrapper,
+  body:has(.plan-of-year-wrapper) .plan-of-year-wrapper * {
+    visibility: visible !important;
   }
 
-  #a4-card {
-    position: absolute;
+  body:has(.plan-of-year-wrapper) .plan-of-year-wrapper {
+    position: fixed;
     top: 0;
     left: 0;
-    width: 287mm;
-    min-height: 200mm;
-    padding: 5mm;
+    width: 100%;
+    margin: 0;
+    padding: 0;
     background: white !important;
+  }
 
+  body:has(.plan-of-year-wrapper) #plan-of-year-page {
+    width: 100% !important;
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
+
+@media print {
+  body:has(.plan-of-year-wrapper) {
+    size: A4 portrait;
   }
 }
 

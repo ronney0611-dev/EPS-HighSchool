@@ -5,7 +5,6 @@ import bcrypt from 'bcryptjs'
 import { connectDB } from '@/app/lib/mongo'
 import User from '@/app/models/User'
 
-// 💡 Type declarations matching your IUser schema exactly
 declare module "next-auth" {
   interface Session {
     user: {
@@ -13,6 +12,7 @@ declare module "next-auth" {
       isPaid: boolean;
       paidUntil: string | Date | null;
       role: 'user' | 'admin';
+      level: 'lycee' | 'cem' | 'primaire';
     } & DefaultSession["user"]
   }
 
@@ -21,6 +21,7 @@ declare module "next-auth" {
     isPaid: boolean;
     paidUntil: string | Date | null;
     role: 'user' | 'admin';
+    level: 'lycee' | 'cem' | 'primaire';
   }
 }
 
@@ -30,6 +31,7 @@ declare module "next-auth/jwt" {
     isPaid: boolean;
     paidUntil: string | Date | null;
     role: 'user' | 'admin';
+    level: 'lycee' | 'cem' | 'primaire';
   }
 }
 
@@ -55,29 +57,29 @@ export const authOptions: NextAuthOptions = {
           isPaid: user.isPaid,
           paidUntil: user.paidUntil,
           role: user.role,
+          level: user.level,  // ← added
         }
       }
     })
   ],
   callbacks: {
-    // 🔒 Strictly typed arguments, zero 'any' allowed
     async jwt({ token, user }: { token: JWT; user?: NextAuthUser }) {
       if (user) {
         token.id = user.id
-        token.role = user.role;
+        token.role = user.role
         token.isPaid = user.isPaid
         token.paidUntil = user.paidUntil
-        token.role = user.role 
+        token.level = user.level  // ← added
       }
       return token
     },
     async session({ session, token }: { session: Session; token: JWT }) {
       if (session.user) {
         session.user.id = token.id
-        session.user.role = token.role;
+        session.user.role = token.role
         session.user.isPaid = token.isPaid
         session.user.paidUntil = token.paidUntil
-        session.user.role = token.role 
+        session.user.level = token.level  // ← added
       }
       return session
     }

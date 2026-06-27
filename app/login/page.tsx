@@ -39,11 +39,10 @@ export default function Login() {
             } else {
                 const response = await axios.post('/api/register', formData)
                 if (response.data.success) {
-                    await signIn('credentials', {
-                        email: formData.email,
-                        password: formData.password,
-                        callbackUrl: '/profile'
-                    })
+                    // Save credentials for auto-login after choosing level
+                    sessionStorage.setItem('registered_email', formData.email)
+                    sessionStorage.setItem('registered_password', formData.password)
+                    router.push('/choose-level')
                 }
             }
         } catch (err: unknown) {
@@ -61,17 +60,20 @@ export default function Login() {
     return (
         <div className="relative min-h-screen flex items-center justify-center bg-[#0a0a0f] text-white antialiased select-none overflow-hidden font-sans" style={{ direction: 'rtl' }}>
 
+            {/* Background glows */}
             <div className="absolute inset-0 pointer-events-none opacity-40 mix-blend-screen">
                 <div className="absolute top-[-10%] right-[10%] w-125 h-125 bg-emerald-500/10 rounded-full blur-[120px]" />
                 <div className="absolute bottom-[-10%] left-[15%] w-100 h-100 bg-emerald-600/5 rounded-full blur-[100px]" />
             </div>
 
+            {/* Grid */}
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
                 style={{ backgroundImage: 'linear-gradient(#10b981 1px, transparent 1px), linear-gradient(90deg, #10b981 1px, transparent 1px)', backgroundSize: '45px 45px' }}
             />
 
             <div className="relative z-10 w-full max-w-110 m-4 bg-[#0f0f14]/80 border border-emerald-500/15 backdrop-blur-xl rounded-3xl p-8 sm:p-10 shadow-[0_24px_64px_rgba(0,0,0,0.7)]">
 
+                {/* Logo */}
                 <div className="flex items-center justify-center gap-3 mb-6">
                     <div className="w-11 h-11 bg-linear-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center text-xl shadow-[0_4px_20px_rgba(16,185,129,0.3)]">
                         🏃
@@ -88,6 +90,7 @@ export default function Login() {
                     {state === 'login' ? 'سجّل الدخول للوصول إلى فضائك التربوي' : 'انضم إلى منصة أساتذة التربية البدنية والرياضية'}
                 </p>
 
+                {/* Google */}
                 <button
                     type="button"
                     onClick={() => signIn('google', { callbackUrl: '/profile' })}
@@ -194,7 +197,7 @@ export default function Login() {
                         {loading ? (
                             <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         ) : (
-                            state === 'login' ? 'دخول آمن للمنصة' : 'إنشاء حساب جديد وتأكيده'
+                            state === 'login' ? 'دخول آمن للمنصة' : 'التالي — اختيار المستوى'
                         )}
                     </button>
                 </form>

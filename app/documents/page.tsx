@@ -1,12 +1,31 @@
+'use client';
+
 import { documentsConfig } from '@/src/config/documents';
 import Image from 'next/image';
 import Link from 'next/link';
-import GradientText from '../../components/GradientText'
+import GradientText from '../../components/GradientText';
+import { useSession } from 'next-auth/react';
 
 const DocumentsPage = () => {
+  const { data: session, status } = useSession();
+
+  if (status === "loading") {
+    return <div className="text-center text-white my-20 font-medium">جاري تحميل البيانات...</div>;
+  }
+
+  const teacherLevel = session?.user?.level || 'lycee';
+
+  const filteredTeacherClass = Object.entries(documentsConfig.teacherclass).filter(
+    ([_, doc]) => doc.levels.includes(teacherLevel)
+  );
+
+  const filteredTeacherNote = Object.entries(documentsConfig.teacherNote).filter(
+    ([_, doc]) => doc.levels.includes(teacherLevel)
+  );
 
   return (
     <div dir="rtl" className='my-8 mx-8 grid gap-4' >
+
       <div className='flex flex-col justify-center items-center' >
         <div className='flex justify-center text-center '>
           <GradientText
@@ -20,10 +39,9 @@ const DocumentsPage = () => {
         </div>
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
           {
-            //Object.values(documentsConfig) == when we have an object not an array.    
-            Object.entries(documentsConfig.teacherclass).map(([key, doc]) => {
+            filteredTeacherClass.map(([key, doc]) => {
               return (
-                <div key={doc.name} className=' p-4 flex flex-col justify-center items-center border border-gray-500 rounded-2xl transition-transform duration-300 hover:scale-105' >
+                <div key={key} className=' p-4 flex flex-col justify-center items-center border border-gray-500 rounded-2xl transition-transform duration-300 hover:scale-105' >
                   <Link href={`/documents/${key}`} className='flex flex-col justify-center items-center'>
                     <Image src={doc.image} alt={doc.name} width={200} height={200} className='w-60 h-60 my-2 object-fill rounded-2xl' />
                     <h1 className='text-white text-xl my-2 font-medium' >{doc.name}</h1>
@@ -49,10 +67,9 @@ const DocumentsPage = () => {
         </div>
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
           {
-            //Object.values(documentsConfig) == when we have an object not an array.    
-            Object.entries(documentsConfig.teacherNote).map(([key, doc]) => {
+            filteredTeacherNote.map(([key, doc]) => {
               return (
-                <div key={doc.name} className=' p-4 flex flex-col justify-center items-center border border-gray-500 rounded-2xl transition-transform duration-300 hover:scale-105' >
+                <div key={key} className=' p-4 flex flex-col justify-center items-center border border-gray-500 rounded-2xl transition-transform duration-300 hover:scale-105' >
                   <Link href={`/documents/${key}`} className='flex flex-col justify-center items-center'>
                     <Image src={doc.image} alt={doc.name} width={200} height={200} className='w-60 h-60 my-2 object-fill rounded-2xl' />
                     <h1 className='text-white text-xl my-2 font-medium' >{doc.name}</h1>
@@ -64,8 +81,9 @@ const DocumentsPage = () => {
           }
         </div>
       </div>
+
     </div>
   )
 }
 
-export default DocumentsPage
+export default DocumentsPage;

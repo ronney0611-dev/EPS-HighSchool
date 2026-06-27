@@ -14,7 +14,7 @@ export async function POST(req: Request) {
         if (!session) return Response.json({ message: 'Unauthorized' }, { status: 401 });
         for (const cls of classes) {
 
-            const newClass = await Class.create({ name: cls.name, level: cls.level, teacher: session.user.id });
+            const newClass = await Class.create({ name: cls.name, level: session.user.level, teacher: session.user.id });
 
             await Student.insertMany(cls.students.map((s: Omit<StudentType, '_id'>) => ({ ...s, classId: newClass._id })));
         }
