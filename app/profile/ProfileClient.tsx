@@ -107,7 +107,7 @@ const ProfilePage = () => {
     }, [classes]);
 
     return (
-        <div dir="rtl" className='min-h-screen p-6 flex flex-col items-center gap-6'>
+        <div dir="rtl" className='min-h-screen p-6 flex flex-col items-center gap-6 bg-black text-white'>
 
             {/* profile card */}
             <div className='bg-white text-black rounded-2xl p-6 w-full max-w-md flex flex-col items-center gap-4 shadow-lg'>

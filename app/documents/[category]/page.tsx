@@ -45,7 +45,7 @@ const CategoryPage = ({ params }: { params: Promise<{ category: string }> }) => 
   const fileEntries = Object.entries(post.files) as [string, FileConfig][];
 
   return (
-    <div>
+    <div className=' bg-black text-white' >
       <div className='flex flex-col md:flex-row lg:flex-row justify-center items-center gap-20 m-4 lg:m-20' >
         {
           fileEntries.map(([key, doc]) => {
