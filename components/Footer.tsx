@@ -3,7 +3,7 @@ import { faFacebook, faInstagram, faTiktok, faWhatsapp } from '@fortawesome/free
 
 const Footer = () => {
     return (
-        <footer className='print:hidden max-w-7xl mx-auto w-full px-6 pb-8 font-["Noto_Kufi_Arabic","Cairo",sans-serif]'>
+        <footer className='print:hidden max-w-7xl mx-auto w-full px-6 pb-8 font-["Noto_Kufi_Arabic","Cairo",sans-serif] bg-black text-white' >
             {/* Divider line */}
             <hr className='my-5 border-gray-300' />
 
