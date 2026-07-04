@@ -2,7 +2,7 @@
 
 An enterprise-grade, high-performance School Management System built using a cutting-edge serverless architecture. The platform handles student authentication, massive data imports, financial tracking, and real-time animation pipelines with robust database integrity and heavily optimized response times.
 
----
+<img width="1832" height="848" alt="Image" src="https://github.com/user-attachments/assets/1a2fe8c3-5535-4fdc-97d6-ba9e786f2170" />
 
 🚀 Core Features
 
