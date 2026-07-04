@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { useSessionRefresh } from "@/hooks/useSessionRefresh";
 import { useSession } from 'next-auth/react';
 
-type PaymentMethod = 'BARIDIMOB' | 'CHARGILY'
+type PaymentMethod = 'BARIDIMOB' | 'BARIDI' | 'CHARGILY'
 
 export default function Payment() {
     const router = useRouter()
@@ -25,7 +25,11 @@ export default function Payment() {
     const AMOUNT = 3000
     const PLAN = 'YEARLY'
 
+    const { status } = useSession();
+
     useEffect(() => {
+        if (status !== 'authenticated') return;
+
         refresh().then((data) => {
             if (data?.isPaid) {
                 const params = new URLSearchParams(window.location.search);
@@ -33,9 +37,7 @@ export default function Payment() {
                 window.location.href = callbackUrl || "/documents";
             }
         });
-    }, []);
-
-    const {  status } = useSession();
+    }, [status]);
 
     useEffect(() => {
         if (status === 'unauthenticated') {
@@ -152,6 +154,13 @@ export default function Payment() {
                                 subtitle="تحويل يدوي"
                             />
                             <MethodCard
+                                selected={method === 'BARIDI'}
+                                onClick={() => setMethod('BARIDI')}
+                                icon="📮"
+                                title="مكتب البريد ccp"
+                                subtitle="تحويل يدوي"
+                            />
+                            <MethodCard
                                 selected={method === 'CHARGILY'}
                                 onClick={() => setMethod('CHARGILY')}
                                 icon="💳"
@@ -180,13 +189,13 @@ export default function Payment() {
                         {/* Instructions */}
                         <div className="bg-emerald-500/5 border border-emerald-500/15 rounded-xl p-4 mb-5">
                             <p className="text-emerald-400 text-xs font-bold mb-3">📋 خطوات الدفع عبر بريدي موب</p>
-                            <ol className="text-gray-400 text-xs space-y-2 list-decimal list-inside">
+                            <ol className="text-gray-400 text-sm space-y-2 list-decimal list-inside">
                                 <li>افتح تطبيق بريدي موب</li>
                                 <li>أرسل <span className="text-white font-bold">3000 دج</span> إلى الرقم:</li>
                                 <div className="bg-[#0a0a0f] border border-white/10 rounded-lg px-4 py-2 text-center my-2">
-                                    <p className="text-emerald-400 font-black text-lg tracking-widest">00000000000</p>{/* ← ضع رقمك هنا */}
+                                    <p dir="ltr" className="text-emerald-400 font-black text-lg tracking-widest">00799999<br></br>0023698984 83</p>
                                 </div>
-                                <li>خذ لقطة شاشة للإيصال</li>
+                                <li>خذ لقطة شاشة للإيصال ( سكرين شوت ) </li>
                                 <li>ارفع الصورة أدناه وأرسل الطلب</li>
                             </ol>
                         </div>
@@ -236,7 +245,7 @@ export default function Payment() {
 
                         <button
                             disabled={loading || uploading || !receiptUrl}
-                            onClick={handleBaridiSubmit}
+                            onClick={() => { handleBaridiSubmit() }}
                             className="w-full h-12 bg-linear-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 disabled:opacity-30 disabled:pointer-events-none rounded-xl text-white text-sm font-bold transition-all duration-200"
                         >
                             {loading ? (
@@ -265,7 +274,85 @@ export default function Payment() {
                         </button>
                     </div>
                 )}
+                {step === 'pay' && method === 'BARIDI' && (
+                    <div className="bg-[#0f0f14]/80 border border-white/5 backdrop-blur-xl rounded-2xl p-6 shadow-[0_24px_64px_rgba(0,0,0,0.7)]">
+                        <button onClick={() => setStep('select')} className="text-gray-500 hover:text-gray-300 text-xs mb-5 flex items-center gap-1 transition-colors">
+                            ← رجوع
+                        </button>
 
+                        <div className="bg-emerald-500/5 border border-emerald-500/15 rounded-xl p-4 mb-5">
+                            <p className="text-emerald-400 text-xs font-bold mb-3">📋 خطوات الدفع عبر مكتب البريد CCP</p>
+                            <ol className="text-gray-400 text-sm space-y-2 list-decimal list-inside">
+                                <li>توجه إلى أقرب مكتب بريد</li>
+                                <li>حوّل <span className="text-white font-bold">3000 دج</span> إلى حساب CCP رقم:</li>
+                                <div className="bg-[#0a0a0f] border border-white/10 rounded-lg px-4 py-2 text-center my-2">
+                                    <p dir="ltr" className="text-emerald-400 font-black text-lg tracking-widest">00799999<br />0023698984 83</p>
+                                </div>
+                                <li>الاسم واللقب ادناه</li>
+                                <div className="bg-[#0a0a0f] border border-white/10 rounded-lg px-4 py-2 text-center my-2">
+                                    <p dir="ltr" className="text-emerald-400 font-black text-lg tracking-widest">BENHAMADA MOHAMMED</p>
+                                </div>
+                                <li>رقم الهاتف ( يمكنك التواصل معنا قبل العملية )</li>
+                                <div className="bg-[#0a0a0f] border border-white/10 rounded-lg px-4 py-2 text-center my-2">
+                                    <p dir="ltr" className="text-emerald-400 font-black text-lg tracking-widest">0795972858</p>
+                                </div>
+                                <li>احتفظ بوصل التحويل</li>
+                                <li>ارفع صورة الوصل أدناه وأرسل الطلب</li>
+                            </ol>
+                        </div>
+
+                        <div className="mb-4">
+                            <label className="block text-xs font-semibold text-gray-400 mb-1.5">رقم العملية (اختياري)</label>
+                            <input
+                                type="text"
+                                value={transactionNumber}
+                                onChange={e => setTransactionNumber(e.target.value)}
+                                placeholder="مثال: TXN123456"
+                                className="w-full h-11 bg-white/3 border border-white/8 focus:border-emerald-500/40 focus:ring-4 focus:ring-emerald-500/10 rounded-xl px-4 text-white text-sm outline-none transition-all duration-200 text-left"
+                            />
+                        </div>
+
+                        <div className="mb-5">
+                            <label className="block text-xs font-semibold text-gray-400 mb-1.5">صورة الوصل <span className="text-red-400">*</span></label>
+                            <input ref={fileRef} type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
+                            <button
+                                type="button"
+                                onClick={() => fileRef.current?.click()}
+                                className={`w-full h-24 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-2 transition-all duration-200 ${receiptUrl ? 'border-emerald-500/40 bg-emerald-500/5' : 'border-white/10 hover:border-white/20 bg-white/2'}`}
+                            >
+                                {uploading ? (
+                                    <span className="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                ) : receiptUrl ? (
+                                    <>
+                                        <span className="text-2xl">✅</span>
+                                        <span className="text-emerald-400 text-xs font-semibold">{fileName}</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span className="text-2xl">📎</span>
+                                        <span className="text-gray-500 text-xs">اضغط لرفع صورة الوصل</span>
+                                    </>
+                                )}
+                            </button>
+                        </div>
+
+                        {error && (
+                            <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-xl p-3 text-center mb-4">
+                                ⚠️ {error}
+                            </div>
+                        )}
+
+                        <button
+                            disabled={loading || uploading || !receiptUrl}
+                            onClick={() => { handleBaridiSubmit() }}
+                            className="w-full h-12 bg-linear-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 disabled:opacity-30 disabled:pointer-events-none rounded-xl text-white text-sm font-bold transition-all duration-200"
+                        >
+                            {loading ? (
+                                <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            ) : 'إرسال طلب التفعيل'}
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     )

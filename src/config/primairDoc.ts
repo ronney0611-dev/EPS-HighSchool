@@ -5,7 +5,7 @@ export type MokhatarData = {
     maidans: {
         name: string
         kafaaKhitamiya: string
-        merkabatKafaa: string // الجزء المضاف حديثاً
+        merkabatKafaa: string
         mouraddMaarifa: string
         mouraddAardiya: string
     }[]

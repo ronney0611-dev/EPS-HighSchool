@@ -62,14 +62,14 @@ const MaterialsCalc = () => {
             </button>
 
             {/* A4 document */}
-            <div id="a4-card" className="w-full max-w-[210mm] mx-auto bg-white text-black p-4 md:p-10 shadow-lg">
+            <div id="a4-card" className="w-full max-w-[210mm] mx-auto bg-white text-black p-4 md:p-10 shadow-lg print:shadow-none">
                 {/* header */}
                 <div className='flex justify-center items-center border border-gray-400 bg-blue-600 text-white font-bold text-xl py-4 rounded-2xl my-2'>
                     <h1>قائمة جرد وسائل التربية البدنية والرياضية</h1>
                 </div>
                 <div className="flex flex-col my-2">
-                    <p className='text-xl font-bold text-blue-600'>الاستاذ: <span className='font-medium text-black mx-2'>{teacher.name || '—'}</span></p>
-                    <p className='text-xl font-bold text-blue-600'>المؤسسة: <span className='font-medium text-black mx-2'>{teacher.school || '—'}</span></p>
+                    <p className='text-sm font-bold text-blue-600'>الاستاذ: <span className='font-medium text-black mx-2'>{teacher.name || '—'}</span></p>
+                    <p className='text-sm font-bold text-blue-600'>المؤسسة: <span className='font-medium text-black mx-2'>{teacher.school || '—'}</span></p>
                 </div>
 
                 {/* table */}
@@ -96,8 +96,8 @@ const MaterialsCalc = () => {
                         <tbody>
                             {material.map((m, i) => (
                                 <tr className="border" key={i}>
-                                    <td className="border text-center font-semibold">{i + 1}</td>
-                                    <td className="border p-2 text-center font-semibold">{m.name}</td>
+                                    <td className="border text-center text-sm font-semibold">{i + 1}</td>
+                                    <td className="border px-2 text-center text-sm font-semibold">{m.name}</td>
                                     <td className="border text-center">
                                         <input className="w-full text-center border-none outline-none" type="number" value={m.quantity} onChange={e => updateMaterial(i, 'quantity', e.target.value)} />
                                     </td>
@@ -126,6 +126,61 @@ const MaterialsCalc = () => {
                     <div>المدير</div>
                 </div>
             </div>
+
+            {/* print-only CSS: forces exactly one A4 page, hides everything else */}
+            <style jsx global>{`
+                @media print {
+                    @page {
+                        size: A4;
+                        margin: 10mm;
+                    }
+
+                    html, body {
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        height: auto !important;
+                    }
+
+                    body * {
+                        visibility: hidden;
+                    }
+
+                    #a4-card, #a4-card * {
+                        visibility: visible;
+                    }
+
+                    #a4-card {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 190mm;
+                        max-width: 190mm;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        box-shadow: none !important;
+                    }
+
+                    #a4-card > div {
+                        break-inside: avoid;
+                        page-break-inside: avoid;
+                    }
+
+                    table, tr, thead, tbody {
+                        break-inside: avoid;
+                        page-break-inside: avoid;
+                    }
+
+                    input {
+                        border: none !important;
+                        outline: none !important;
+                    }
+
+                    #a4-card {
+                        break-after: avoid;
+                        page-break-after: avoid;
+                    }
+                }
+            `}</style>
         </div>
     )
 }

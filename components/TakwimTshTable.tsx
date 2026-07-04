@@ -8,6 +8,7 @@ import level1Data from "@/src/config/level1Curriculum.json";
 import level2Data from "@/src/config/level2Curriculum.json";
 import level3Data from "@/src/config/level3Curriculum.json";
 import { useTachkhisi } from "@/hooks/useTachkhisi";
+import { ToastContainer, toast } from 'react-toastify'
 
 interface Indicator {
     id: number;
@@ -37,7 +38,7 @@ const curriculumRegistry: Record<string, LevelCurriculum | undefined> = {
 interface StudentState {
     name: string;
     result: { t1: number; t2: number };
-    score: { t1: number; t2: number }[]; // يتم التحكم في حجمها ديناميكياً
+    score: { t1: number; t2: number }[];
 }
 
 const TakwimTshTable = () => {
@@ -49,7 +50,7 @@ const TakwimTshTable = () => {
     const [classSelect, setClassSelect] = useState<string>('');
     const [prevClassSelect, setPrevClassSelect] = useState<string>('');
 
-    const [mochirCount, setMochirCount] = useState<number>(4); // العدد الذي يختاره الأستاذ
+    const [mochirCount, setMochirCount] = useState<number>(4);
     const [selectedIndicatorIds, setSelectedIndicatorIds] = useState<number[]>([0, 1, 2, 3]); // المعايير المختارة
 
     const [students, setStudents] = useState<StudentState[]>([]);
@@ -178,8 +179,8 @@ const TakwimTshTable = () => {
                             }}>
                             <optgroup label="الألعاب الفردية">
                                 <option value="sprint">سباق السرعة </option>
-                                <option value="longjump">الوثب الطويل </option>
-                                <option value="throw">رمي الجلة </option>
+                                <option value="long_jump">الوثب الطويل </option>
+                                <option value="shot_put">رمي الجلة </option> 
                             </optgroup>
                         </select>
                     </div>
@@ -390,7 +391,7 @@ const TakwimTshTable = () => {
                         const found = classes.find(c => c.name === classSelect);
                         if (!found) return;
                         saveTachkhisi(
-                            found._id,  // ← use _id not classSelect
+                            found._id, 
                             sportSelect,
                             'fardi',
                             mochirCount,
@@ -408,10 +409,12 @@ const TakwimTshTable = () => {
                                 t2: t2,
                             }))
                         );
+                        toast("تم حفظ المعلومات بنجاح !", { type: "success" });
                     }}
                     className='bg-green-600 text-white px-6 py-2 rounded-xl font-bold text-sm w-full md:w-auto shadow-sm'>
                     حفظ ✅
                 </button>
+                <ToastContainer />
             </div>
         </div>
     )

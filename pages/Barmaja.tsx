@@ -1,7 +1,8 @@
 'use client';
 
 import { planOfYearConfig } from '@/src/config/highPlan';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useTeacher } from "@/hooks/useTeacher"
 
 const AVAILABLE_LEVELS = [
   { id: 's1', name: 'السنة الأولى ثانوي' },
@@ -17,6 +18,8 @@ const SPORT_NAMES: Record<string, string> = {
   throw: 'دفع الجلة',
   handball: 'كرة اليد',
 };
+
+const ALL_SPORT_KEYS = Object.keys(SPORT_NAMES);
 
 // الألوان لكل كفاءة قاعدية
 const KAFAA_COLORS = [
@@ -52,17 +55,20 @@ function buildDefaultSports(levelId: string): Record<string, string> {
 }
 
 export default function PlanOfYear() {
+
+  const { teacher } = useTeacher();
+
   const [selectedLevel, setSelectedLevel] = useState('s1');
   const [contents, setContents] = useState<ContentMap>(() => buildDefaultContents('s1'));
   const [selectedSports, setSelectedSports] = useState<Record<string, string>>(() => buildDefaultSports('s1'));
 
-  // When level changes: reset sports selection and contents
-  useEffect(() => {
-    setSelectedSports(buildDefaultSports(selectedLevel));
-    setContents(buildDefaultContents(selectedLevel));
-  }, [selectedLevel]);
-
   const data = planOfYearConfig[selectedLevel];
+
+  const handleLevelChange = (newLevel: string) => {
+    setSelectedLevel(newLevel);
+    setSelectedSports(buildDefaultSports(newLevel));
+    setContents(buildDefaultContents(newLevel));
+  };
 
   const handleSportChange = (kafaaIdx: number, slotIdx: number, newSportKey: string) => {
     const slotKey = `${kafaaIdx}-${slotIdx}`;
@@ -100,12 +106,12 @@ export default function PlanOfYear() {
       <div className="min-h-screen bg-gray-100 p-2 md:p-6 text-right" dir="rtl">
 
         {/* شريط التحكم */}
-        <div className="max-w-[210mm] mx-auto mb-4 p-3 bg-white rounded-lg shadow-sm border border-gray-200 flex flex-wrap items-center justify-between gap-3 print:hidden">
+        <div className="w-full md:max-w-[210mm] mx-auto mb-4 p-3 bg-white rounded-lg shadow-sm border border-gray-200 flex flex-wrap items-center justify-between gap-3 print:hidden">
           <div className="flex items-center gap-2">
             <label className="text-sm font-bold text-gray-700">المستوى الدراسي:</label>
             <select
               value={selectedLevel}
-              onChange={(e) => setSelectedLevel(e.target.value)}
+              onChange={(e) => handleLevelChange(e.target.value)}
               className="p-1.5 border border-gray-300 rounded bg-gray-50 text-sm text-black font-medium focus:ring-2 focus:ring-cyan-500 outline-none"
             >
               {AVAILABLE_LEVELS.map(lvl => (
@@ -121,13 +127,21 @@ export default function PlanOfYear() {
           </button>
         </div>
 
-        {/* صفحة A4 */}
-        <div id="plan-of-year-page" className="w-[210mm] min-h-[297mm] mx-auto bg-white border border-gray-300 shadow-xl rounded print:shadow-none print:border-none print:rounded-none print:w-full print:min-h-0 print:m-0 print:p-0 flex flex-col justify-between">
+        {/* صفحة A4 — full width + fluid on mobile, exact A4 size on desktop/print */}
+        <div
+          id="plan-of-year-page"
+          className="w-full md:w-[210mm] min-h-0 md:min-h-[297mm] mx-auto bg-white border border-gray-300 shadow-xl rounded print:shadow-none print:border-none print:rounded-none print:w-[210mm] print:min-h-[297mm] print:m-0 print:p-0 flex flex-col justify-between overflow-hidden"
+        >
 
           <div className="flex flex-col flex-1">
             {/* ترويسة */}
             <div className="bg-gray-800 text-white text-center py-2 px-4 print:rounded-none">
               <h1 className="text-sm font-bold tracking-wide">البرمجة السنوية — {AVAILABLE_LEVELS.find(l => l.id === selectedLevel)?.name}</h1>
+            </div>
+
+            <div className="flex flex-col my-2 px-2">
+              <p className='text-sm font-bold text-blue-800'>الاستاذ: <span className='font-medium text-black mx-2'>{teacher.name || '—'}</span></p>
+              <p className='text-sm font-bold text-blue-800'>المؤسسة: <span className='font-medium text-black mx-2'>{teacher.school || '—'}</span></p>
             </div>
 
             {/* الكفاءة الختامية */}
@@ -136,42 +150,45 @@ export default function PlanOfYear() {
               <span className="text-sm font-bold text-gray-800">{data.kafaaKhitamiya}</span>
             </div>
 
-            {/* الجدول الرئيسي */}
-            <div className="grid grid-cols-3 border-t border-gray-300 flex-1 items-stretch">
+            {/* الجدول الرئيسي — stacked on mobile, 3 columns from md up and always on print */}
+            <div className="grid grid-cols-1 md:grid-cols-3 print:grid-cols-3 border-t border-gray-300 flex-1 items-stretch">
               {data.kafaatQaaidiya.map((kafaa, ki) => {
                 const colors = KAFAA_COLORS[ki];
                 const availableSports = getAvailableSports(ki);
 
                 return (
-                  <div key={ki} className="flex flex-col border-l last:border-l-0 border-gray-300">
+                  <div
+                    key={ki}
+                    className="flex flex-col border-b md:border-b-0 md:border-l print:border-b-0 print:border-l last:border-b-0 md:last:border-l-0 print:last:border-l-0 border-gray-300"
+                  >
 
                     {/* عنوان الكفاءة */}
-                    <div className={`${colors.header} flex p-2 items-center justify-center h-20 border-b border-gray-300 text-center`}>
+                    <div className={`${colors.header} flex p-2 items-center justify-center min-h-14 md:h-20 print:h-20 border-b border-gray-300 text-center`}>
                       <p className="text-sm font-bold text-white leading-snug">{kafaa.title}</p>
                     </div>
 
                     {/* المؤشرات */}
-                    <div className={`${colors.mouashirat} border-b border-gray-300 px-2 py-2 h-54`}>
+                    <div className={`${colors.mouashirat} border-b border-gray-300 px-2 py-2 min-h-32 md:h-54 print:h-54`}>
                       <p className="text-sm font-bold text-blue-900 border-b border-gray-200 pb-1 mb-1 text-center">المؤشـرات</p>
                       <ul className="space-y-1 p-1">
                         {kafaa.mouashirat.map((m, i) => (
-                          <li key={i} className="text-xs text-gray-800 ">• {m}</li>
+                          <li key={i} className="text-[11px] md:text-xs text-gray-800 ">• {m}</li>
                         ))}
                       </ul>
                     </div>
 
                     {/* الأهداف التعلمية */}
-                    <div className="border-b border-gray-300 px-2 py-2 bg-amber-50 h-34">
+                    <div className="border-b border-gray-300 px-2 py-2 bg-amber-50 min-h-24 md:h-34 print:h-34">
                       <h1 className="text-sm font-bold text-gray-700 border-b border-gray-200 pb-1 mb-1 text-center">الأهداف التعلمية</h1>
-                      <div className="flex gap-2 justify-between">
+                      <div className="flex flex-col md:flex-row gap-2 justify-between print:flex-row">
                         {kafaa.ahdafTaalamuiya.map((a, i) => (
-                          <p key={i} className="text-xs text-gray-800 p-1">• {a}</p>
+                          <p key={i} className="text-[11px] md:text-xs text-gray-800 p-1">• {a}</p>
                         ))}
                       </div>
                     </div>
 
-                    {/* الأنشطة — عمودين */}
-                    <div className="flex flex-1 divide-x divide-x-reverse divide-gray-300">
+                    {/* الأنشطة — عمودين، تحت بعض على الجوال الصغير جدا، جنب بعض من sm فما فوق ودائما بالطباعة */}
+                    <div className="flex flex-col sm:flex-row print:flex-row flex-1 divide-y sm:divide-y-0 sm:divide-x sm:divide-x-reverse print:divide-y-0 print:divide-x print:divide-x-reverse divide-gray-300">
                       {[0, 1].map((slotIdx) => {
                         const currentSport = selectedSports[`${ki}-${slotIdx}`] || availableSports[slotIdx];
                         const goalNum = goalNumbers[ki][slotIdx];
@@ -215,7 +232,7 @@ export default function PlanOfYear() {
                                       lines[lineIdx] = e.currentTarget.innerText;
                                       setContent(ki, slotIdx, lines.join('\n'));
                                     }}
-                                    className="text-xs text-gray-800 leading-relaxed outline-none px-1 py-0.5 rounded hover:bg-gray-100 focus:bg-blue-50 before:content-['•'] before:ml-1 before:text-gray-400"
+                                    className="text-[11px] md:text-xs text-gray-800 leading-relaxed outline-none px-1 py-0.5 rounded hover:bg-gray-100 focus:bg-blue-50 before:content-['•'] before:ml-1 before:text-gray-400"
                                   >
                                     {line}
                                   </li>
@@ -235,6 +252,51 @@ export default function PlanOfYear() {
           </div>
         </div>
       </div>
+
+      {/* print-only CSS: forces exactly one A4 page, hides everything else */}
+      <style jsx global>{`
+        @media print {
+          @page {
+            size: A4;
+            margin: 8mm;
+          }
+
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            height: auto !important;
+          }
+
+          body * {
+            visibility: hidden;
+          }
+
+          #plan-of-year-page, #plan-of-year-page * {
+            visibility: visible;
+          }
+
+          #plan-of-year-page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 194mm; /* A4 width (210mm) minus 8mm margins each side */
+            max-width: 194mm;
+            margin: 0 !important;
+            box-shadow: none !important;
+          }
+
+          /* keep each كفاءة قاعدية column, and its inner sections, intact */
+          #plan-of-year-page .grid > div {
+            break-inside: avoid;
+            page-break-inside: avoid;
+          }
+
+          #plan-of-year-page {
+            break-after: avoid;
+            page-break-after: avoid;
+          }
+        }
+      `}</style>
     </div>
   );
 }

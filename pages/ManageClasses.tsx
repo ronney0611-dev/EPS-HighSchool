@@ -49,7 +49,7 @@ const ManageClasses = () => {
     }
 
     return (
-        <div dir="rtl" className='w-full flex flex-col'>
+        <div dir="rtl" className='w-full p-4 bg-black text-white'>
             {/* Add Class */}
             <div className='w-full border border-white rounded-2xl p-8 my-8 text-center' >
                 <h1 className='text-lg font-bold mb-4'> في حالة عدم توفر ملف Excel من طرف الادارة. يمكنك ادخال الأقسام والتلاميذ يدوياً </h1>
@@ -82,7 +82,7 @@ const ManageClasses = () => {
                             <h2 className='font-bold text-lg bg-blue-500 text-white rounded py-1 flex-1 text-center'>{c.name}</h2>
                             <button
                                 onClick={e => { e.stopPropagation(); deleteClasses(c._id) }}
-                                className='text-red-600 font-bold px-2 text-xl'>✕</button>
+                                className='text-red-600 font-bold px-2 text-xl cursor-pointer'>✕</button>
                         </div>
 
                         {/* expanded content */}

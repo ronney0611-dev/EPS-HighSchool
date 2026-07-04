@@ -26,6 +26,9 @@ const AllTakwiniSchema = new mongoose.Schema<ITakwiniAll>({
     students: [TakwiniSchema],
     groupLevels: { type: Map, of: String },
     groupNotes: { type: Map, of: Number },
+}, {
+    toJSON: { flattenMaps: true },
+    toObject: { flattenMaps: true },
 });
 
 AllTakwiniSchema.index({ classId: 1, activity: 1 }, { unique: true });

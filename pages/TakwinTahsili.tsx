@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { Gender, getScore, getTawaorScore } from '@/src/config/barem';
 import { useTahsili } from '@/hooks/useTahsili';
 import { useTachkhisi } from '@/hooks/useTachkhisi';
+import { ToastContainer ,toast } from "react-toastify";
 
 const TakwinTahsili = () => {
     const { classes, studentsByClass, fetchStudents } = useClasses();
@@ -19,10 +20,6 @@ const TakwinTahsili = () => {
 
     const selectedClassData = classes.find(c => c.name === classSlecet);
     const classStudents = selectedClassData ? (studentsByClass[selectedClassData._id] || []) : [];
-    console.log('groupeDataRaw:', groupeDataRaw);
-    console.log('groupeSport:', groupeSport);
-    console.log('students[0]:', groupeDataRaw?.students?.[0]);
-    console.log('students[0]:', groupeDataRaw?.students?.[0]?.levelT2);
 
     const levelToNote = (level: string) => {
         switch (level) {
@@ -89,7 +86,7 @@ const TakwinTahsili = () => {
             return { name: s.name, matricule: s.matricule ?? '', final: finalResult };
         });
         saveTahsili(selectedClassData._id, activity, grades);
-        alert('تم الحفظ ✓');
+        toast("تم حفظ المعلومات بنجاح !", { type: "success" });
     };
 
     return (
@@ -112,7 +109,6 @@ const TakwinTahsili = () => {
                         className='border border-gray-300 rounded px-3 py-1 bg-white text-black text-sm'
                         onChange={e => {
                             setActivity(e.target.value as 'sprint' | 'longjump' | 'throw')
-                            console.log('fetching groupe with:', e.target.value, selectedClassData?._id)
                         }
                         }>
                         <option value="sprint">عدو 60م</option>
@@ -241,13 +237,62 @@ const TakwinTahsili = () => {
                     </tbody>
                 </table>
             </main>
-            <div className='flex justify-center my-4'>
+            <div className='print:hidden flex justify-center my-4'>
                 <button
                     onClick={handleSave}
                     className='bg-blue-700 text-white px-6 py-2 rounded-xl text-sm cursor-pointer'>
                     💾 حفظ
                 </button>
+                <ToastContainer />
             </div>
+
+            {/* print-only CSS, self-contained in this file: landscape A4
+                (wide table), forces background colors to actually print,
+                keeps each student row intact, repeats header on every
+                page it spans */}
+            <style jsx global>{`
+                @media print {
+                    @page {
+                        size: A4 landscape;
+                        margin: 5mm;
+                    }
+
+                    html, body {
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        height: auto !important;
+                    }
+
+                    #a4-card {
+                        margin: 0 !important;
+                        padding: 0 !important;
+                    }
+
+                    #a4-card, #a4-card * {
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                        color-adjust: exact !important;
+                    }
+
+                    /* only rows avoid splitting — NOT the whole table,
+                       otherwise the entire table gets pushed to a fresh
+                       page instead of starting right away */
+                    tr {
+                        break-inside: avoid;
+                        page-break-inside: avoid;
+                    }
+
+                    thead {
+                        display: table-header-group;
+                    }
+
+                    select {
+                        -webkit-appearance: none;
+                        appearance: none;
+                        border: none !important;
+                    }
+                }
+            `}</style>
         </div >
     );
 };

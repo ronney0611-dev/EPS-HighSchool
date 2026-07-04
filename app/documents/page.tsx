@@ -1,15 +1,27 @@
 'use client';
 
 import { documentsConfig } from '@/src/config/documents';
-import Image from 'next/image';
-import Link from 'next/link';
 import GradientText from '../../components/GradientText';
 import { useSession } from 'next-auth/react';
+import LockedDocCard from '@/components/LockVideo';
+import { useSessionRefresh } from '@/hooks/useSessionRefresh';
+import { useEffect, useState } from 'react';
 
 const DocumentsPage = () => {
   const { data: session, status } = useSession();
+  const { refresh } = useSessionRefresh();
+  const [isActivated, setIsActivated] = useState(false);
+  const [checking, setChecking] = useState(false);
 
-  if (status === "loading") {
+  useEffect(() => {
+    if (status !== 'authenticated') return;
+    refresh().then((data) => {
+      setIsActivated(Boolean(data?.isPaid));
+      setChecking(false);
+    })
+  }, [status]);
+
+  if (status === "loading" || checking) {
     return <div className="text-center text-white my-20 font-medium">جاري تحميل البيانات...</div>;
   }
 
@@ -42,11 +54,16 @@ const DocumentsPage = () => {
             filteredTeacherClass.map(([key, doc]) => {
               return (
                 <div key={key} className=' p-4 flex flex-col justify-center items-center border border-gray-500 rounded-2xl transition-transform duration-300 hover:scale-105' >
-                  <Link href={`/documents/${key}`} className='flex flex-col justify-center items-center'>
-                    <Image src={doc.image} alt={doc.name} width={200} height={200} className='w-60 h-60 my-2 object-fill rounded-2xl' />
-                    <h1 className='text-white text-xl my-2 font-medium' >{doc.name}</h1>
-                  </Link>
-                  <p className='my-2 text-center text-gray-400' >{doc.description}</p>
+                  <LockedDocCard
+                    key={key}
+                    title={doc.name}
+                    description={doc.description}
+                    imageSrc={doc.image}
+                    youtubeVideoId={doc.youtubeVideoId}
+                    documentHref={`/documents/${key}`}
+                    activationHref="/payment"
+                    isActivated={isActivated}
+                  />
                 </div>
               )
             })
@@ -70,11 +87,16 @@ const DocumentsPage = () => {
             filteredTeacherNote.map(([key, doc]) => {
               return (
                 <div key={key} className=' p-4 flex flex-col justify-center items-center border border-gray-500 rounded-2xl transition-transform duration-300 hover:scale-105' >
-                  <Link href={`/documents/${key}`} className='flex flex-col justify-center items-center'>
-                    <Image src={doc.image} alt={doc.name} width={200} height={200} className='w-60 h-60 my-2 object-fill rounded-2xl' />
-                    <h1 className='text-white text-xl my-2 font-medium' >{doc.name}</h1>
-                  </Link>
-                  <p className='my-2 text-center text-gray-400' >{doc.description}</p>
+                  <LockedDocCard
+                    key={key}
+                    title={doc.name}
+                    description={doc.description}
+                    imageSrc={doc.image}
+                    youtubeVideoId={doc.youtubeVideoId}
+                    documentHref={`/documents/${key}`}
+                    activationHref="/payment"
+                    isActivated={isActivated}
+                  />
                 </div>
               )
             })
@@ -86,4 +108,4 @@ const DocumentsPage = () => {
   )
 }
 
-export default DocumentsPage;
+export default DocumentsPage

@@ -6,10 +6,18 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { House, CircleUserRound, BookText, LogOut } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react'
+import { usePathname } from 'next/navigation'
 
 const Navbare = () => {
+    const pathname = usePathname();
     const [open, setOpen] = useState(false);
     const { data: session, status } = useSession();
+
+    const navItems = [
+        { href: '/', label: 'الواجهة', Icon: House },
+        { href: '/profile', label: 'الحساب', Icon: CircleUserRound },
+        { href: '/documents', label: 'الوثائق', Icon: BookText },
+    ]
 
     const handleLogout = () => signOut({ callbackUrl: "/login" });
 
@@ -22,18 +30,22 @@ const Navbare = () => {
 
             {/* Desktop Menu */}
             <div className="hidden sm:flex items-center gap-8">
-                <Link className='flex flex-col items-center' href={"/"} >
-                    <House className='my-1' />
-                    <p>الواجهة</p>
-                </Link>
-                <Link className='flex flex-col items-center' href="/profile">
-                    <CircleUserRound className='my-1' />
-                    <p>الحساب</p>
-                </Link>
-                <Link className='flex flex-col items-center' href="/documents">
-                    <BookText className='my-1' />
-                    <p>الوثائق</p>
-                </Link>
+                {navItems.map(({ href, label, Icon }) => {
+                    const isActive = pathname === href
+                    return (
+                        <Link
+                            key={href}
+                            href={href}
+                            className={`flex flex-col items-center transition-all duration-150 ${isActive
+                                ? 'scale-90 opacity-70'
+                                : 'scale-100 opacity-100'
+                                }`}
+                        >
+                            <Icon className='my-1' />
+                            <p>{label}</p>
+                        </Link>
+                    )
+                })}
 
                 {/* 👈 Dynamic Authentication UI Check */}
                 {status === 'loading' ? (
@@ -57,10 +69,19 @@ const Navbare = () => {
 
             {/* Mobile Menu */}
             <div className={`${open ? 'hidden' : 'flex flex-row pt-5 justify-between align-middle'} absolute h-20 top-0 left-0 w-full bg-black text-white z-10 shadow-md py-4 flex-col items-start gap-2 px-8 text-sm md:hidden`} >
-
-                <Link href={"/"} ><House className='my-1' /></Link>
-                <Link href="/profile"><CircleUserRound className='my-1' /></Link>
-                <Link href="/documents"><BookText className='my-1' /></Link>
+                {navItems.map(({ href, Icon }) => {
+                    const isActive = pathname === href
+                    return (
+                        <Link
+                            key={href}
+                            href={href}
+                            className={`transition-all duration-150 ${isActive ? 'scale-90 opacity-70' : 'scale-100 opacity-100'
+                                }`}
+                        >
+                            <Icon className='my-1' />
+                        </Link>
+                    )
+                })}
 
                 {/* 👈 Dynamic Mobile Authentication UI Check */}
                 {status !== 'loading' && (
@@ -75,7 +96,7 @@ const Navbare = () => {
                     ) : (
                         <Link href="/login">
                             <button className="cursor-pointer my-0.5 px-6 py-2 bg-indigo-500 hover:bg-indigo-600 transition text-white rounded-full text-sm">
-                               دخول
+                                دخول
                             </button>
                         </Link>
                     )

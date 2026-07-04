@@ -4,6 +4,7 @@ import { useGroupe } from '@/hooks/useGroupe';
 import { Sessions, useAttendance } from '@/hooks/useMostamir';
 import { useTeacher } from '@/hooks/useTeacher';
 import { useEffect, useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify'
 
 const Mostamir = () => {
   const { classes, studentsByClass, fetchStudents } = useClasses();
@@ -53,6 +54,7 @@ const Mostamir = () => {
     );
     return groupIndex !== -1 ? groupLabels[groupIndex] : '—';
   };
+
   return (
     <div dir='rtl' className='mx-2 bg-white text-black my-4'>
 
@@ -185,9 +187,10 @@ const Mostamir = () => {
         </table>
 
       </div>
-      <div className='flex justify-center my-4 gap-4'>
+      <div className='print:hidden flex justify-center my-4 gap-4'>
         <button onClick={() => {
           if (selectedClassData) updateAttendance(selectedClassData._id, toSessions(grid));
+          toast("تم حفظ المعلومات بنجاح !", { type: "success" });
         }} className="print:hidden bg-green-700 text-white px-6 py-2 rounded-xl self-center cursor-pointer">
           حفظ
         </button>
@@ -196,8 +199,52 @@ const Mostamir = () => {
           className='bg-blue-600 text-white px-6 py-2 rounded-xl font-semibold text-sm my-4'>
           طباعة 🖨️
         </button>
+        <ToastContainer />
       </div>
-    </div >
+
+      <style jsx global>{`
+        @media print {
+          @page {
+            size: A4 landscape;
+            margin: 5mm;
+          }
+
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            height: auto !important;
+          }
+
+          #a4-card {
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+
+          /* backgrounds are stripped by default when printing —
+             force every colored cell to actually print its color */
+          #a4-card, #a4-card * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+          }
+
+          tr {
+            break-inside: avoid;
+            page-break-inside: avoid;
+          }
+
+          thead {
+            display: table-header-group;
+          }
+
+          select {
+            -webkit-appearance: none;
+            appearance: none;
+            border: none !important;
+          }
+        }
+      `}</style>
+    </div>
   )
 }
 

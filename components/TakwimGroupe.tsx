@@ -4,6 +4,7 @@ import { useClasses } from "@/hooks/useClasses";
 import { useTachkhisi } from "@/hooks/useTachkhisi";
 import { useTeacher } from "@/hooks/useTeacher";
 import React, { useEffect, useState } from "react";
+import { ToastContainer, toast } from 'react-toastify'
 
 import level1Data from "@/src/config/level1Curriculum.json";
 import level2Data from "@/src/config/level2Curriculum.json";
@@ -405,10 +406,12 @@ const TakwimGroupe = () => {
                                 t2: t2,
                             }))
                         );
+                        toast("تم حفظ المعلومات بنجاح !", { type: "success" });
                     }}
                     className='bg-green-600 text-white px-6 py-2 rounded-xl font-bold text-sm w-full md:w-auto shadow-sm'>
                     حفظ ✅
                 </button>
+                <ToastContainer />
             </div>
         </div>
     );

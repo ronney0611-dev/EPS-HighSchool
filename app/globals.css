@@ -84,6 +84,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@page {
+  size: A4 portrait;
+  margin: 8mm;
+}
+ 
 @media print {
   body:has(.plan-of-year-wrapper) * {
     visibility: hidden;
@@ -133,6 +138,7 @@
 svg {
   display: inline-block;
 }
+
 
 :root {
   --background: oklch(1 0 0);

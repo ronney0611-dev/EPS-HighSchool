@@ -40,9 +40,9 @@ const Hero = () => {
             <header dir="rtl" className='bg-black lg:mt-[-20] lg:mb-[-100] text-white flex flex-col items-center bg-[url("https://assets.prebuiltui.com/images/components/hero-section/hero-background-image.png")] bg-cover bg-center bg-no-repeat pb-10'>
 
                 <h1 className="text-3xl mt-20 md:text-5xl font-extrabold text-center max-w-4xl tracking-wide leading-tight px-4 bg-linear-to-b from-white to-gray-300 bg-clip-text text-transparent font-['Cairo',sans-serif]">
-                    مستقبل التعليم بين يديك.<span className="text-red-500"> قف في الملعب</span>، ودع تطبيقنا يتولى صياغة وثائقك البيداغوجية في ثوان.
+                    <span className="text-red-500"> قف في الملعب</span> و دع تطبيقنا يتولى صياغة وثائقك البيداغوجية في ثوان.
                 </h1>
-                <p className="text-center text-sm md:text-lg text-gray-400 max-w-2xl mx-auto mt-6 px-6 leading-relaxed font-['Tajawal',sans-serif]">
+                <p className="text-center text-sm md:text-lg text-gray-200 max-w-2xl mx-auto mt-6 px-6 leading-relaxed font-['Tajawal',sans-serif]">
                     ودع الأوراق المبعثرة وساعات الصياغة الطويلة. ركّز جهدك على تدريب وتطوير طلابك، ونحن من نتكفل بجميع الوثائق؛ من قوائم الأقسام والتلاميذ إلى رصد النقاط وإرسالها للإدارة.
                 </p>
 
@@ -51,8 +51,6 @@ const Hero = () => {
                     <div className="text-center w-full sm:w-auto" onClick={() => document.getElementById('features-section')?.scrollIntoView({ behavior: 'smooth' })}>
                         <BorderAnimationButton text="تصفح العروض والخدمات 📋" />
                     </div>
-
-                    {/* الزر الثاني: التواصل المباشر لحل مشاكل الدفع أو الإجابة على استفسارات الأساتذة */}
                     <a
                         href="https://wa.me/+213795972858?text=مرحباً،%20أريد%20الاستفسار%20عن%20تطبيق%20الوثائق%20البيداغوجية"
                         target="_blank"
@@ -66,14 +64,18 @@ const Hero = () => {
 
                 <div className=" lg:my-10 w-full max-w-4xl mx-auto px-4  relative flex items-center justify-center">
                     {/* Video with spinning glow border */}
-                    <video controls loop playsInline
-                        className='rounded-3xl w-full relative'
-                        style={{
-                            zIndex: 1,
-                            animation: 'glowSpin 4s linear infinite',
-                        }}>
-                        <source src={assets.video} type="video/mp4" />
-                    </video>
+                    <div className="lg:my-10 w-full max-w-4xl mx-auto px-4 relative flex items-center justify-center">
+                        <iframe
+                            allow="autoplay; encrypted-media; picture-in-picture"
+                            allowFullScreen
+                            src='https://www.youtube.com/embed/uBFFxl2f-S0'
+                            className='rounded-3xl w-full aspect-video relative'
+                            style={{
+                                zIndex: 1,
+                                animation: 'glowSpin 4s linear infinite',
+                            }}
+                        />
+                    </div>
                 </div>
                 <Offers />
             </header >

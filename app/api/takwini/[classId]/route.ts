@@ -9,7 +9,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ clas
     const session = await getServerSession(authOptions);
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    await connectDB;
+    await connectDB();
     const { classId } = await params;
     const activity = req.nextUrl.searchParams.get('activity');
 

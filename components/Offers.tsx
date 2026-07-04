@@ -130,7 +130,7 @@ export default function WhatWeOffer() {
                     ابدأ العام الدراسي بشكل مختلف هذه المرة
                 </h3>
                 <p className="text-[15px] opacity-85 max-w-120 mx-auto leading-[1.8] mb-8">
-                   <span className="font-bold text-2xl text-red-600"> بـ 3000 دج فقط، للعام الدراسي كاملا</span>    — أقل من تكلفة كراريس — احصل على منصة كاملة حتى 30 جوان.
+                   <span className="font-bold text-2xl text-red-600"> بـ 3000 دج فقط، للعام الدراسي كاملا</span>    — أقل من تكلفة كراريس — احصل على منصة كاملة حتى 01 جويلية 2027.
                 </p>
                 <div className="flex gap-3 justify-center flex-wrap">
                     <a

@@ -1,10 +1,10 @@
 // hooks/useWahda.ts
 import { useState, useCallback } from "react";
 import axios from "axios";
-import { IWahda, ISession } from "@/app/models/WahdaDoc"; // Import plain type layout
+import { IWahda, ISession } from "@/app/models/WahdaDoc"; 
 
 export const useWahda = () => {
-  const [wahda, setWahda] = useState<IWahda | null>(null); // Fixed type here
+  const [wahda, setWahda] = useState<IWahda | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 

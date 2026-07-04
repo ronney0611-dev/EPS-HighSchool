@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useClasses } from "@/hooks/useClasses"
 import { useTeacher } from "@/hooks/useTeacher"
 import { useGroupe } from "@/hooks/useGroupe"
+import { ToastContainer, toast } from 'react-toastify'
 
 const ClassPlan = () => {
     const { classes, studentsByClass, fetchStudents } = useClasses();
@@ -273,12 +274,14 @@ const ClassPlan = () => {
             <div className="flex justify-center gap-4">
                 <button onClick={() => {
                     if (selectedClassData) creatGroupes(selectedClassData._id, groupe);
+                    toast("تم حفظ الافواج بنجاح !", { type: "success" });
                 }} className="print:hidden bg-green-700 text-white px-6 py-2 rounded-xl self-center cursor-pointer">
                     حفظ
                 </button>
                 <button onClick={handlePrint} className="print:hidden bg-green-700 text-white px-6 py-2 rounded-xl self-center cursor-pointer">
                     🖨️ طباعة
                 </button>
+                <ToastContainer />
             </div>
         </div >
     )

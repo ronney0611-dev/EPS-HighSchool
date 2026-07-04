@@ -4,6 +4,7 @@ import { useGroupe } from "@/hooks/useGroupe";
 import React, { useState } from "react"
 import { Gender, getScore } from "@/src/config/barem2"
 import { useTakwini } from "@/hooks/useTakwini";
+import { ToastContainer, toast } from "react-toastify";
 
 const TaqwimTakwini = () => {
     const { classes, studentsByClass, fetchStudents } = useClasses();
@@ -55,11 +56,13 @@ const TaqwimTakwini = () => {
         return Math.max(...scores, 0);
     };
 
-    const getJamaiNote = (groupIndex: number): number => {
-        if (groupIndex === -1) return 0;
+    const getGroupSessionKey = (studentId: string, groupIndex: number, gi: number) =>
+        groupIndex !== -1 ? `${groupIndex}-${gi}` : `nogroup-${studentId}-${gi}`;
+
+    const getJamaiNote = (studentId: string, groupIndex: number): number => {
         let best = 0;
         for (let gi = 0; gi < 6; gi++) {
-            const key = `${groupIndex}-${gi}`;
+            const key = getGroupSessionKey(studentId, groupIndex, gi);
             if (groupNotes[key] !== undefined && groupNotes[key] > best) {
                 best = groupNotes[key];
             }
@@ -90,6 +93,7 @@ const TaqwimTakwini = () => {
                             if (found) {
                                 fetchStudents(found._id);
                                 fetchGroupes(found._id);
+                                fetchTakwini(found._id, activity);
                             }
                         }}>
                         <option value="">— اختر —</option>
@@ -165,21 +169,17 @@ const TaqwimTakwini = () => {
                                 const groupIndex = getStudentGroupIndex(s._id);
                                 const groupLabel = groupIndex !== -1 ? groupLabels[groupIndex] : '—';
                                 const bestFardi = getBestFardi(s._id, gender);
-                                const jamaiNote = getJamaiNote(groupIndex);
+                                const jamaiNote = getJamaiNote(s._id, groupIndex);
                                 const isMalade = s.status === 'malade';
-
-                                // Find the latest assigned group level to offer fine-tuning drop-downs
                                 let currentGroupLevel = '';
                                 let latestGroupSessionKey = '';
                                 let bestNote = 0;
-                                if (groupIndex !== -1) {
-                                    for (let gi = 0; gi < 6; gi++) {
-                                        const key = `${groupIndex}-${gi}`;
-                                        if (groupLevels[key] && groupNotes[key] !== undefined && groupNotes[key] >= bestNote) {
-                                            bestNote = groupNotes[key];
-                                            currentGroupLevel = groupLevels[key];
-                                            latestGroupSessionKey = key;
-                                        }
+                                for (let gi = 0; gi < 6; gi++) {
+                                    const key = getGroupSessionKey(s._id, groupIndex, gi);
+                                    if (groupLevels[key] && groupNotes[key] !== undefined && groupNotes[key] >= bestNote) {
+                                        bestNote = groupNotes[key];
+                                        currentGroupLevel = groupLevels[key];
+                                        latestGroupSessionKey = key;
                                     }
                                 }
                                 const noteRange = levelToNote(currentGroupLevel);
@@ -319,9 +319,12 @@ const TaqwimTakwini = () => {
                 </div>
 
             </div>
-            <div className="my-6 flex gap-4" >
+            <div className="print:hidden my-6 flex gap-4" >
                 <button
-                    onClick={() => saveTakwini(classId, activity, studentIds, genders, isThirdYear)}
+                    onClick={() => {
+                        saveTakwini(classId, activity, studentIds, genders, isThirdYear);
+                        toast("تم حفظ المعلومات بنجاح !", { type: "success" });
+                    }}
                     className='bg-green-600 text-white px-6 py-2 rounded-xl font-semibold text-sm w-full md:w-auto cursor-pointer'>
                     حفظ
                 </button>
@@ -330,7 +333,56 @@ const TaqwimTakwini = () => {
                     className='bg-blue-600 text-white px-6 py-2 rounded-xl font-semibold text-sm w-full md:w-auto cursor-pointer'>
                     طباعة 🖨️
                 </button>
+                <ToastContainer />
             </div>
+
+            {/* print-only CSS, self-contained in this file: landscape A4
+                (this table has 22+ columns, needs the wide dimension),
+                forces background colors to actually print, keeps each
+                student row intact, repeats header on every page it spans */}
+            <style jsx global>{`
+                @media print {
+                    @page {
+                        size: A4 landscape;
+                        margin: 5mm;
+                    }
+
+                    html, body {
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        height: auto !important;
+                    }
+
+                    #a4-card {
+                        margin: 0 !important;
+                        padding: 0 !important;
+                    }
+
+                    #a4-card, #a4-card * {
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                        color-adjust: exact !important;
+                    }
+
+                    /* only rows avoid splitting — NOT the whole table,
+                       otherwise the entire table gets pushed to a fresh
+                       page instead of starting right away */
+                    tr {
+                        break-inside: avoid;
+                        page-break-inside: avoid;
+                    }
+
+                    thead {
+                        display: table-header-group;
+                    }
+
+                    select, input {
+                        -webkit-appearance: none;
+                        appearance: none;
+                        border: none !important;
+                    }
+                }
+            `}</style>
         </div >
     )
 }

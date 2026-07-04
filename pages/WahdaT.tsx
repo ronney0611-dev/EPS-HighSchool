@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { useClasses } from '@/hooks/useClasses'
 import { useWahda } from '@/hooks/useWahda'
 import type { ISession } from '@/app/models/WahdaDoc'
+import { ToastContainer, toast } from 'react-toastify'
 
 // Static JSON imports matching your file structure
 import level1Curriculum from '@/src/config/level1Curriculum.json'
@@ -209,7 +210,9 @@ export default function WahdaGeneratorPage() {
             trimester: wahda.trimester,
             sessions: wahda.sessions
         })
-        if (success) alert("تم حفظ الوحدة التعلمية بنجاح")
+        if (success) {
+            toast("تم حفظ الوحدة التعلمية بنجاح !", { type: "success" });
+        }
     }
 
     return (
@@ -255,7 +258,7 @@ export default function WahdaGeneratorPage() {
                     {wahda && wahda.sessions && wahda.sessions.length > 0 && (
                         <>
                             <button
-                                onClick={handleSave}
+                                onClick={ handleSave }
                                 className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-2.5 rounded-xl transition"
                             >
                                 💾 حفظ في قاعدة البيانات
@@ -266,6 +269,7 @@ export default function WahdaGeneratorPage() {
                             >
                                 🖨️ طباعة
                             </button>
+                            <ToastContainer />
                         </>
                     )}
                 </div>
@@ -288,7 +292,7 @@ export default function WahdaGeneratorPage() {
                             </h2>
                         </div>
                         <div className="flex flex-col items-center gap-1">
-                            <p>السنة الدراسية: 2026/2025</p>
+                            <p>السنة الدراسية: 2026/2027</p>
                             <p>المستوى: {LEVELS.find(l => l.key === wahda.level)?.name}</p>
                         </div>
                     </div>

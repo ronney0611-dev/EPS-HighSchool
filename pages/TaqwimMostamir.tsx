@@ -5,6 +5,7 @@ import { useTeacher } from "@/hooks/useTeacher";
 import { useGroupe } from '@/hooks/useGroupe';
 import { useMostamir } from '@/hooks/useTakwimMostamir';
 import { useEffect, useState } from "react";
+import { ToastContainer ,toast } from "react-toastify";
 
 const TaqwimMostamir = () => {
 
@@ -249,6 +250,7 @@ const TaqwimMostamir = () => {
               scores: scores[i] ?? [5, 5, 5, 5],
               total: scores[i]?.reduce((a, b) => a + b, 0) ?? 20,
             })));
+            toast("تم حفظ المعلومات بنجاح !", { type: "success" });
           }}
           className='bg-blue-700 text-white px-6 py-2 rounded-xl text-sm cursor-pointer'>
           💾 حفظ
@@ -258,6 +260,7 @@ const TaqwimMostamir = () => {
           className='bg-blue-700 text-white px-6 py-2 rounded-xl text-sm cursor-pointer'>
           🖨️ طباعة
         </button>
+        <ToastContainer />
       </div>
 
     </div>

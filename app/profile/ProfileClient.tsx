@@ -8,6 +8,7 @@ import GradientText from '../../components/GradientText'
 import { useEffect, useState } from 'react'
 import * as XLSX from 'xlsx'
 import AllNotes from '@/components/AllNotes'
+import { ToastContainer, toast } from "react-toastify";
 
 const getLevel = (name: string) => {
     if (name.startsWith('1')) return 'أولى ثانوي'
@@ -108,16 +109,15 @@ const ProfilePage = () => {
 
     return (
         <div dir="rtl" className='min-h-screen p-6 flex flex-col items-center gap-6 bg-black text-white'>
-
             {/* profile card */}
-            <div className='bg-white text-black rounded-2xl p-6 w-full max-w-md flex flex-col items-center gap-4 shadow-lg'>
+            <div className='bg-white text-black rounded-2xl p-6 w-full max-w-md h-full justify-center flex flex-col items-center gap-4 shadow-lg'>
                 <div className='w-24 h-24 rounded-full overflow-hidden border-4 border-blue-500'>
                     {teacher.photo
                         ? <Image src={teacher.photo} alt="profile" width={96} height={96} className='w-full h-full object-cover' />
                         : <div className='w-full h-full bg-gray-300 flex items-center justify-center text-3xl'>👤</div>
                     }
                 </div>
-                <h1 className='text-2xl font-bold'>{teacher.name || 'اسم الأستاذ'}</h1>
+                <h1 className='text-2xl text-center font-bold'>{teacher.name || 'اسم الأستاذ'}</h1>
                 <p className='text-gray-500'>{teacher.school || 'اسم الثانوية'}</p>
                 <p className='text-gray-500'>{teacher.birthloc || ' الولاية'}</p>
                 <Link href="/manage-profile" className='bg-blue-500 text-white px-4 py-2 rounded-xl text-sm'>
@@ -221,7 +221,14 @@ const ProfilePage = () => {
 
                         <div className='flex gap-3'>
                             <button
-                                onClick={handleImportConfirm}
+                                onClick={
+                                    () => {
+                                        if (handleImportConfirm) {
+                                            handleImportConfirm();
+                                            toast("تم استيراد الأقسام بنجاح !", { type: "success" });
+                                        }
+                                    }
+                                }
                                 className='bg-green-600 text-white px-6 py-2 rounded-xl flex-1 font-semibold cursor-pointer'>
                                 استيراد
                             </button>
@@ -251,6 +258,7 @@ const ProfilePage = () => {
                 <div className='w-full max-w-2xl border border-white rounded-2xl p-4 bg-red-100 text-black'>
                     <AllNotes />
                 </div>
+                <ToastContainer />
             </div>
         </div>
     )

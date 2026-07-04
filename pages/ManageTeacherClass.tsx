@@ -1,6 +1,7 @@
 'use client'
 import { useTeacher } from '@/hooks/useTeacher'
 import Image from 'next/image'
+import {ToastContainer, toast } from 'react-toastify'
 
 const fields = [
     { label: 'الاسم واللقب', key: 'name', type: 'text', placeholder: 'الاسم واللقب' },
@@ -75,18 +76,18 @@ const ManageTeacherProfile = () => {
                         ))}
                     </div>
                 </div>
-
                 {/* Save button */}
                 <button
                     onClick={() => {
                         updateTeacher(teacher);
-                        alert('تم الحفظ ✓');
+                        toast("تم حفظ المعلومات بنجاح !", { type: "success" });
                     }}
                     className="w-full h-13 bg-emerald-500 hover:bg-emerald-400 active:scale-[0.98] rounded-2xl text-white font-bold text-base transition-all duration-200 shadow-[0_0_30px_rgba(16,185,129,0.2)]"
                 >
+
                     💾 حفظ المعلومات
                 </button>
-
+                <ToastContainer />
             </div>
         </div>
     )
