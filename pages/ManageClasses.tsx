@@ -1,10 +1,23 @@
 'use client'
-import { useClasses } from '@/hooks/useClasses'
+
 import { useState } from 'react'
+import type { Class, Student } from '@/hooks/useClasses'
 
+type ManageClassesProps = {
+    classes: Class[]
+    studentsByClass: Record<string, Student[]>
+    fetchStudents: (classId: string) => void
+    addClass: (classData: Omit<Class, '_id'>) => void
+    deleteClass: (classId: string) => void
+    addStudent: (classId: string, studentData: Omit<Student, '_id'>) => void
+    deleteStudent: (classId: string, studentId: string) => void
+    updateStudent: (classId: string, studentId: string, studentData: Partial<Omit<Student, '_id'>>) => void
+}
 
-const ManageClasses = () => {
-    const { classes, studentsByClass, fetchStudents, addClass, deleteClass, addStudent, deleteStudent, updateStudent } = useClasses();
+const ManageClasses = ({
+    classes, studentsByClass, fetchStudents,
+    addClass, deleteClass, addStudent, deleteStudent, updateStudent
+}: ManageClassesProps) => {
     const [expandedClassId, setExpandedClassId] = useState<string | null>(null)
     const [classInput, setClassInput] = useState('');
     const [studentInput, setStudentInput] = useState('');

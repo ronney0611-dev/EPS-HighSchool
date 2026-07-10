@@ -88,19 +88,10 @@ export default function Login() {
                     </span>
                 </div>
 
-                <h1 className="text-center text-xl font-bold text-white mb-1">
-                    {state === 'login' ? 'ادخل إلى حسابك' : 'انشئ حساب جديد وانضم إلى منصة أساتذة التربية البدنية والرياضية'}
+                <h1 className="text-center text-xl font-bold text-white mb-6">
+                    {state === 'login' ? ' مرحبا بعودتك ! ادخل إلى حسابك ' : 'انشئ حساب جديد وانضم إلى منصة أساتذة التربية البدنية والرياضية'}
                 </h1>
-                <div className="text-center mt-6 text-gray-300 mb-6">
-                    {state === 'login' ? 'اذا كنت لا تملك حساباً ؟' : ' اذا كمت تملك حساباً مسجلاً مسبقاً ؟ '}
-                    <button
-                        onClick={() => { setState(prev => prev === 'login' ? 'register' : 'login'); setError('') }}
-                        className="text-emerald-400 font-bold mr-1.5 hover:underline cursor-pointer"
-                    >
-                        {state === 'login' ? 'سجّل الآن هنا' : 'اضغط لتسجيل الدخول'}
-                    </button>
-                </div>
-
+               
                 {/* Google 
                 <button
                     type="button"
@@ -217,6 +208,16 @@ export default function Login() {
                         )}
                     </button>
                 </form>
+                 <div className="text-center text-gray-300 mt-8">
+                    {state === 'login' ? 'اذا كنت لا تملك حساباً ؟' : ' اذا كمت تملك حساباً مسجلاً مسبقاً ؟ '}
+                    <button
+                        onClick={() => { setState(prev => prev === 'login' ? 'register' : 'login'); setError('') }}
+                        className="text-emerald-400 font-bold mr-1.5 hover:underline cursor-pointer"
+                    >
+                        {state === 'login' ? 'سجّل الآن هنا' : 'اضغط لتسجيل الدخول'}
+                    </button>
+                </div>
+
             </div>
         </div>
     )

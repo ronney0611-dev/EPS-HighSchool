@@ -120,7 +120,7 @@ const Mostamir = () => {
                 الأستاذ: <span className='font-medium'>{teacher.name || '—'}</span>
               </td>
               <td className='border border-black px-1 py-1 font-semibold'>
-                السنة الدراسية: 2025/2026
+                السنة الدراسية: 2026/2027
               </td>
             </tr>
           </tbody>
@@ -163,7 +163,7 @@ const Mostamir = () => {
                         <option value=""></option>
                         <option value="P">P</option>
                         <option value="A">A</option>
-                        <option value="0">0</option>
+                        <option value="0">ST</option>
                         <option value="M">M</option>
                       </select>
                     </td>
@@ -180,7 +180,7 @@ const Mostamir = () => {
             <tr>
               <th className='border  text-sm border-black px-2 py-1'>الحضور = P</th>
               <th className='border text-sm border-black px-2 py-1'>الغياب = A</th>
-              <th className='border text-sm border-black px-2 py-1'>بدون بدلة = 0</th>
+              <th className='border text-sm border-black px-2 py-1'>بدون بدلة = ST</th>
               <th className='border text-sm border-black px-2 py-1'>مرض = M</th>
             </tr>
           </thead>
@@ -201,7 +201,6 @@ const Mostamir = () => {
         </button>
         <ToastContainer />
       </div>
-
       <style jsx global>{`
         @media print {
           @page {

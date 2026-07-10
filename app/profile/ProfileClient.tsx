@@ -19,7 +19,7 @@ const getLevel = (name: string) => {
 
 const ProfilePage = () => {
     const { teacher } = useTeacher()
-    const { classes, studentsByClass, fetchStudents, importClasses } = useClasses();
+    const { classes, studentsByClass, fetchStudents, importClasses, addClass, deleteClass, addStudent, deleteStudent, updateStudent } = useClasses();
 
     const allStudents = Object.values(studentsByClass).flat();
     const totalStudents = allStudents.length
@@ -185,7 +185,14 @@ const ProfilePage = () => {
                         />
                     </label>
                 </div>
-                <ManageClasses />
+                <ManageClasses classes={classes}
+                    studentsByClass={studentsByClass}
+                    fetchStudents={fetchStudents}
+                    addClass={addClass}
+                    deleteClass={deleteClass}
+                    addStudent={addStudent}
+                    deleteStudent={deleteStudent}
+                    updateStudent={updateStudent} />
             </div>
 
             {/* Modal */}

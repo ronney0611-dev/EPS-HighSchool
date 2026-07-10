@@ -135,24 +135,29 @@ const MaterialsCalc = () => {
                         margin: 10mm;
                     }
 
+                    * {
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                        color-adjust: exact !important;
+                    }
+
                     html, body {
                         margin: 0 !important;
                         padding: 0 !important;
                         height: auto !important;
+                        background: white !important;
                     }
 
-                    body * {
-                        visibility: hidden;
+                    body *:not(#a4-card):not(#a4-card *) {
+                        visibility: hidden !important;
                     }
 
                     #a4-card, #a4-card * {
-                        visibility: visible;
+                        visibility: visible !important;
                     }
 
                     #a4-card {
-                        position: absolute;
-                        top: 0;
-                        left: 0;
+                        position: static !important;
                         width: 190mm;
                         max-width: 190mm;
                         margin: 0 !important;
@@ -160,12 +165,16 @@ const MaterialsCalc = () => {
                         box-shadow: none !important;
                     }
 
-                    #a4-card > div {
-                        break-inside: avoid;
-                        page-break-inside: avoid;
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
                     }
 
-                    table, tr, thead, tbody {
+                    thead {
+                        display: table-header-group;
+                    }
+
+                    tr {
                         break-inside: avoid;
                         page-break-inside: avoid;
                     }
@@ -173,11 +182,6 @@ const MaterialsCalc = () => {
                     input {
                         border: none !important;
                         outline: none !important;
-                    }
-
-                    #a4-card {
-                        break-after: avoid;
-                        page-break-after: avoid;
                     }
                 }
             `}</style>

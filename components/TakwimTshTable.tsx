@@ -416,6 +416,62 @@ const TakwimTshTable = () => {
                 </button>
                 <ToastContainer />
             </div>
+            <style jsx global>{`
+                @media print {
+                    @page {
+                        size: A4 landscape;
+                        margin: 8mm;
+                    }
+
+                    * {
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                        color-adjust: exact !important;
+                    }
+
+                    html, body {
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        height: auto !important;
+                        background: white !important;
+                    }
+
+                    body *:not(#a4-card):not(#a4-card *) {
+                        visibility: hidden !important;
+                    }
+
+                    #a4-card, #a4-card * {
+                        visibility: visible !important;
+                    }
+
+                    #a4-card {
+                        position: static !important;
+                        width: 100% !important;
+                        margin: 0 !important;
+                        border: none !important;
+                    }
+
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+
+                    thead {
+                        display: table-header-group;
+                    }
+
+                    tr {
+                        break-inside: avoid;
+                        page-break-inside: avoid;
+                    }
+
+                    select, input {
+                        -webkit-appearance: none;
+                        appearance: none;
+                        border: none !important;
+                    }
+                }
+            `}</style>
         </div>
     )
 }

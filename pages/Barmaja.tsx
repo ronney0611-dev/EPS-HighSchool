@@ -238,8 +238,9 @@ export default function PlanOfYear() {
                                   </li>
                                 ))}
                               </ul>
-                            </div>
 
+                            </div>
+                            <hr className='border border-gray-300' />
                           </div>
                         );
                       })}
@@ -261,39 +262,42 @@ export default function PlanOfYear() {
             margin: 8mm;
           }
 
+          * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+          }
+
           html, body {
             margin: 0 !important;
             padding: 0 !important;
             height: auto !important;
+            background: white !important;
           }
 
-          body * {
-            visibility: hidden;
+          body *:not(#plan-of-year-page):not(#plan-of-year-page *) {
+            visibility: hidden !important;
           }
 
           #plan-of-year-page, #plan-of-year-page * {
-            visibility: visible;
+            visibility: visible !important;
           }
 
           #plan-of-year-page {
-            position: absolute;
+            position: fixed !important;
             top: 0;
             left: 0;
-            width: 194mm; /* A4 width (210mm) minus 8mm margins each side */
+            width: 194mm;
             max-width: 194mm;
+            min-height: 0 !important;
+            height: auto !important;
             margin: 0 !important;
             box-shadow: none !important;
           }
 
-          /* keep each كفاءة قاعدية column, and its inner sections, intact */
           #plan-of-year-page .grid > div {
             break-inside: avoid;
             page-break-inside: avoid;
-          }
-
-          #plan-of-year-page {
-            break-after: avoid;
-            page-break-after: avoid;
           }
         }
       `}</style>

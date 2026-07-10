@@ -149,15 +149,15 @@ export default function Payment() {
                             <MethodCard
                                 selected={method === 'BARIDIMOB'}
                                 onClick={() => setMethod('BARIDIMOB')}
-                                icon="📮"
+                                icon="📱"
                                 title="بريدي موب"
                                 subtitle="تحويل يدوي"
                             />
                             <MethodCard
                                 selected={method === 'BARIDI'}
                                 onClick={() => setMethod('BARIDI')}
-                                icon="📮"
-                                title="مكتب البريد ccp"
+                                icon="🏦"
+                                title="مكتب البريد ( la poste )"
                                 subtitle="تحويل يدوي"
                             />
                             <MethodCard
@@ -196,20 +196,12 @@ export default function Payment() {
                                     <p dir="ltr" className="text-emerald-400 font-black text-lg tracking-widest">00799999<br></br>0023698984 83</p>
                                 </div>
                                 <li>خذ لقطة شاشة للإيصال ( سكرين شوت ) </li>
-                                <li>ارفع الصورة أدناه وأرسل الطلب</li>
+                                <li> ارسل الصورة عبر الواتساب او ارفعها أدناه وأرسل الطلب</li>
                             </ol>
                         </div>
 
-                        {/* Transaction number */}
-                        <div className="mb-4">
-                            <label className="block text-xs font-semibold text-gray-400 mb-1.5">رقم العملية (اختياري)</label>
-                            <input
-                                type="text"
-                                value={transactionNumber}
-                                onChange={e => setTransactionNumber(e.target.value)}
-                                placeholder="مثال: TXN123456"
-                                className="w-full h-11 bg-white/3 border border-white/8 focus:border-emerald-500/40 focus:ring-4 focus:ring-emerald-500/10 rounded-xl px-4 text-white text-sm outline-none transition-all duration-200 text-left"
-                            />
+                        <div className="bg-[#0a0a0f] border border-white/10 rounded-lg px-4 py-2 text-center my-2">
+                            <p dir="ltr" className="text-emerald-400 font-black text-lg tracking-widest">WhatsApp: 0795972858</p>
                         </div>
 
                         {/* Receipt upload */}
@@ -236,6 +228,19 @@ export default function Payment() {
                                 )}
                             </button>
                         </div>
+
+                        {/* Transaction number */}
+                        <div className="mb-4">
+                            <label className="block text-xs font-semibold text-gray-400 mb-1.5">رقم العملية (اختياري)</label>
+                            <input
+                                type="text"
+                                value={transactionNumber}
+                                onChange={e => setTransactionNumber(e.target.value)}
+                                placeholder="مثال: TXN123456"
+                                className="w-full h-11 bg-white/3 border border-white/8 focus:border-emerald-500/40 focus:ring-4 focus:ring-emerald-500/10 rounded-xl px-4 text-white text-sm outline-none transition-all duration-200 text-left"
+                            />
+                        </div>
+
 
                         {error && (
                             <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-xl p-3 text-center mb-4">
@@ -297,20 +302,10 @@ export default function Payment() {
                                     <p dir="ltr" className="text-emerald-400 font-black text-lg tracking-widest">0795972858</p>
                                 </div>
                                 <li>احتفظ بوصل التحويل</li>
-                                <li>ارفع صورة الوصل أدناه وأرسل الطلب</li>
+                                <li>ارفع صورة الوصل عبر الواتساب أو ارفعها أدناه وأرسل الطلب</li>
                             </ol>
                         </div>
 
-                        <div className="mb-4">
-                            <label className="block text-xs font-semibold text-gray-400 mb-1.5">رقم العملية (اختياري)</label>
-                            <input
-                                type="text"
-                                value={transactionNumber}
-                                onChange={e => setTransactionNumber(e.target.value)}
-                                placeholder="مثال: TXN123456"
-                                className="w-full h-11 bg-white/3 border border-white/8 focus:border-emerald-500/40 focus:ring-4 focus:ring-emerald-500/10 rounded-xl px-4 text-white text-sm outline-none transition-all duration-200 text-left"
-                            />
-                        </div>
 
                         <div className="mb-5">
                             <label className="block text-xs font-semibold text-gray-400 mb-1.5">صورة الوصل <span className="text-red-400">*</span></label>
@@ -334,6 +329,17 @@ export default function Payment() {
                                     </>
                                 )}
                             </button>
+                        </div>
+                        {/* Transaction number */}
+                        <div className="mb-4">
+                            <label className="block text-xs font-semibold text-gray-400 mb-1.5">رقم العملية (اختياري)</label>
+                            <input
+                                type="text"
+                                value={transactionNumber}
+                                onChange={e => setTransactionNumber(e.target.value)}
+                                placeholder="مثال: TXN123456"
+                                className="w-full h-11 bg-white/3 border border-white/8 focus:border-emerald-500/40 focus:ring-4 focus:ring-emerald-500/10 rounded-xl px-4 text-white text-sm outline-none transition-all duration-200 text-left"
+                            />
                         </div>
 
                         {error && (

@@ -258,7 +258,7 @@ export default function WahdaGeneratorPage() {
                     {wahda && wahda.sessions && wahda.sessions.length > 0 && (
                         <>
                             <button
-                                onClick={ handleSave }
+                                onClick={handleSave}
                                 className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-2.5 rounded-xl transition"
                             >
                                 💾 حفظ في قاعدة البيانات
@@ -279,7 +279,7 @@ export default function WahdaGeneratorPage() {
 
             {/* Document Render Sheet Matrix Table */}
             {wahda && wahda.sessions && wahda.sessions.length > 0 ? (
-                <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 print:shadow-none print:border-none print:p-0">
+                <div id="a4-card" className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 print:shadow-none print:border-none print:p-0">
 
                     <div className="grid grid-cols-3 text-sm font-bold text-gray-800 mb-6 border-b pb-4">
                         <div >
@@ -408,6 +408,63 @@ export default function WahdaGeneratorPage() {
                     📊 لا يوجد وثيقة منشأة حالياً لهذا الاختيار، اضغط على توليد جدول جديد للاعتماد على نتائج التشخيص.
                 </div>
             )}
+            <style jsx global>{`
+                @media print {
+                    @page {
+                        size: A4 landscape;
+                        margin: 10mm;
+                    }
+
+                    * {
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                        color-adjust: exact !important;
+                    }
+
+                    html, body {
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        height: auto !important;
+                        background: white !important;
+                    }
+
+                    body *:not(#a4-card):not(#a4-card *) {
+                        visibility: hidden !important;
+                    }
+
+                    #a4-card, #a4-card * {
+                        visibility: visible !important;
+                    }
+
+                    #a4-card {
+                        position: static !important;
+                        width: 100% !important;
+                        margin: 0 !important;
+                        box-shadow: none !important;
+                    }
+
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+
+                    thead {
+                        display: table-header-group;
+                    }
+
+                    tr {
+                        break-inside: avoid;
+                        page-break-inside: avoid;
+                    }
+
+                    textarea {
+                        border: none !important;
+                        outline: none !important;
+                        resize: none !important;
+                    }
+                }
+            `}</style>
         </div>
-    )
+
+    );
 }

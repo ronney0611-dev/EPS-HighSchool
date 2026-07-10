@@ -103,8 +103,7 @@ const ProfileDoc = () => {
                     <span>الختم</span>
                 </div>
             </div>
-
-            {/* print-only CSS: forces exactly one A4 page, hides everything else */}
+            {/* print-only CSS: forces exactly one A4 page, hides everything else, forces real colors */}
             <style jsx global>{`
                 @media print {
                     @page {
@@ -112,34 +111,45 @@ const ProfileDoc = () => {
                         margin: 10mm;
                     }
 
+                    * {
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                        color-adjust: exact !important;
+                    }
+
                     html, body {
                         margin: 0 !important;
                         padding: 0 !important;
                         height: auto !important;
+                        background: white !important;
                     }
 
-                    /* hide everything on the page by default */
-                    body * {
-                        visibility: hidden;
+                    body *:not(#a4-card):not(#a4-card *) {
+                        visibility: hidden !important;
+                        height: 0 !important;
+                        min-height: 0 !important;
+                        max-height: 0 !important;
+                        overflow: hidden !important;
+                        padding: 0 !important;
+                        margin: 0 !important;
+                        border: none !important;
                     }
 
-                    /* reveal only the card and its children */
                     #a4-card, #a4-card * {
-                        visibility: visible;
+                        visibility: visible !important;
                     }
 
                     #a4-card {
-                        position: absolute;
+                        position: fixed !important;
                         top: 0;
                         left: 0;
-                        width: 190mm; /* A4 width (210mm) minus 10mm margins each side */
+                        width: 190mm;
                         max-width: 190mm;
                         margin: 0 !important;
                         padding: 0 !important;
                         box-shadow: none !important;
                     }
 
-                    /* keep logical sections intact, never split across pages */
                     #a4-card > div {
                         break-inside: avoid;
                         page-break-inside: avoid;
@@ -150,13 +160,13 @@ const ProfileDoc = () => {
                         page-break-inside: avoid;
                     }
 
-                    /* absolutely prevent a second page from being created */
                     #a4-card {
                         break-after: avoid;
                         page-break-after: avoid;
                     }
                 }
             `}</style>
+
         </div>
     )
 }
