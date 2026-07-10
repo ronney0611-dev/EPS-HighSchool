@@ -15,8 +15,14 @@ type ManageClassesProps = {
 }
 
 const ManageClasses = ({
-    classes, studentsByClass, fetchStudents,
-    addClass, deleteClass, addStudent, deleteStudent, updateStudent
+    classes = [],
+    studentsByClass = {},
+    fetchStudents = () => {},
+    addClass = () => {},
+    deleteClass = () => {},
+    addStudent = () => {},
+    deleteStudent = () => {},
+    updateStudent = () => {}
 }: ManageClassesProps) => {
     const [expandedClassId, setExpandedClassId] = useState<string | null>(null)
     const [classInput, setClassInput] = useState('');
