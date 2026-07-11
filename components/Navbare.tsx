@@ -7,6 +7,8 @@ import { useState } from 'react'
 import { House, CircleUserRound, BookText, LogOut } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
+import LockedDocCard from './LockVideo'
+import BorderAnimationButton from '@/src/components/nurui/border-button'
 
 const Navbare = () => {
     const pathname = usePathname();
@@ -42,7 +44,7 @@ const Navbare = () => {
                                 }`}
                         >
                             <Icon className='my-1' />
-                            <p>{label}</p>
+                            <span>{label}</span>
                         </Link>
                     )
                 })}
@@ -69,16 +71,17 @@ const Navbare = () => {
 
             {/* Mobile Menu */}
             <div className={`${open ? 'hidden' : 'flex flex-row pt-5 justify-between align-middle'} absolute h-20 top-0 left-0 w-full bg-black text-white z-10 shadow-md py-4 flex-col items-start gap-2 px-8 text-sm md:hidden`} >
-                {navItems.map(({ href, Icon }) => {
+                {navItems.map(({ href, Icon, label }) => {
                     const isActive = pathname === href
                     return (
                         <Link
                             key={href}
                             href={href}
-                            className={`transition-all duration-150 ${isActive ? 'scale-90 opacity-70' : 'scale-100 opacity-100'
+                            className={`transition-all flex flex-col items-center duration-150 ${isActive ? 'scale-90 opacity-70' : 'scale-100 opacity-100'
                                 }`}
                         >
                             <Icon className='my-1' />
+                            <span>{label}</span>
                         </Link>
                     )
                 })}
@@ -88,14 +91,14 @@ const Navbare = () => {
                     session ? (
                         <button
                             onClick={handleLogout}
-                            className="cursor-pointer my-0.5 px-4 py-2 bg-red-600 hover:bg-red-700 transition text-white rounded-full text-xs flex items-center gap-1"
+                            className="cursor-pointer my-0.5 px-4 mt-2 py-2 bg-red-600 hover:bg-red-700 transition text-white rounded-full text-xs flex items-center gap-1"
                         >
                             <LogOut size={14} />
                             خروج
                         </button>
                     ) : (
                         <Link href="/login">
-                            <button className="cursor-pointer my-0.5 px-6 py-2 bg-indigo-500 hover:bg-indigo-600 transition text-white rounded-full text-sm">
+                            <button className="cursor-pointer mt-2 my-0.5 px-6 py-2 bg-indigo-500 hover:bg-indigo-600 transition text-white rounded-full text-sm">
                                 دخول
                             </button>
                         </Link>

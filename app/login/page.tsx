@@ -209,10 +209,10 @@ export default function Login() {
                     </button>
                 </form>
                  <div className="text-center text-gray-300 mt-8">
-                    {state === 'login' ? 'اذا كنت لا تملك حساباً ؟' : ' اذا كمت تملك حساباً مسجلاً مسبقاً ؟ '}
+                    {state === 'login' ? 'اذا كنت لا تملك حساباً ؟' : ' اذا كنت تملك حساباً مسجلاً مسبقاً ؟ '}
                     <button
                         onClick={() => { setState(prev => prev === 'login' ? 'register' : 'login'); setError('') }}
-                        className="text-emerald-400 font-bold mr-1.5 hover:underline cursor-pointer"
+                        className="w-full h-12 bg-linear-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none rounded-xl text-white text-sm font-bold shadow-[0_4px_24px_rgba(16,185,129,0.2)] transition-all duration-200 mt-2"
                     >
                         {state === 'login' ? 'سجّل الآن هنا' : 'اضغط لتسجيل الدخول'}
                     </button>

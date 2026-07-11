@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import BorderAnimationButton from '@/src/components/nurui/border-button'
 
 type LockedDocCardProps = {
     title: string
@@ -111,12 +112,11 @@ export default function LockedDocCard({
                             <p className="text-xs text-gray-300 text-center">
                                 الوثيقة جاهزة في انتظارك يرجى تفعيل حسابك.
                             </p>
-                            <button
-                                onClick={() => router.push(activationHref)}
-                                className="bg-amber-500 hover:bg-amber-400 text-black cursor-pointer font-bold py-2 rounded-xl transition text-sm"
-                            >
-                                تفعيل الحساب
-                            </button>
+
+                            <div onClick={() => router.push(activationHref)} className="flex justify-center my-2">
+                                <BorderAnimationButton text="  تفعيل الحساب 🔓" className='my-1 h-10' />
+                            </div>
+
                         </div>
                     </div>
                 </div>

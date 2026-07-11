@@ -2,7 +2,7 @@
 
 import { useClasses } from "@/hooks/useClasses";
 import { useTeacher } from "@/hooks/useTeacher";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
 import level1Data from "@/src/config/level1Curriculum.json";
 import level2Data from "@/src/config/level2Curriculum.json";
@@ -29,10 +29,46 @@ interface LevelCurriculum {
     };
 }
 
+const LEVEL_LABELS: Record<number, string> = {
+    1: 'أولى ثانوي',
+    2: 'ثانية ثانوي',
+    3: 'ثالثة ثانوي',
+};
+
+const getLevelLabel = (className: string | undefined): string => {
+    const grade = getLevelKeyFromClass(className);
+    return LEVEL_LABELS[Number(grade)] ?? '—';
+};
+
+type RawCurriculumFile = { [key: string]: LevelCurriculum };
+
 const curriculumRegistry: Record<string, LevelCurriculum | undefined> = {
-    "1": (level1Data["1"] || level1Data) as unknown as LevelCurriculum,
-    "2": (level2Data["2"] || level2Data) as unknown as LevelCurriculum,
-    "3": (level3Data["3"] || level3Data) as unknown as LevelCurriculum
+    "1": (level1Data as unknown as RawCurriculumFile)["1"] || (level1Data as unknown as LevelCurriculum),
+    "2": (level2Data as unknown as RawCurriculumFile)["2"] || (level2Data as unknown as LevelCurriculum),
+    "3": (level3Data as unknown as RawCurriculumFile)["3"] || (level3Data as unknown as LevelCurriculum),
+};
+
+const getLevelKeyFromClass = (className: string | number | undefined, fallbackLevel?: string | number): '1' | '2' | '3' => {
+    const source = className ?? fallbackLevel;
+    if (source === undefined || source === null) return '1';
+
+    const str = String(source).trim();
+    if (str.startsWith('1')) return '1';
+    if (str.startsWith('2')) return '2';
+    if (str.startsWith('3')) return '3';
+
+    const normalized = str.toLowerCase();
+    if (normalized.includes('أولى') || normalized.includes('اولى') || normalized.includes('niveau 1') || normalized.includes('s1')) return '1';
+    if (normalized.includes('ثانية') || normalized.includes('niveau 2') || normalized.includes('s2')) return '2';
+    if (normalized.includes('ثالثة') || normalized.includes('niveau 3') || normalized.includes('s3')) return '3';
+
+    return '1';
+};
+
+const getDefaultIndicatorIds = (levelKey: string, sportKey: string, count: number) => {
+    const sportCfg = curriculumRegistry[levelKey]?.sports?.[sportKey];
+    const availableIds = sportCfg?.indicators.map(ind => ind.id) ?? [];
+    return availableIds.slice(0, Math.min(count, availableIds.length));
 };
 
 interface StudentState {
@@ -44,11 +80,10 @@ interface StudentState {
 const TakwimTshTable = () => {
     const { classes, fetchStudents, studentsByClass } = useClasses();
     const { teacher } = useTeacher();
-    const { fetchTachkhisi, saveTachkhisi } = useTachkhisi();
+    const { fetchTachkhisi, saveTachkhisi, setTachkhisi } = useTachkhisi();
 
     const [sportSelect, setSportSelect] = useState<string>('sprint');
     const [classSelect, setClassSelect] = useState<string>('');
-    const [prevClassSelect, setPrevClassSelect] = useState<string>('');
 
     const [mochirCount, setMochirCount] = useState<number>(4);
     const [selectedIndicatorIds, setSelectedIndicatorIds] = useState<number[]>([0, 1, 2, 3]); // المعايير المختارة
@@ -57,26 +92,13 @@ const TakwimTshTable = () => {
 
     const selectedClassData = classes.find(c => c.name === classSelect);
 
-    const getLevelKey = (): string => {
-        if (!selectedClassData?.level) return '1';
-        const levelStr = String(selectedClassData.level);
-        if (levelStr.includes("1") || levelStr.includes("أولى") || levelStr.includes("الاولى")) return "1";
-        if (levelStr.includes("2") || levelStr.includes("ثانية") || levelStr.includes("الثانية")) return "2";
-        if (levelStr.includes("3") || levelStr.includes("ثالثة") || levelStr.includes("الثالثة")) return "3";
-        const match = levelStr.match(/[1-3]/);
-        return match ? match[0] : '1';
-    };
+    const dynamicLevelKey = useMemo(
+        () => getLevelKeyFromClass(selectedClassData?.name, selectedClassData?.level),
+        [selectedClassData?.name, selectedClassData?.level]
+    );
 
-    const dynamicLevelKey = getLevelKey();
     const activeLevelConfig = curriculumRegistry[dynamicLevelKey];
     const activeSportConfig = activeLevelConfig?.sports?.[sportSelect];
-
-    useEffect(() => {
-        if (activeSportConfig?.indicators) {
-            const availableIds = activeSportConfig.indicators.map(i => i.id);
-            setTimeout(() => { setSelectedIndicatorIds(availableIds.slice(0, mochirCount)); }, 0);
-        }
-    }, [sportSelect, mochirCount, activeSportConfig]);
 
     const handleIndicatorChange = (indexToUpdate: number, newId: number) => {
         setSelectedIndicatorIds(prev => {
@@ -86,56 +108,136 @@ const TakwimTshTable = () => {
         });
     };
 
-    if (classSelect !== prevClassSelect) {
-        setPrevClassSelect(classSelect);
-        const found = classes.find(c => c.name === classSelect);
-        const foundStudents = found ? (studentsByClass[found._id] || []) : [];
+    const [studentsSourceKey, setStudentsSourceKey] = useState<string>('');
 
-        setStudents(foundStudents.map(s => ({
+    const foundForStudents = classSelect ? classes.find(c => c.name === classSelect) : undefined;
+    const hookStudentsForKey = foundForStudents ? (studentsByClass[foundForStudents._id] || []) : [];
+    const currentStudentsKey = classSelect ? `${classSelect}::${mochirCount}::${hookStudentsForKey.length}` : '';
+
+    if (currentStudentsKey !== studentsSourceKey) {
+        setStudentsSourceKey(currentStudentsKey);
+        setStudents(hookStudentsForKey.map(s => ({
             name: s.name,
             score: Array.from({ length: mochirCount }, () => ({ t1: 0, t2: 0 })),
             result: { t1: 0, t2: 0 }
         })));
     }
 
-    const activeClassId = selectedClassData?._id;
-    const hookStudents = activeClassId ? (studentsByClass[activeClassId] || []) : [];
+    {/*useEffect(() => {
+        const availableIds = getDefaultIndicatorIds(dynamicLevelKey, sportSelect, mochirCount);
 
-    if (hookStudents.length > 0 && students.length === 0) {
-        setStudents(hookStudents.map(s => ({
-            name: s.name,
-            score: Array.from({ length: mochirCount }, () => ({ t1: 0, t2: 0 })),
-            result: { t1: 0, t2: 0 }
-        })));
-    }
-
-    useEffect(() => {
-        if (students.length > 0 && students[0].score.length !== mochirCount) {
-            setTimeout(() => {
-                setStudents(prev => prev.map(s => ({
-                    ...s,
-                    score: Array.from({ length: mochirCount }, (_, idx) => s.score[idx] || { t1: 0, t2: 0 })
-                })));
-            }, 0);
+        if (availableIds.length === 0) {
+            setSelectedIndicatorIds([]);
+            return;
         }
-    }, [mochirCount]);
 
-    const handleClassSelect = (className: string) => {
-        setClassSelect(className);
+        setSelectedIndicatorIds(prev => {
+            const filtered = prev.filter(id => availableIds.includes(id));
+            if (filtered.length > 0) {
+                return filtered.slice(0, availableIds.length);
+            }
+            return availableIds;
+        });
+    }, [dynamicLevelKey, sportSelect, mochirCount]);*/}
+
+    const indicatorsKey = `${dynamicLevelKey}::${sportSelect}::${mochirCount}`;
+    const [lastIndicatorsKey, setLastIndicatorsKey] = useState('');
+
+    if (indicatorsKey !== lastIndicatorsKey) {
+        setLastIndicatorsKey(indicatorsKey);
+
+        const availableIds = getDefaultIndicatorIds(dynamicLevelKey, sportSelect, mochirCount);
+
+        if (availableIds.length === 0) {
+            setSelectedIndicatorIds([]);
+        } else {
+            setSelectedIndicatorIds(prev => {
+                const filtered = prev.filter(id => availableIds.includes(id));
+                return filtered.length > 0 ? filtered.slice(0, availableIds.length) : availableIds;
+            });
+        }
+    }
+
+    {/* useEffect(() => {
+        if (students.length > 0 && students[0].score.length !== mochirCount) {
+            setStudents(prev => prev.map(s => ({
+                ...s,
+                score: Array.from({ length: mochirCount }, (_, idx) => s.score[idx] || { t1: 0, t2: 0 })
+            })));
+        }
+    }, [mochirCount, students]); */}
+    if (students.length > 0 && students[0].score.length !== mochirCount) {
+        setStudents(prev => prev.map(s => ({
+            ...s,
+            score: Array.from({ length: mochirCount }, (_, idx) => s.score[idx] || { t1: 0, t2: 0 })
+        })));
+    }
+
+    const hydrateFromData = (data: NonNullable<Awaited<ReturnType<typeof fetchTachkhisi>>>, levelKey: string) => {
+        const availableIds = getDefaultIndicatorIds(levelKey, sportSelect, data.mochirCount ?? mochirCount);
+        const validIds = (data.selectedIndicatorIds || []).filter((id: number) => availableIds.includes(id));
+        const nextIds = validIds.length > 0 ? validIds.slice(0, availableIds.length) : availableIds;
+
+        setMochirCount(Math.min(data.mochirCount ?? mochirCount, availableIds.length || 4));
+        setSelectedIndicatorIds(nextIds);
+        setStudents(data.students.map((s: { name: string; score: { t1: number; t2: number }[]; result?: { t1: number; t2: number } }) => ({
+            name: s.name,
+            score: s.score,
+            result: s.result || { t1: 0, t2: 0 },
+        })));
+    };
+
+    const handleClassSelect = async (className: string) => {
         const found = classes.find(c => c.name === className);
-        if (found) {
-            fetchStudents(found._id);
-            fetchTachkhisi(found._id, sportSelect, 'fardi');
+        if (!found) return;
+
+        setClassSelect(className);
+        setTachkhisi(null);
+        fetchStudents(found._id);
+        const data = await fetchTachkhisi(found._id, sportSelect, 'fardi');
+        if (data && data.students && data.students.length > 0) {
+            hydrateFromData(data, getLevelKeyFromClass(found.name, found.level));
+        } else {
+            const newLevelKey = getLevelKeyFromClass(found.name, found.level);
+            const availableIds = getDefaultIndicatorIds(newLevelKey, sportSelect, 4);
+            const defaultCount = Math.min(4, availableIds.length);
+            setMochirCount(defaultCount);
+            setSelectedIndicatorIds(availableIds.slice(0, defaultCount));
         }
     };
 
-    const updateResult = (studentIndex: number, attempt: string, value: number) => {
+    const handleSportSelect = async (newSport: string) => {
+        setSportSelect(newSport);
+        setTachkhisi(null);
+        const found = classes.find(c => c.name === classSelect);
+        if (found) {
+            const data = await fetchTachkhisi(found._id, newSport, 'fardi');
+            if (data && data.students && data.students.length > 0) {
+                hydrateFromData(data, getLevelKeyFromClass(found.name, found.level));
+            } else {
+                const newLevelKey = getLevelKeyFromClass(found.name, found.level);
+                const availableIds = getDefaultIndicatorIds(newLevelKey, newSport, 4);
+                const defaultCount = Math.min(4, availableIds.length);
+                setMochirCount(defaultCount);
+                setSelectedIndicatorIds(availableIds.slice(0, defaultCount));
+
+                const rosterStudents = studentsByClass[found._id] || [];
+                setStudents(rosterStudents.map(s => ({
+                    name: s.name,
+                    score: Array.from({ length: defaultCount }, () => ({ t1: 0, t2: 0 })),
+                    result: { t1: 0, t2: 0 }
+                })));
+            }
+        }
+    };
+
+    const updateResult = (studentIndex: number, attempt: 't1' | 't2', value: number) => {
         setStudents(prev => prev.map((s, i) =>
             i === studentIndex ? { ...s, result: { ...s.result, [attempt]: value } } : s
         ));
     }
 
-    const updateScore = (studentIndex: number, scoreIndex: number, attempt: string, value: number) => {
+    const updateScore = (studentIndex: number, scoreIndex: number, attempt: 't1' | 't2', value: number) => {
         setStudents(prev => {
             const copy = [...prev];
             const updatedScore = [...copy[studentIndex].score];
@@ -155,13 +257,6 @@ const TakwimTshTable = () => {
         return students.length === 0 ? 0 : total / students.length;
     });
 
-    useEffect(() => {
-        if (activeSportConfig?.indicators) {
-            const availableIds = activeSportConfig.indicators.map(i => i.id);
-            setTimeout(() => { setSelectedIndicatorIds(availableIds.slice(0, mochirCount)); }, 0);
-        }
-    }, [sportSelect, mochirCount, activeSportConfig]);
-
     return (
         <div dir="rtl" className='m-2 md:m-4 flex flex-col items-center bg-white text-black font-sans'>
 
@@ -172,15 +267,11 @@ const TakwimTshTable = () => {
                         <select
                             className='border border-gray-300 rounded-lg px-3 py-1.5 bg-white text-black text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none'
                             value={sportSelect}
-                            onChange={e => {
-                                setSportSelect(e.target.value);
-                                const found = classes.find(c => c.name === classSelect);
-                                if (found) fetchTachkhisi(found._id, e.target.value, 'fardi');
-                            }}>
+                            onChange={e => handleSportSelect(e.target.value)}>
                             <optgroup label="الألعاب الفردية">
                                 <option value="sprint">سباق السرعة </option>
                                 <option value="long_jump">الوثب الطويل </option>
-                                <option value="shot_put">رمي الجلة </option> 
+                                <option value="shot_put">رمي الجلة </option>
                             </optgroup>
                         </select>
                     </div>
@@ -190,14 +281,10 @@ const TakwimTshTable = () => {
                         <select
                             className='border border-gray-300 rounded-lg px-3 py-1.5 bg-white text-black text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none'
                             value={classSelect}
-                            onChange={e => {
-                                handleClassSelect(e.target.value);
-                                const found = classes.find(c => c.name === e.target.value);
-                                if (found) fetchTachkhisi(found._id, sportSelect, 'fardi');
-                            }}>
+                            onChange={e => handleClassSelect(e.target.value)}>
                             <option value="">— اختر القسم —</option>
-                            {classes.map((c, i) => (
-                                <option key={i} value={c.name}>{c.name}</option>
+                            {classes.map((c) => (
+                                <option key={c._id} value={c.name}>{c.name}</option>
                             ))}
                         </select>
                     </div>
@@ -250,7 +337,7 @@ const TakwimTshTable = () => {
                     <div className="grid grid-cols-2 md:grid-cols-4 bg-gray-50 border-x border-b border-black">
                         <div className="border-r border-black py-1.5 px-2 text-sm text-right"> الأستاذ: {teacher.name || '—'}</div>
                         <div className="border-r border-black py-1.5 px-2 text-sm text-right"> المؤسسة: {teacher.school || '—'}</div>
-                        <div className="border-r border-black py-1.5 px-2 text-sm text-right"> المستوى: {selectedClassData?.level || '—'}</div>
+                        <div className="border-r border-black py-1.5 px-2 text-sm text-right"> المستوى: {getLevelLabel(selectedClassData?.name) || '—'}</div>
                         <div className="py-1.5 px-2 text-sm text-right"> القسم: {classSelect || '—'}</div>
                     </div>
 
@@ -329,11 +416,11 @@ const TakwimTshTable = () => {
                                             {t2_t1 >= 0 ? `+${t2_t1.toFixed(1)}%` : `${t2_t1.toFixed(1)}%`}
                                         </td>
                                         <td className="border-l border-black p-0">
-                                            <input type="number" className="w-11 text-center bg-transparent border-none outline-none font-mono"
+                                            <input type="number" value={student.result.t1} className="w-11 text-center bg-transparent border-none outline-none font-mono"
                                                 onChange={e => updateResult(studentIndex, 't1', Number(e.target.value))} />
                                         </td>
                                         <td className="border-l border-black p-0">
-                                            <input type="number" className="w-11 text-center bg-transparent border-none outline-none font-mono"
+                                            <input type="number" value={student.result.t2} className="w-11 text-center bg-transparent border-none outline-none font-mono"
                                                 onChange={e => updateResult(studentIndex, 't2', Number(e.target.value))} />
                                         </td>
                                         <td className="p-1 font-mono font-bold">
@@ -391,7 +478,7 @@ const TakwimTshTable = () => {
                         const found = classes.find(c => c.name === classSelect);
                         if (!found) return;
                         saveTachkhisi(
-                            found._id, 
+                            found._id,
                             sportSelect,
                             'fardi',
                             mochirCount,

@@ -3,7 +3,7 @@
 import { useClasses } from "@/hooks/useClasses";
 import { useTachkhisi } from "@/hooks/useTachkhisi";
 import { useTeacher } from "@/hooks/useTeacher";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ToastContainer, toast } from 'react-toastify'
 
 import level1Data from "@/src/config/level1Curriculum.json";
@@ -28,17 +28,55 @@ interface LevelCurriculum {
         [key: string]: SportConfig | undefined;
     };
 }
+type RawCurriculumFile = { [key: string]: LevelCurriculum };
 
 const curriculumRegistry: Record<string, LevelCurriculum | undefined> = {
-    "1": (level1Data["1"] || level1Data) as unknown as LevelCurriculum,
-    "2": (level2Data["2"] || level2Data) as unknown as LevelCurriculum,
-    "3": (level3Data["3"] || level3Data) as unknown as LevelCurriculum
+    "1": (level1Data as unknown as RawCurriculumFile)["1"] || (level1Data as unknown as LevelCurriculum),
+    "2": (level2Data as unknown as RawCurriculumFile)["2"] || (level2Data as unknown as LevelCurriculum),
+    "3": (level3Data as unknown as RawCurriculumFile)["3"] || (level3Data as unknown as LevelCurriculum),
+};
+
+const LEVEL_LABELS: Record<number, string> = {
+    1: 'أولى ثانوي',
+    2: 'ثانية ثانوي',
+    3: 'ثالثة ثانوي',
+};
+
+const getLevelLabel = (className: string | undefined): string => {
+    const grade = getLevelKeyFromClass(className);
+    return LEVEL_LABELS[Number(grade)] ?? '—';
+};
+
+const getLevelKeyFromClass = (
+    className: string | number | undefined,
+    fallbackLevel?: string | number
+): '1' | '2' | '3' => {
+    const source = className ?? fallbackLevel;
+    if (source === undefined || source === null) return '1';
+
+    const str = String(source).trim();
+    if (str.startsWith('1')) return '1';
+    if (str.startsWith('2')) return '2';
+    if (str.startsWith('3')) return '3';
+
+    const normalized = str.toLowerCase();
+    if (normalized.includes('أولى') || normalized.includes('اولى') || normalized.includes('niveau 1') || normalized.includes('s1')) return '1';
+    if (normalized.includes('ثانية') || normalized.includes('niveau 2') || normalized.includes('s2')) return '2';
+    if (normalized.includes('ثالثة') || normalized.includes('niveau 3') || normalized.includes('s3')) return '3';
+
+    return '1';
+};
+
+const getDefaultIndicatorIds = (levelKey: string, sportKey: string, count: number) => {
+    const sportCfg = curriculumRegistry[levelKey]?.sports?.[sportKey];
+    const availableIds = sportCfg?.indicators.map(ind => ind.id) ?? [];
+    return availableIds.slice(0, Math.min(count, availableIds.length));
 };
 
 const TakwimGroupe = () => {
     const { classes, studentsByClass, fetchStudents } = useClasses();
     const { teacher } = useTeacher();
-    const { fetchTachkhisi, saveTachkhisi } = useTachkhisi();
+    const { fetchTachkhisi, saveTachkhisi, setTachkhisi } = useTachkhisi();
 
     const [classSelect, setClassSelect] = useState<string>('');
     const [students, setStudents] = useState<{
@@ -51,46 +89,125 @@ const TakwimGroupe = () => {
     const [sportSelect, setSportSelect] = useState<string>('basketball');
     const [mochirCount, setMochirCount] = useState<number>(4); // العدد الذي يختاره الأستاذ
 
-    const selectedClassData = classes.find(c => c.name === classSelect);
+    const selectedClassData = classes.find(c => c._id === classSelect || c.name === classSelect);
 
-    const getLevelKey = (): string => {
-        if (!selectedClassData?.level) return '1';
-        const levelStr = String(selectedClassData.level);
-        if (levelStr.includes("1") || levelStr.includes("أولى") || levelStr.includes("الاولى")) return "1";
-        if (levelStr.includes("2") || levelStr.includes("ثانية") || levelStr.includes("الثانية")) return "2";
-        if (levelStr.includes("3") || levelStr.includes("ثالثة") || levelStr.includes("الثالثة")) return "3";
-        const match = levelStr.match(/[1-3]/);
-        return match ? match[0] : '1';
-    };
+    const selectedLevelKey = useMemo(
+        () => getLevelKeyFromClass(selectedClassData?.name, selectedClassData?.level),
+        [selectedClassData?.name, selectedClassData?.level]
+    );
 
-    const dynamicLevelKey = getLevelKey();
-    const activeLevelConfig = curriculumRegistry[dynamicLevelKey];
+    const activeLevelConfig = curriculumRegistry[selectedLevelKey];
     const activeSportConfig = activeLevelConfig?.sports?.[sportSelect];
     const [selectedIndicatorIds, setSelectedIndicatorIds] = useState<number[]>([0, 1, 2, 3]);
 
-    useEffect(() => {
-        if (!classSelect) return;
-        const found = classes.find(c => c.name === classSelect);
-        if (!found) return;
-        const hookStudents = studentsByClass[found._id] || [];
-        if (hookStudents.length === 0) return;
-        setTimeout(() => {
-            setStudents(hookStudents.map(s => ({
-                name: s.name,
-                score: Array.from({ length: mochirCount }, () => ({ t1: 0, t2: 0 })),
-                result: { t1: 0, t2: 0 },
-                levelT1: '',
-                levelT2: '',
-            })));
-        }, 0);
-    }, [classSelect, mochirCount, studentsByClass[selectedClassData?._id ?? '']?.length]);
+    const [studentsSourceKey, setStudentsSourceKey] = useState<string>('');
 
-    const handleClassSelect = (className: string) => {
+    const foundForStudents = classSelect
+        ? classes.find(c => c._id === classSelect || c.name === classSelect)
+        : undefined;
+    const hookStudentsForKey = foundForStudents ? (studentsByClass[foundForStudents._id] || []) : [];
+    const currentSourceKey = classSelect
+        ? `${classSelect}::${mochirCount}::${hookStudentsForKey.length}`
+        : '';
+
+    if (classSelect && currentSourceKey !== studentsSourceKey) {
+        setStudentsSourceKey(currentSourceKey);
+
+        setStudents(
+            hookStudentsForKey.length === 0
+                ? []
+                : hookStudentsForKey.map(s => ({
+                    name: s.name,
+                    score: Array.from({ length: mochirCount }, () => ({ t1: 0, t2: 0 })),
+                    result: { t1: 0, t2: 0 },
+                    levelT1: '',
+                    levelT2: '',
+                }))
+        );
+    }
+
+    const indicatorsKey = selectedClassData
+        ? `${selectedClassData.name}::${selectedClassData.level}::${sportSelect}::${mochirCount}`
+        : '';
+    const [lastIndicatorsKey, setLastIndicatorsKey] = useState('');
+
+    if (indicatorsKey && indicatorsKey !== lastIndicatorsKey) {
+        setLastIndicatorsKey(indicatorsKey);
+
+        const levelKey = getLevelKeyFromClass(selectedClassData?.name, selectedClassData?.level);
+        const availableIds = getDefaultIndicatorIds(levelKey, sportSelect, mochirCount);
+
+        if (availableIds.length === 0) {
+            setSelectedIndicatorIds([]);
+        } else {
+            setSelectedIndicatorIds(prev => {
+                const filtered = prev.filter(id => availableIds.includes(id));
+                return filtered.length > 0 ? filtered.slice(0, availableIds.length) : availableIds;
+            });
+        }
+    }
+
+    const hydrateFromData = (data: NonNullable<Awaited<ReturnType<typeof fetchTachkhisi>>>, levelKey: string) => {
+        const availableIds = getDefaultIndicatorIds(levelKey, sportSelect, data.mochirCount ?? mochirCount);
+        const validIds = (data.selectedIndicatorIds || []).filter(id => availableIds.includes(id));
+        const nextIds = validIds.length > 0 ? validIds.slice(0, availableIds.length) : availableIds;
+
+        setMochirCount(Math.min(data.mochirCount ?? mochirCount, availableIds.length || 4));
+        setSelectedIndicatorIds(nextIds);
+        setStudents(data.students.map((s) => ({
+            name: s.name,
+            score: s.score,
+            result: s.result || { t1: 0, t2: 0 },
+            levelT1: s.levelT1 || '',
+            levelT2: s.levelT2 || '',
+        })));
+    };
+
+    const handleClassSelect = async (className: string) => {
+        const found = classes.find(c => c._id === className || c.name === className);
+        if (!found) return;
+
         setClassSelect(className);
-        const found = classes.find(c => c.name === className);
+        setTachkhisi(null);
         if (found) {
             fetchStudents(found._id);
-            fetchTachkhisi(found._id, sportSelect, 'groupe');
+            const data = await fetchTachkhisi(found._id, sportSelect, 'groupe');
+            if (data && data.students && data.students.length > 0) {
+                hydrateFromData(data, getLevelKeyFromClass(found.name, found.level));
+            } else {
+                const newLevelKey = getLevelKeyFromClass(found.name, found.level);
+                const availableIds = getDefaultIndicatorIds(newLevelKey, sportSelect, 4);
+                const defaultCount = Math.min(4, availableIds.length);
+                setMochirCount(defaultCount);
+                setSelectedIndicatorIds(availableIds.slice(0, defaultCount));
+            }
+        }
+    };
+
+    const handleSportSelect = async (newSport: string) => {
+        setSportSelect(newSport);
+        setTachkhisi(null);
+        const found = classes.find(c => c._id === classSelect || c.name === classSelect);
+        if (found) {
+            const data = await fetchTachkhisi(found._id, newSport, 'groupe');
+            if (data && data.students && data.students.length > 0) {
+                hydrateFromData(data, getLevelKeyFromClass(found.name, found.level));
+            } else {
+                const newLevelKey = getLevelKeyFromClass(found.name, found.level);
+                const availableIds = getDefaultIndicatorIds(newLevelKey, newSport, 4);
+                const defaultCount = Math.min(4, availableIds.length);
+                setMochirCount(defaultCount);
+                setSelectedIndicatorIds(availableIds.slice(0, defaultCount));
+
+                const rosterStudents = studentsByClass[found._id] || [];
+                setStudents(rosterStudents.map(s => ({
+                    name: s.name,
+                    score: Array.from({ length: defaultCount }, () => ({ t1: 0, t2: 0 })),
+                    result: { t1: 0, t2: 0 },
+                    levelT1: '',
+                    levelT2: '',
+                })));
+            }
         }
     };
 
@@ -128,15 +245,6 @@ const TakwimGroupe = () => {
         });
     };
 
-    useEffect(() => {
-        if (activeSportConfig?.indicators) {
-            const availableIds = activeSportConfig.indicators.map(i => i.id);
-            setTimeout(() => {
-                setSelectedIndicatorIds(availableIds.slice(0, mochirCount));
-            }, 0);
-        }
-    }, [sportSelect, mochirCount, activeSportConfig]);
-
     return (
         <div dir="rtl" className='m-2 md:m-4 flex flex-col items-center bg-white text-black font-sans'>
 
@@ -148,11 +256,7 @@ const TakwimGroupe = () => {
                         <select
                             className='border border-gray-300 rounded-lg px-3 py-1.5 bg-white text-black text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none'
                             value={sportSelect}
-                            onChange={e => {
-                                setSportSelect(e.target.value);
-                                const found = classes.find(c => c.name === classSelect);
-                                if (found) fetchTachkhisi(found._id, e.target.value, 'groupe');
-                            }}>
+                            onChange={e => handleSportSelect(e.target.value)}>
                             <optgroup label="الألعاب الفردية">
                                 <option value="basketball">كرة السلة </option>
                                 <option value="volleyball">كرة الطائرة </option>
@@ -178,14 +282,10 @@ const TakwimGroupe = () => {
                         <select
                             className='border border-gray-300 rounded-lg px-3 py-1.5 bg-white text-black text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none'
                             value={classSelect}
-                            onChange={e => {
-                                handleClassSelect(e.target.value);
-                                const found = classes.find(c => c.name === e.target.value);
-                                if (found) fetchTachkhisi(found._id, sportSelect, 'groupe');
-                            }}>
+                            onChange={e => handleClassSelect(e.target.value)}>
                             <option value="">— اختر القسم —</option>
-                            {classes.map((c, i) => (
-                                <option key={i} value={c.name}>{c.name}</option>
+                            {classes.map((c) => (
+                                <option key={c._id} value={c._id}>{c.name}</option>
                             ))}
                         </select>
                     </div>
@@ -228,8 +328,8 @@ const TakwimGroupe = () => {
                     <div className="grid grid-cols-2 md:grid-cols-4 bg-gray-50 border-x border-b border-black">
                         <div className="border-r border-black py-1.5 px-2 text-sm text-right"> الأستاذ: {teacher.name || '—'}</div>
                         <div className="border-r border-black py-1.5 px-2 text-sm text-right"> المؤسسة: {teacher.school || '—'}</div>
-                        <div className="border-r border-black py-1.5 px-2 text-sm text-right"> المستوى: {selectedClassData?.level || '—'}</div>
-                        <div className="py-1.5 px-2 text-sm text-right"> القسم: {classSelect || '—'}</div>
+                        <div className="border-r border-black py-1.5 px-2 text-sm text-right"> المستوى: {getLevelLabel(selectedClassData?.name) || '—'}</div>
+                        <div className="py-1.5 px-2 text-sm text-right"> القسم: {selectedClassData?.name || '—'}</div>
                     </div>
 
                     <div className="border-x border-b border-black bg-white text-right">
@@ -383,7 +483,7 @@ const TakwimGroupe = () => {
                 </button>
                 <button
                     onClick={() => {
-                        const found = classes.find(c => c.name === classSelect);
+                        const found = classes.find(c => c._id === classSelect || c.name === classSelect);
                         if (!found) return;
                         saveTachkhisi(
                             found._id,

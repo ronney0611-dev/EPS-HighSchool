@@ -59,6 +59,14 @@ const Hero = () => {
                     >
                         <BorderAnimationButton text="تواصل معنا عبر واتساب 💬" />
                     </a>
+                    <div className="flex gap-3 justify-center flex-wrap">
+                        <a
+                            href="/payment"
+                            className="bg-white text-blue-700 font-bold text-[15px] px-8 py-3.5 rounded-xl inline-block transition-transform duration-200 hover:scale-[1.03] shadow-md"
+                        >
+                            احصل على العرض الآن ←
+                        </a>
+                    </div>
 
                 </div>
 
@@ -76,6 +84,7 @@ const Hero = () => {
                             }}
                         />
                     </div>
+
                 </div>
                 <Offers />
             </header >

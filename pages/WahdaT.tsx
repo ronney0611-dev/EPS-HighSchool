@@ -27,6 +27,30 @@ const LEVELS = [
     { key: '3', name: 'ثالثة ثانوي' }
 ]
 
+const FARDI_SPORTS = ['sprint', 'long_jump', 'shot_put'];
+const getSportType = (sportKey: string): 'fardi' | 'groupe' =>
+    FARDI_SPORTS.includes(sportKey) ? 'fardi' : 'groupe';
+
+const getLevelKeyFromClass = (
+    className: string | number | undefined,
+    fallbackLevel?: string | number
+): '1' | '2' | '3' => {
+    const source = className ?? fallbackLevel;
+    if (source === undefined || source === null) return '1';
+
+    const str = String(source).trim();
+    if (str.startsWith('1')) return '1';
+    if (str.startsWith('2')) return '2';
+    if (str.startsWith('3')) return '3';
+
+    const normalized = str.toLowerCase();
+    if (normalized.includes('أولى') || normalized.includes('اولى') || normalized.includes('niveau 1') || normalized.includes('s1')) return '1';
+    if (normalized.includes('ثانية') || normalized.includes('niveau 2') || normalized.includes('s2')) return '2';
+    if (normalized.includes('ثالثة') || normalized.includes('niveau 3') || normalized.includes('s3')) return '3';
+
+    return '1';
+};
+
 export default function WahdaGeneratorPage() {
     const { classes } = useClasses();
     const { wahda, error, fetchWahda, saveWahda, setWahda } = useWahda();
@@ -67,21 +91,24 @@ export default function WahdaGeneratorPage() {
 
             const currentLevelConfig = rootDoc[level] || rootDoc["1"];
             const sportConfig = currentLevelConfig?.sports?.[sport];
-            const sportIndicators = sportConfig?.indicators;
 
-            if (!sportIndicators || !Array.isArray(sportIndicators)) {
+            if (!sportConfig || !Array.isArray(sportConfig.indicators)) {
                 throw new Error(`لم يتم العثور على مؤشرات للنشاط ${sport} في ملف المستندات الخاص بالمستوى ${level}`);
             }
 
+            // 1. Build indicatorAveragesMap FIRST by aggregating saved Takwim data
+            //    across every class at this level for this sport.
             const indicatorAveragesMap = new Map<number, { sum: number; count: number }>();
 
-            const levelClasses = Array.isArray(classes) ? classes.filter(c => String(c.level) === level) : []
+            const levelClasses = Array.isArray(classes)
+                ? classes.filter(c => c.level === 'lycee' && getLevelKeyFromClass(c.name) === level)
+                : []
 
             if (levelClasses.length > 0) {
                 const fetchedDataArray = await Promise.all(
                     levelClasses.map(async (c) => {
                         try {
-                            const res = await fetch(`/api/tachkhisi/${c._id}?sportKey=${sport}`)
+                            const res = await fetch(`/api/tachkhisi/${c._id}?sportKey=${sport}&sportType=${getSportType(sport)}`)
                             if (!res.ok) return null
                             return await res.json()
                         } catch { return null }
@@ -91,12 +118,20 @@ export default function WahdaGeneratorPage() {
                     if (data && Array.isArray(data.selectedIndicatorIds) && Array.isArray(data.mochirAverages)) {
                         data.selectedIndicatorIds.forEach((id: number, index: number) => {
                             const avgObj = data.mochirAverages[index]
-                            const percentage = avgObj ? (avgObj.t1 || 0) : 0
+                            const percentage = avgObj ? (avgObj.t1 || 0) * 100 : 0
                             const current = indicatorAveragesMap.get(id) || { sum: 0, count: 0 }
                             indicatorAveragesMap.set(id, { sum: current.sum + percentage, count: current.count + 1 })
                         })
                     }
                 })
+            }
+
+            // 2. Now restrict planning to indicators that were actually evaluated
+            //    in Takwim (i.e. have saved averages), instead of the full curriculum list.
+            const sportIndicators = sportConfig.indicators.filter(ind => indicatorAveragesMap.has(ind.id));
+
+            if (sportIndicators.length === 0) {
+                throw new Error(`لم يتم العثور على مؤشرات مقيّمة للنشاط ${sport} في ملف المستندات الخاص بالمستوى ${level}. يرجى حفظ التقويم التشخيصي أولاً`);
             }
 
             type IndicatorPlan = {
@@ -191,7 +226,7 @@ export default function WahdaGeneratorPage() {
             setIsGenerating(false)
 
         } catch (err: unknown) {
-            alert(err instanceof Error ? err.message : "حدث خطأ أثناء معالجة البيانات")
+            toast(err instanceof Error ? err.message : "حدث خطأ أثناء معالجة البيانات", { type: "error" })
             setIsGenerating(false)
         }
     }
@@ -269,10 +304,10 @@ export default function WahdaGeneratorPage() {
                             >
                                 🖨️ طباعة
                             </button>
-                            <ToastContainer />
                         </>
                     )}
                 </div>
+                <ToastContainer />
             </div>
 
             {error && <div className="p-4 bg-red-50 text-red-700 border border-red-200 rounded-xl">{error}</div>}

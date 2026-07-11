@@ -47,17 +47,19 @@ export const useTachkhisi = () => {
         classId: string,
         sportKey: string,
         sportType: 'fardi' | 'groupe'
-    ) => {
+    ): Promise<TachkhisiData | null> => {
         console.log('FETCH CALLED:', sportKey, sportType);
         setLoading(true);
         try {
             const res = await axios.get(`/api/tachkhisi/${classId}`, {
                 params: { sportKey, sportType }
             });
-            setTachkhisi(res.data)
+            setTachkhisi(res.data);
+            return res.data;
         } catch (err) {
             console.error("fetchTachkhisi error:", err);
             setTachkhisi(null);
+            return null;
         } finally {
             setLoading(false);
         }
