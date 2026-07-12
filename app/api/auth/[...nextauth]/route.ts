@@ -32,8 +32,11 @@ declare module "next-auth/jwt" {
     paidUntil: string | Date | null;
     role: 'user' | 'admin';
     level: 'lycee' | 'cem' | 'primaire';
+    isPaidCheckedAt?: number;
   }
 }
+
+const ISPAID_REVALIDATE_SECONDS = 5 * 60;
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -57,20 +60,37 @@ export const authOptions: NextAuthOptions = {
           isPaid: user.isPaid,
           paidUntil: user.paidUntil,
           role: user.role,
-          level: user.level,  // ← added
+          level: user.level,
         }
       }
     })
   ],
   callbacks: {
-    async jwt({ token, user }: { token: JWT; user?: NextAuthUser }) {
+    async jwt({ token, user, trigger }: { token: JWT; user?: NextAuthUser; trigger?: "signIn" | "signUp" | "update" }) {
       if (user) {
         token.id = user.id
         token.role = user.role
         token.isPaid = user.isPaid
         token.paidUntil = user.paidUntil
-        token.level = user.level  // ← added
+        token.level = user.level
+        token.isPaidCheckedAt = Math.floor(Date.now() / 1000)
+        return token
       }
+
+      const checkedAt = token.isPaidCheckedAt ?? 0
+      const now = Math.floor(Date.now() / 1000)
+      const isStale = now - checkedAt > ISPAID_REVALIDATE_SECONDS
+
+      if (trigger === 'update' || isStale) {
+        await connectDB()
+        const dbUser = await User.findById(token.id).select('isPaid paidUntil').lean()
+        if (dbUser) {
+          token.isPaid = dbUser.isPaid
+          token.paidUntil = dbUser.paidUntil
+          token.isPaidCheckedAt = now
+        }
+      }
+
       return token
     },
     async session({ session, token }: { session: Session; token: JWT }) {
@@ -79,7 +99,7 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role
         session.user.isPaid = token.isPaid
         session.user.paidUntil = token.paidUntil
-        session.user.level = token.level  // ← added
+        session.user.level = token.level
       }
       return session
     }

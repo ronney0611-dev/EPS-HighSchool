@@ -1,7 +1,10 @@
 'use client'
 import { useTeacher } from '@/hooks/useTeacher'
 import Image from 'next/image'
-import {ToastContainer, toast } from 'react-toastify'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { toast } from 'react-toastify'
 
 const fields = [
     { label: 'الاسم واللقب', key: 'name', type: 'text', placeholder: 'الاسم واللقب' },
@@ -20,6 +23,22 @@ const fields = [
 
 const ManageTeacherProfile = () => {
     const { teacher, setTeacher, updateTeacher } = useTeacher();
+    const [saving, setSaving] = useState(false);
+    const router = useRouter();
+
+    const handleSave = async () => {
+        setSaving(true);
+        try {
+            await updateTeacher(teacher);
+            toast("تم حفظ المعلومات بنجاح !", { type: "success" });
+            router.push('/profile');
+        } catch {
+            toast("فشل حفظ المعلومات، حاول مرة أخرى", { type: "error" });
+        } finally {
+            setSaving(false);
+        }
+    };
+
 
     return (
         <div dir="rtl" className="min-h-screen bg-[#0a0a0f] text-white p-6 flex justify-center">
@@ -78,18 +97,14 @@ const ManageTeacherProfile = () => {
                 </div>
                 {/* Save button */}
                 <button
-                    onClick={() => {
-                        updateTeacher(teacher);
-                        toast("تم حفظ المعلومات بنجاح !", { type: "success" });
-                    }}
-                    className="w-full h-13 bg-emerald-500 hover:bg-emerald-400 active:scale-[0.98] rounded-2xl text-white font-bold text-base transition-all duration-200 shadow-[0_0_30px_rgba(16,185,129,0.2)]"
+                    onClick={handleSave}
+                    disabled={saving}
+                    className="w-full h-13 bg-emerald-500 hover:bg-emerald-400 active:scale-[0.98] rounded-2xl text-white font-bold text-base transition-all duration-200 shadow-[0_0_30px_rgba(16,185,129,0.2)] disabled:opacity-50"
                 >
-
-                    💾 حفظ المعلومات
+                    {saving ? '...جاري الحفظ' : '💾 حفظ المعلومات'}
                 </button>
-                <ToastContainer />
             </div>
-        </div>
+        </div >
     )
 }
 

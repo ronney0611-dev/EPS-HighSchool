@@ -3,6 +3,9 @@
 import React, { useRef, useEffect, useState } from "react";
 import { features } from "@/src/config/features";
 import GradientText from "./GradientText";
+import { useSession } from "next-auth/react";
+import axios from "axios";
+import Link from "next/link";
 
 function FeatureCard({ f, index }: { f: typeof features[0]; index: number }) {
     const [visible, setVisible] = useState(false);
@@ -22,22 +25,15 @@ function FeatureCard({ f, index }: { f: typeof features[0]; index: number }) {
     return (
         <div
             ref={ref}
-            style={{
-                transitionDelay: `${index * 0.1}s`,
-            }}
+            style={{ transitionDelay: `${index * 0.1}s` }}
             className={`bg-white border-2 border-gray-200 rounded-[20px] p-8 flex flex-col gap-4 relative overflow-hidden transition-all duration-550 ease-out ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-7"
                 }`}
         >
-            {/* Decorative colored corner */}
             <div
                 style={{ background: f.bg }}
                 className="absolute top-0 right-0 w-30 h-30 rounded-bl-[100%] rounded-tr-[20px] opacity-70"
             />
-
-            {/* Icon */}
             <div className="text-[36px] current-line-height-1 z-10">{f.icon}</div>
-
-            {/* Content wrapper */}
             <div className="z-10">
                 <h3 className="text-xl font-bold text-gray-900 mb-2 leading-[1.4] font-['Noto_Kufi_Arabic','Cairo',sans-serif]">
                     {f.title}
@@ -49,13 +45,8 @@ function FeatureCard({ f, index }: { f: typeof features[0]; index: number }) {
                     {f.value}
                 </p>
             </div>
-
-            {/* Stats footer panel */}
             <div className="mt-auto pt-4 border-t border-gray-100 flex items-baseline gap-2 z-10">
-                <span
-                    style={{ color: f.color }}
-                    className="text-[28px] font-extrabold font-['Cairo',sans-serif]"
-                >
+                <span style={{ color: f.color }} className="text-[28px] font-extrabold font-['Cairo',sans-serif]">
                     {f.stat}
                 </span>
                 <span className="text-[13px] text-gray-700 font-['Noto_Kufi_Arabic','Cairo',sans-serif]">
@@ -70,6 +61,47 @@ export default function WhatWeOffer() {
     const [headerVisible, setHeaderVisible] = useState(false);
     const headerRef = useRef<HTMLDivElement>(null);
 
+    // Moved up from FeatureCard — this belongs at the page/section level, not per-card
+    const { data: session, status, update } = useSession();
+    const [paymentStatus, setPaymentStatus] = useState<'checking' | 'none' | 'pending' | 'rejected'>('checking');
+    const [livePaid, setLivePaid] = useState<boolean>(false);
+
+    const isPaid = session?.user.isPaid || livePaid;
+
+    useEffect(() => {
+        const handleFocus = () => {
+            if (status === 'authenticated') update();
+        };
+        window.addEventListener('focus', handleFocus);
+        return () => window.removeEventListener('focus', handleFocus);
+    }, [status, update]);
+
+    useEffect(() => {
+        if (status !== 'authenticated' || !session || session.user.isPaid) return;
+
+        let cancelled = false;
+        axios.get('/api/payment/manual')
+            .then((res) => {
+                if (cancelled) return;
+                const payments = res.data?.payments || [];
+                const dbPaid = res.data?.isPaid ?? false;
+
+                if (dbPaid) {
+                    setLivePaid(true);
+                    return;
+                }
+
+                const hasPending = payments.some((p: { status: string }) => p.status === 'PENDING');
+                const latestRejected = payments.find((p: { status: string }) => p.status === 'REJECTED');
+                setPaymentStatus(hasPending ? 'pending' : latestRejected ? 'rejected' : 'none');
+            })
+            .catch(() => {
+                if (!cancelled) setPaymentStatus('none');
+            });
+
+        return () => { cancelled = true; };
+    }, [status, session]);
+
     useEffect(() => {
         const el = headerRef.current;
         if (!el) return;
@@ -83,7 +115,6 @@ export default function WhatWeOffer() {
 
     return (
         <section dir="rtl" id="features-section" className="py-20 px-6 w-full mx-auto font-['Noto_Kufi_Arabic','Cairo',sans-serif]">
-            {/* Animated Main Header Block */}
             <div
                 ref={headerRef}
                 className={`text-center mb-14 transition-all duration-600 ease-out ${headerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
@@ -114,14 +145,12 @@ export default function WhatWeOffer() {
                 </p>
             </div>
 
-            {/* Dynamic Features Grid layout */}
             <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-6 mb-16">
                 {features.map((f, i) => (
                     <FeatureCard key={i} f={f} index={i} />
                 ))}
             </div>
 
-            {/* High-Converting Pricing CTA Card */}
             <div className="bg-linear-to-br from-white to-gray-300 rounded-[24px] p-8 md:p-10 text-center text-black shadow-xl">
                 <p className="text-[20px] font-semibold mb-2 tracking-wide uppercase">
                     لا تضيّع وقتك أكثر
@@ -130,18 +159,66 @@ export default function WhatWeOffer() {
                     ابدأ العام الدراسي بشكل مختلف هذه المرة
                 </h3>
                 <p className="text-[15px] opacity-85 max-w-120 mx-auto leading-[1.8] mb-8">
-                   <span className="font-bold text-2xl text-red-600"> بـ 3000 دج فقط، للعام الدراسي كاملا</span>    — أقل من تكلفة كراريس — احصل على منصة كاملة حتى 01 جويلية 2027.
+                    <span className="font-bold text-2xl text-red-600"> بـ 3000 دج فقط، للعام الدراسي كاملا</span>    — أقل من تكلفة كراريس — احصل على منصة كاملة حتى 01 جويلية 2027.
                 </p>
-                <div className="flex gap-3 justify-center flex-wrap">
-                    <a
-                        href="/payment"
-                        className="bg-white text-blue-700 font-bold text-[15px] px-8 py-3.5 rounded-xl inline-block transition-transform duration-200 hover:scale-[1.03] shadow-md"
-                    >
-                        احصل على العرض الآن ←
-                    </a>
-                </div>
-            </div>
+                {
+                    status !== 'loading' && (
+                        session ? (
+                            isPaid ? (
+                                <div className="flex gap-3 justify-center flex-wrap">
+                                    <Link
+                                        href="/documents"
+                                        className="bg-white text-blue-700 font-bold text-[15px] px-8 py-3.5 rounded-xl inline-block text-center transition-transform duration-200 hover:scale-[1.03] shadow-lg ring-4 ring-green-400/30"
+                                    >
+                                        شكرا على ثقتك بنا، حسابك مفعل الان 🎉
+                                    </Link>
+                                </div>
+                            ) : paymentStatus === 'pending' ? (
+                                <div className="flex gap-3 justify-center flex-wrap">
+                                    <span className="bg-yellow-500/90 text-black font-bold text-[15px] px-8 py-3.5 rounded-xl inline-block shadow-md cursor-default">
+                                        شكرا على ثقتك بنا، جاري تفعيل حسابك...
+                                    </span>
+                                </div>
+                            ) : paymentStatus === 'rejected' ? (
+                                <div className="flex gap-3 justify-center flex-wrap">
+                                    <a
+                                        href="/payment"
+                                        className="bg-red-100 text-red-700 font-bold text-[15px] px-8 py-3.5 rounded-xl inline-block transition-transform duration-200 hover:scale-[1.03] shadow-md"
+                                    >
 
-        </section>
+                                        تم رفض طلبك، يرجى المحاولة مرة أخرى ←
+                                    </a>
+                                </div>
+                            ) : paymentStatus === 'checking' ? (
+                                <div className="flex gap-3 justify-center flex-wrap">
+                                    <span className="bg-gray-200/90 text-gray-500 font-bold text-[15px] px-8 py-3.5 rounded-xl inline-block shadow-md cursor-default">
+                                        معالجة..
+                                    </span>
+                                </div>
+                            ) : (
+                                <div className="flex gap-3 justify-center flex-wrap">
+                                    <a
+                                        href="/payment"
+                                        className="bg-white text-blue-700 font-bold text-[15px] px-8 py-3.5 rounded-xl inline-block transition-transform duration-200 hover:scale-[1.03] shadow-md"
+                                    >
+                                        فعل حسابك الان ←
+                                    </a>
+                                </div>
+                            )
+                        ) : (
+                            <div className="flex gap-3 justify-center flex-wrap">
+                                <a
+                                    href="/login"
+                                    className="bg-white text-blue-700 font-bold text-[15px] px-8 py-3.5 rounded-xl inline-block transition-transform duration-200 hover:scale-[1.03] shadow-md"
+                                >
+                                    سجل الدخول الآن ←
+                                </a>
+                            </div>
+                        )
+                    )
+                }
+            </div >
+
+        </section >
     );
 }

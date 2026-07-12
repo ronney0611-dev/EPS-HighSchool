@@ -7,8 +7,6 @@ import { useState } from 'react'
 import { House, CircleUserRound, BookText, LogOut } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
-import LockedDocCard from './LockVideo'
-import BorderAnimationButton from '@/src/components/nurui/border-button'
 
 const Navbare = () => {
     const pathname = usePathname();

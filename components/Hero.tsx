@@ -1,10 +1,54 @@
 'use client'
 
-import { assets } from "@/public/videos/assets";
 import BorderAnimationButton from "@/src/components/nurui/border-button";
 import Offers from "./Offers";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import Link from "next/link";
 
 const Hero = () => {
+
+    const { data: session, status, update } = useSession();
+    const [paymentStatus, setPaymentStatus] = useState<'checking' | 'none' | 'pending' | 'rejected'>('checking');
+    const [livePaid, setLivePaid] = useState<boolean>(false);
+
+    const isPaid = session?.user.isPaid || livePaid;
+
+    useEffect(() => {
+        const handleFocus = () => {
+            if (status === 'authenticated') update();
+        };
+        window.addEventListener('focus', handleFocus);
+        return () => window.removeEventListener('focus', handleFocus);
+    }, [status, update]);
+
+    useEffect(() => {
+        if (status !== 'authenticated' || !session || session.user.isPaid) return;
+
+        let cancelled = false;
+        axios.get('/api/payment/manual')
+            .then((res) => {
+                if (cancelled) return;
+                const payments = res.data?.payments || [];
+                const dbPaid = res.data?.isPaid ?? false;
+
+                if (dbPaid) {
+                    setLivePaid(true);
+                    return;
+                }
+
+                const hasPending = payments.some((p: { status: string }) => p.status === 'PENDING');
+                const latestRejected = payments.find((p: { status: string }) => p.status === 'REJECTED');
+                setPaymentStatus(hasPending ? 'pending' : latestRejected ? 'rejected' : 'none');
+            })
+            .catch(() => {
+                if (!cancelled) setPaymentStatus('none');
+            });
+
+        return () => { cancelled = true; };
+    }, [status, session]);
+
     return (
         <>
             <style>
@@ -40,7 +84,7 @@ const Hero = () => {
             <header dir="rtl" className='bg-black lg:mt-[-20] lg:mb-[-100] text-white flex flex-col items-center bg-[url("https://assets.prebuiltui.com/images/components/hero-section/hero-background-image.png")] bg-cover bg-center bg-no-repeat pb-10'>
 
                 <h1 className="text-3xl mt-20 md:text-5xl font-extrabold text-center max-w-4xl tracking-wide leading-tight px-4 bg-linear-to-b from-white to-gray-300 bg-clip-text text-transparent font-['Cairo',sans-serif]">
-                    <span className="text-red-500"> قف في الملعب</span> و دع تطبيقنا يتولى صياغة وثائقك البيداغوجية في ثوان.
+                    <span className="text-red-500"> قف في الملعب.</span> واترك تطبيقنا يتولى صياغة وثائقك البيداغوجية في ثوان
                 </h1>
                 <p className="text-center text-sm md:text-lg text-gray-200 max-w-2xl mx-auto mt-6 px-6 leading-relaxed font-['Tajawal',sans-serif]">
                     ودع الأوراق المبعثرة وساعات الصياغة الطويلة. ركّز جهدك على تدريب وتطوير طلابك، ونحن من نتكفل بجميع الوثائق؛ من قوائم الأقسام والتلاميذ إلى رصد النقاط وإرسالها للإدارة.
@@ -48,7 +92,64 @@ const Hero = () => {
 
                 <div className='flex flex-col sm:flex-row gap-4 md:gap-6 my-10 justify-center items-center mx-4 [font-family:\ Cairo\,sans-serif]'>
 
-                    <div className="text-center w-full sm:w-auto" onClick={() => document.getElementById('features-section')?.scrollIntoView({ behavior: 'smooth' })}>
+                    {
+                        status !== 'loading' && (
+                            session ? (
+                                isPaid ? (
+                                    /* Premium Interactive Account Activated State */
+                                    <div className="flex gap-3 justify-center flex-wrap">
+                                        <Link
+                                            href="/documents"
+                                            className="bg-white text-blue-700 font-bold text-[15px] px-8 py-3.5 rounded-xl inline-block text-center transition-transform duration-200 hover:scale-[1.03] shadow-lg ring-4 ring-green-400/30"
+                                        >
+                                            شكرا على ثقتك بنا، حسابك مفعل الان 🎉
+                                        </Link>
+                                    </div>
+
+                                ) : paymentStatus === 'pending' ? (
+                                    <div className="flex gap-3 justify-center flex-wrap">
+                                        <span className="bg-yellow-500/90 text-black font-bold text-[15px] px-8 py-3.5 rounded-xl inline-block shadow-md cursor-default">
+                                            شكرا على ثقتك بنا، جاري تفعيل حسابك...
+                                        </span>
+                                    </div>
+                                ) : paymentStatus === 'rejected' ? (
+                                    <div className="flex gap-3 justify-center flex-wrap">
+                                        <a
+                                            href="/payment"
+                                            className="bg-red-100 text-red-700 font-bold text-[15px] px-8 py-3.5 rounded-xl inline-block transition-transform duration-200 hover:scale-[1.03] shadow-md"
+                                        >
+                                            تم رفض طلبك، يرجى المحاولة مرة أخرى ←
+                                        </a>
+                                    </div>
+                                ) : paymentStatus === 'checking' ? (
+                                    <div className="flex gap-3 justify-center flex-wrap">
+                                        <span className="bg-gray-200/90 text-gray-500 font-bold text-[15px] px-8 py-3.5 rounded-xl inline-block shadow-md cursor-default">
+                                            معالجة..
+                                        </span>
+                                    </div>
+                                ) : (
+                                    <div className="flex gap-3 justify-center flex-wrap">
+                                        <a
+                                            href="/payment"
+                                            className="bg-white text-blue-700 font-bold text-[15px] px-8 py-3.5 rounded-xl inline-block transition-transform duration-200 hover:scale-[1.03] shadow-md"
+                                        >
+                                            فعل حسابك الان ←
+                                        </a>
+                                    </div>
+                                )
+                            ) : (
+                                <div className="flex gap-3 justify-center flex-wrap">
+                                    <a
+                                        href="/login"
+                                        className="bg-white text-blue-700 font-bold text-[15px] px-8 py-3.5 rounded-xl inline-block transition-transform duration-200 hover:scale-[1.03] shadow-md"
+                                    >
+                                        سجل الدخول الآن ←
+                                    </a>
+                                </div>
+                            )
+                        )
+                    }
+                    <div className="text-center w-full sm:w-auto cursor-pointer" onClick={() => document.getElementById('features-section')?.scrollIntoView({ behavior: 'smooth' })}>
                         <BorderAnimationButton text="تصفح العروض والخدمات 📋" />
                     </div>
                     <a
@@ -59,14 +160,6 @@ const Hero = () => {
                     >
                         <BorderAnimationButton text="تواصل معنا عبر واتساب 💬" />
                     </a>
-                    <div className="flex gap-3 justify-center flex-wrap">
-                        <a
-                            href="/payment"
-                            className="bg-white text-blue-700 font-bold text-[15px] px-8 py-3.5 rounded-xl inline-block transition-transform duration-200 hover:scale-[1.03] shadow-md"
-                        >
-                            احصل على العرض الآن ←
-                        </a>
-                    </div>
 
                 </div>
 
