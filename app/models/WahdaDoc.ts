@@ -5,6 +5,7 @@ export interface ISession {
   indicatorId: number;
   indicatorText: string;
   goal: string;
+  specialGoal: string
   isReminder: boolean;
 }
 
@@ -29,6 +30,7 @@ const SessionSchema: Schema<ISession> = new Schema({
   sessionNumber: { type: Number, required: true },
   indicatorId: { type: Number, required: true },
   indicatorText: { type: String, required: true },
+  specialGoal: { type: String, default: '' },
   goal: { type: String, required: true },
   isReminder: { type: Boolean, default: false },
 });

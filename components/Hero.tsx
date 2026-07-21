@@ -131,7 +131,7 @@ const Hero = () => {
                                     <div className="flex gap-3 justify-center flex-wrap">
                                         <a
                                             href="/payment"
-                                            className="bg-white text-blue-700 font-bold text-[15px] px-8 py-3.5 rounded-xl inline-block transition-transform duration-200 hover:scale-[1.03] shadow-md"
+                                            className="bg-green-300 text-black font-bold text-[15px] px-8 py-3.5 rounded-xl inline-block transition-transform duration-200 hover:scale-[1.03] shadow-md"
                                         >
                                             فعل حسابك الان ←
                                         </a>
@@ -150,7 +150,11 @@ const Hero = () => {
                         )
                     }
                     <div className="text-center w-full sm:w-auto cursor-pointer" onClick={() => document.getElementById('features-section')?.scrollIntoView({ behavior: 'smooth' })}>
-                        <BorderAnimationButton text="تصفح العروض والخدمات 📋" />
+                        <div
+                            className="bg-white text-blue-700 font-bold text-[15px] px-8 py-3.5 rounded-xl inline-block transition-transform duration-200 hover:scale-[1.03] shadow-md"
+                        >
+                            لماذا تختارنا ؟
+                        </div>
                     </div>
                     <a
                         href="https://wa.me/+213795972858?text=مرحباً،%20أريد%20الاستفسار%20عن%20تطبيق%20الوثائق%20البيداغوجية"
@@ -158,12 +162,16 @@ const Hero = () => {
                         rel="noopener noreferrer"
                         className="text-center w-full sm:w-auto block"
                     >
-                        <BorderAnimationButton text="تواصل معنا عبر واتساب 💬" />
+                        <div
+                            className="bg-white text-blue-700 font-bold text-[15px] px-8 py-3.5 rounded-xl inline-block transition-transform duration-200 hover:scale-[1.03] shadow-md"
+                        >
+                           اضغط اذا كان لديك استفسار ←
+                        </div>
                     </a>
 
                 </div>
 
-                <div className=" lg:my-10 w-full max-w-4xl mx-auto px-4  relative flex items-center justify-center">
+                <div className=" w-full max-w-4xl mx-auto px-4  relative flex items-center justify-center">
                     {/* Video with spinning glow border */}
                     <div className="lg:my-10 w-full max-w-4xl mx-auto px-4 relative flex items-center justify-center">
                         <iframe

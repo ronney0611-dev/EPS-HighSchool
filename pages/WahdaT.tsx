@@ -11,6 +11,7 @@ import level1Curriculum from '@/src/config/level1Curriculum.json'
 import level2Curriculum from '@/src/config/level2Curriculum.json'
 import level3Curriculum from '@/src/config/level3Curriculum.json'
 import { useTeacher } from '@/hooks/useTeacher'
+import { text } from 'stream/consumers'
 
 const SPORTS = [
     { key: 'sprint', name: 'سباق السرعة ' },
@@ -131,7 +132,7 @@ export default function WahdaGeneratorPage() {
             const sportIndicators = sportConfig.indicators.filter(ind => indicatorAveragesMap.has(ind.id));
 
             if (sportIndicators.length === 0) {
-                throw new Error(`لم يتم العثور على مؤشرات مقيّمة للنشاط ${sport} في ملف المستندات الخاص بالمستوى ${level}. يرجى حفظ التقويم التشخيصي أولاً`);
+                throw new Error(`يرجى القيام بالتقويم التشخيصي الخاص بالمستوى ${level} أولاً`);
             }
 
             type IndicatorPlan = {
@@ -201,6 +202,7 @@ export default function WahdaGeneratorPage() {
                         indicatorId: plan.indicator.id,
                         indicatorText: plan.indicator.text,
                         goal: `تذكير وتقويم: ${plan.indicator.text}`,
+                        specialGoal: plan.indicator.text.replace('أن يكون التلميذ قادرا على ', ''),
                         isReminder: true
                     })
                 } else {
@@ -212,6 +214,7 @@ export default function WahdaGeneratorPage() {
                             indicatorId: plan.indicator.id,
                             indicatorText: plan.indicator.text,
                             goal: goalText,
+                            specialGoal: goalText.replace('أن يكون التلميذ قادرا على ', ''),
                             isReminder: false
                         })
                     }
@@ -314,7 +317,7 @@ export default function WahdaGeneratorPage() {
 
             {/* Document Render Sheet Matrix Table */}
             {wahda && wahda.sessions && wahda.sessions.length > 0 ? (
-                <div id="a4-card" className="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 print:shadow-none print:border-none print:p-0">
+                <div id="a4-card" className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 print:shadow-none print:border-none print:p-0">
 
                     <div className="grid grid-cols-3 text-sm font-bold text-gray-800 mb-6 border-b pb-4">
                         <div >
@@ -331,8 +334,24 @@ export default function WahdaGeneratorPage() {
                             <p>المستوى: {LEVELS.find(l => l.key === wahda.level)?.name}</p>
                         </div>
                     </div>
-
-
+                    <div className='text-black mb-4 mt-[-2] space-y-2'>
+                        <div className='flex items-center w-full'>
+                            <h1 className='text-xl whitespace-nowrap shrink-0'>الكفاءة القاعدية:</h1>
+                            <textarea
+                                className="flex-1 min-w-0 w-full bg-transparent resize-none border-none outline-none p-2 text-blue-700 font-semibold text-lg overflow-hidden"
+                                rows={1}
+                                spellCheck={false}
+                            />
+                        </div>
+                        <div className='flex items-center w-full'>
+                            <h1 className='text-xl whitespace-nowrap shrink-0'>الهدف التعلمي:</h1>
+                            <textarea
+                                className="flex-1 min-w-0 w-full bg-transparent resize-none border-none outline-none p-2 text-red-700  font-semibold text-lg overflow-hidden"
+                                rows={1}
+                                spellCheck={false}
+                            />
+                        </div>
+                    </div>
 
                     <table className="w-full border-collapse border-2 border-black text-center text-sm">
                         <thead>
@@ -340,13 +359,13 @@ export default function WahdaGeneratorPage() {
                                 <th className="border border-black p-2 w-[12%]">التاريخ</th>
                                 <th className="border border-black p-2 w-[15%]">طبيعة الحصة</th>
                                 <th className="border border-black p-2 w-[25%]">المعايير (المؤشر)</th>
-                                <th className="border border-black p-2 w-[24%]">الأهداف الرئيسية</th>
-                                <th className="border border-black p-2 w-[24%]">الأهداف الإجرائية الرئيسية</th>
+                                <th className="border border-black p-2 w-[24%]">الأهداف الخاصة</th>
+                                <th className="border border-black p-2 w-[24%]">هدف النشاط</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr className="border border-black">
-                                <td className="border border-black p-2 text-gray-400 font-mono text-xs">من: --/--/----</td>
+                                <td className="border border-black p-2 text-gray-400 font-mono text-xs"> --/--/----</td>
                                 <td
                                     onClick={() => {
                                         const params = new URLSearchParams({
@@ -370,7 +389,7 @@ export default function WahdaGeneratorPage() {
 
                             {wahda.sessions.map((session, index) => (
                                 <tr key={index} className="border border-black hover:bg-gray-50/50">
-                                    <td className="border border-black p-2 text-gray-400 font-mono text-xs">من: --/--/----</td>
+                                    <td className="border border-black p-2 text-gray-400 font-mono text-xs"> --/--/----</td>
                                     <td onClick={() => {
                                         const params = new URLSearchParams({
                                             level: level,              // was: classLevel
@@ -385,7 +404,7 @@ export default function WahdaGeneratorPage() {
                                     }} className="border border-black p-2 font-bold text-blue-700 bg-blue-50/20 cursor-pointer">
                                         {session.isReminder ? "حصة تذكيرية" : `تعليمية ${String(session.sessionNumber).padStart(2, '0')}`}
                                     </td>
-                                    <td className=" border border-black p-1">
+                                    <td className="border-t-white ">
                                         <textarea
                                             value={session.indicatorText}
                                             onChange={(e) => handleCellChange(index, 'indicatorText', e.target.value)}
@@ -395,8 +414,8 @@ export default function WahdaGeneratorPage() {
                                     </td>
                                     <td className="border border-black p-1">
                                         <textarea
-                                            value={session.goal.replace('أن يكون التلميذ قادرا على ', '')}
-                                            onChange={(e) => handleCellChange(index, 'goal', e.target.value)}
+                                            value={session.specialGoal ?? ''}
+                                            onChange={(e) => handleCellChange(index, 'specialGoal', e.target.value)}
                                             className="w-full bg-transparent resize-none border-none p-1 text-center text-xs text-gray-700"
                                             rows={2}
                                         />
@@ -413,7 +432,7 @@ export default function WahdaGeneratorPage() {
                             ))}
 
                             <tr className="border border-black">
-                                <td className="border border-black p-2 text-gray-400 font-mono text-xs">من: --/--/----</td>
+                                <td className="border border-black p-2 text-gray-400 font-mono text-xs"> --/--/----</td>
                                 <td
                                     onClick={() => {
                                         const params = new URLSearchParams({
@@ -431,75 +450,128 @@ export default function WahdaGeneratorPage() {
                                     منافسة نهائية
 
                                 </td>
-                                <td className="border border-black p-2 text-gray-800">قياس مدى تحقق الأهداف البيداغوجية والمؤشرات</td>
+                                <td className="border border-black  p-2 text-gray-800">قياس مدى تحقق الأهداف البيداغوجية والمؤشرات</td>
                                 <td className="border border-black p-2 text-gray-800">تقويم تحصيلي</td>
                                 <td className="border border-black p-2 text-gray-800">إجراء منافسة نهائية تطبيقية وتحصيل العلامات</td>
                             </tr>
                         </tbody>
                     </table>
+                    <div className='text-black'>
+                        <h1 className='text-xl my-6'>نتائج التقويم التحصيلي:</h1>
+                    </div>
+                    <div className="my-6 font-semibold flex justify-between text-gray-600 mt-12 mx-10">
+                        <div>الاستاذ</div>
+                        <div>المدير</div>
+                        <div>المفتش(ة)</div>
+                    </div>
                 </div>
             ) : (
                 <div className="text-center p-12 border-2 border-dashed rounded-2xl bg-gray-50 text-gray-500 font-medium">
                     📊 لا يوجد وثيقة منشأة حالياً لهذا الاختيار، اضغط على توليد جدول جديد للاعتماد على نتائج التشخيص.
                 </div>
-            )}
+            )
+            }
             <style jsx global>{`
-                @media print {
-                    @page {
-                        size: A4 landscape;
-                        margin: 10mm;
-                    }
+    @media print {
+        @page {
+            size: A4 landscape;
+            margin: 5mm;
+        }
 
-                    * {
-                        -webkit-print-color-adjust: exact !important;
-                        print-color-adjust: exact !important;
-                        color-adjust: exact !important;
-                    }
+        * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+        }
 
-                    html, body {
-                        margin: 0 !important;
-                        padding: 0 !important;
-                        height: auto !important;
-                        background: white !important;
-                    }
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            height: auto !important;
+            background: white !important;
+        }
 
-                    body *:not(#a4-card):not(#a4-card *) {
-                        visibility: hidden !important;
-                    }
+        body *:not(#a4-card):not(#a4-card *) {
+            visibility: hidden !important;
+        }
 
-                    #a4-card, #a4-card * {
-                        visibility: visible !important;
-                    }
+        #a4-card, #a4-card * {
+            visibility: visible !important;
+        }
 
-                    #a4-card {
-                        position: static !important;
-                        width: 100% !important;
-                        margin: 0 !important;
-                        box-shadow: none !important;
-                    }
+        #a4-card {
+            position: static !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 4mm !important;
+            box-shadow: none !important;
+            font-size: 13px !important;
+        }
 
-                    table {
-                        width: 100%;
-                        border-collapse: collapse;
-                    }
+        #a4-card h2 {
+            font-size: 19px !important;
+            padding: 6px 20px !important;
+        }
 
-                    thead {
-                        display: table-header-group;
-                    }
+        #a4-card .grid {
+            margin-bottom: 10px !important;
+            padding-bottom: 8px !important;
+        }
 
-                    tr {
-                        break-inside: avoid;
-                        page-break-inside: avoid;
-                    }
+        #a4-card .grid p {
+            margin: 0 !important;
+            line-height: 1.4 !important;
+        }
 
-                    textarea {
-                        border: none !important;
-                        outline: none !important;
-                        resize: none !important;
-                    }
-                }
-            `}</style>
-        </div>
+        #a4-card .space-y-2 > div {
+            margin: 0 !important;
+        }
+
+        #a4-card .space-y-2 {
+            margin-bottom: 8px !important;
+        }
+
+        #a4-card h1.text-xl {
+            font-size: 15px !important;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px !important;
+        }
+
+        thead {
+            display: table-header-group;
+        }
+
+        th, td {
+            padding: 4px 6px !important;
+            line-height: 1.3 !important;
+        }
+
+        tr {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        textarea {
+            border: none !important;
+            outline: none !important;
+            resize: none !important;
+            font-size: 12px !important;
+            line-height: 1.3 !important;
+            padding: 2px !important;
+            min-height: unset !important;
+        }
+
+        #a4-card > div:last-child h1 {
+            font-size: 15px !important;
+            margin-top: 8px !important;
+        }
+    }
+`}</style>
+        </div >
 
     );
 }

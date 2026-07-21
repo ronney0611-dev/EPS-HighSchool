@@ -19,11 +19,6 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://www.epsdz.com'),
   title: "وثائق التربية البدنية | EPS DZ",
   description: 'توليد جميع الوثائق البيداغوجية والخطط السنوية، استيراد قوائم التلاميذ من إكسل (Excel)، حساب معدلات الفروض والاختبارات تلقائياً، وتسيير شامل ومبسط لجميع الأطوار التعليمية في ثوانٍ وبنقرة واحدة.',
-  icons: {
-    icon: ['/icon.png', { url: '/favicon.ico', sizes: 'any' }],
-    shortcut: ['/favicon.ico'],
-    apple: ['/icon.png'],
-  },
   verification: {
     google: 'Ql1sCrqcMXtkK4_qKKg2trguLPb-_HrpYw2vDo2dABs',
   },
@@ -32,7 +27,6 @@ export const metadata: Metadata = {
     description: "إنشاء جميع الوثائق البيداغوجية في ثوانٍ",
     images: ["/images/preview.png"],
   },
-
 };
 
 export default function RootLayout({

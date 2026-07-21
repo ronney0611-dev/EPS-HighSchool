@@ -315,7 +315,7 @@ const TakwimGroupe = () => {
             </div>
 
             {/* Printable A4 Card Template */}
-            <div id="a4-card" className='w-full bg-white text-black p-2 md:p-6 border border-black rounded-sm shadow-md print:border-none print:shadow-none'>
+            <div id="a4-card-groupe" className='w-full bg-white text-black p-2 md:p-6 border border-black rounded-sm shadow-md print:border-none print:shadow-none'>
 
                 {/* Header Information Sheet Block */}
                 <div dir="rtl" className="text-black text-center bg-white w-full">
@@ -329,7 +329,7 @@ const TakwimGroupe = () => {
                         <div className="border-r border-black py-1.5 px-2 text-sm text-right"> الأستاذ: {teacher.name || '—'}</div>
                         <div className="border-r border-black py-1.5 px-2 text-sm text-right"> المؤسسة: {teacher.school || '—'}</div>
                         <div className="border-r border-black py-1.5 px-2 text-sm text-right"> المستوى: {getLevelLabel(selectedClassData?.name) || '—'}</div>
-                        <div className="py-1.5 px-2 text-sm text-right"> القسم: {selectedClassData?.name || '—'}</div>
+                        <div className="py-1.5 px-2 border-r border-black text-sm text-right"> القسم: {selectedClassData?.name || '—'}</div>
                     </div>
 
                     <div className="border-x border-b border-black bg-white text-right">
@@ -353,7 +353,7 @@ const TakwimGroupe = () => {
                                     </th>
                                 ))}
                                 <th className="border-l border-black p-1 bg-emerald-50" colSpan={3}>نسبة التحكم %</th>
-                                <th className="p-1 bg-purple-50" colSpan={2}>المستوى النوعي</th>
+                                <th className="p-1 bg-purple-50" colSpan={2}>المستوى </th>
                             </tr>
                             <tr className="border-b border-black bg-gray-100 font-semibold text-[10px]">
                                 {Array.from({ length: mochirCount }).map((_, i) => (
@@ -439,7 +439,7 @@ const TakwimGroupe = () => {
                             {/* Collective Group Summary Averages row */}
                             <tr className="border-b border-black bg-blue-50 font-bold">
                                 <td className="border-l border-black p-1"></td>
-                                <td className="border-l border-black p-1 text-right text-blue-900 px-2">النتيجة الجماعية الفوجية</td>
+                                <td className="border-l border-black p-1 text-right text-blue-900 px-2">النتيجة الجماعية </td>
                                 {totalT1PerMochir.map((value, i) => (
                                     <React.Fragment key={i}>
                                         <td className="border-l border-black p-1 font-mono text-red-700">{value.toFixed(2)}</td>
@@ -452,7 +452,7 @@ const TakwimGroupe = () => {
                             {/* Collective Group Success Percentage row */}
                             <tr className="bg-blue-100 font-black">
                                 <td className="border-l border-black p-1"></td>
-                                <td className="border-l border-black p-1 text-right text-blue-950 px-2">نسبة نجاح الفوج %</td>
+                                <td className="border-l border-black p-1 text-right text-blue-950 px-2">نسبة النجاح %</td>
                                 {totalT1PerMochir.map((value, i) => (
                                     <React.Fragment key={i}>
                                         <td className="border-l border-black p-1 font-mono text-red-700">{(value * 100).toFixed(1)}%</td>
@@ -478,7 +478,10 @@ const TakwimGroupe = () => {
                 </div>
             </div>
             <div className="md:margin-right-auto flex gap-2 w-full md:w-auto my-6 print:hidden">
-                <button onClick={() => window.print()} className='bg-blue-600 text-white px-6 py-2 rounded-xl font-bold text-sm w-full md:w-auto shadow-sm'>
+                <button onClick={() => {
+                    document.body.setAttribute('data-print-target', 'a4-card-groupe');
+                    window.print();
+                }} className='bg-blue-600 text-white px-6 py-2 rounded-xl font-bold text-sm w-full md:w-auto shadow-sm'>
                     طباعة 🖨️
                 </button>
                 <button
@@ -514,61 +517,115 @@ const TakwimGroupe = () => {
                 <ToastContainer />
             </div>
             <style jsx global>{`
-                @media print {
-                    @page {
-                        size: A4 landscape;
-                        margin: 8mm;
-                    }
+    @media print {
+        @page {
+            size: A4 landscape;
+            margin: 4mm;
+        }
 
-                    * {
-                        -webkit-print-color-adjust: exact !important;
-                        print-color-adjust: exact !important;
-                        color-adjust: exact !important;
-                    }
+        * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+        }
 
-                    html, body {
-                        margin: 0 !important;
-                        padding: 0 !important;
-                        height: auto !important;
-                        background: white !important;
-                    }
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            height: auto !important;
+            background: white !important;
+        }
 
-                    body *:not(#a4-card):not(#a4-card *) {
-                        visibility: hidden !important;
-                    }
+         body {
+        margin-top: 0 !important;
+    }
 
-                    #a4-card, #a4-card * {
-                        visibility: visible !important;
-                    }
+        body > div {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
 
-                    #a4-card {
-                        position: static !important;
-                        width: 100% !important;
-                        margin: 0 !important;
-                        border: none !important;
-                    }
+        #a4-card-groupe, #a4-card-groupe {
+            display: none !important;
+        }
 
-                    table {
-                        width: 100%;
-                        border-collapse: collapse;
-                    }
+        body[data-print-target="a4-card-groupe"] #a4-card-groupe {
+            display: block !important;
+            position: static !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            font-size: 8px !important;
+        }
 
-                    thead {
-                        display: table-header-group;
-                    }
+        #a4-card-groupe h1 {
+            font-size: 11px !important;
+            padding: 2px 4px !important;
+        }
 
-                    tr {
-                        break-inside: avoid;
-                        page-break-inside: avoid;
-                    }
+        #a4-card-groupe .grid > div {
+            padding: 1px 3px !important;
+            font-size: 8px !important;
+        }
 
-                    select {
-                        -webkit-appearance: none;
-                        appearance: none;
-                        border: none !important;
-                    }
-                }
-            `}</style>
+        #a4-card-groupe .border-b.border-black.bg-white .py-2 {
+            padding: 1px 3px !important;
+            font-size: 8px !important;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8px !important;
+            margin: 0 !important;
+        }
+
+        thead {
+            display: table-header-group;
+        }
+
+        th, td {
+            padding: 0px 2px !important;
+            line-height: 1 !important;
+            height: 12px !important;
+        }
+
+        tr {
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        select {
+            -webkit-appearance: none;
+            appearance: none;
+            border: none !important;
+            font-size: 8px !important;
+        }
+
+        #a4-card-groupe .overflow-x-auto {
+            margin: 0 !important;
+        }
+
+        #a4-card-groupe .overflow-x-auto ~ div,
+        #a4-card-groupe > div.flex.flex-col.mt-4 {
+            margin: 1px 0 0 0 !important;
+            padding: 1px !important;
+            gap: 0px !important;
+        }
+
+        #a4-card-groupe .flex.items-center.gap-2 {
+            gap: 3px !important;
+        }
+
+        #a4-card-groupe .flex.items-center.gap-2 h1,
+        #a4-card-groupe .flex.items-center.gap-2 p {
+            font-size: 8px !important;
+            margin: 0 !important;
+            line-height: 1.1 !important;
+        }
+    }
+`}</style>
         </div>
     );
 };

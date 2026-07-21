@@ -241,15 +241,21 @@ export default function PlanOfYear() {
 
                             </div>
                             <hr className='border border-gray-300' />
+
                           </div>
                         );
                       })}
                     </div>
-
                   </div>
                 );
               })}
+
             </div>
+          </div>
+          <div className="my-6 font-semibold flex justify-between text-black mx-10">
+            <div>الاستاذ</div>
+            <div>المدير</div>
+            <div>المفتش(ة)</div>
           </div>
         </div>
       </div>
