@@ -22,7 +22,7 @@ const Footer = () => {
                     <div className='flex items-center gap-4 text-gray-500' >
                         <Link
                             className='hover:text-white transition-colors p-1'
-                            href="/aboutus"
+                            href="/about"
                         >
                             <Phone />
                         </Link>

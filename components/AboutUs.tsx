@@ -1,5 +1,4 @@
-import React from 'react'
-import { Code, Award, Users, Mail, Phone, Heart, Zap, UserCheck } from 'lucide-react'
+import { Code, Award, Users, Mail, Phone, UserCheck } from 'lucide-react'
 
 // Common className constant for section containers to maintain width consistency
 const SECTION_CONTAINER_CLASS = "max-w-[1400px] mx-auto px-6 md:px-12 py-4 md:py-28";
@@ -8,6 +7,24 @@ const AboutUs = () => {
     return (
         // Main dark background wrapper
         <div dir='rtl' className="w-full bg-black items-center text-white font-sans antialiased dir-rtl min-h-screen">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "Person",
+                        "name": "بن حمادة محمد",
+                        "jobTitle": "أستاذ التربية البدنية والرياضية / مطور Full-Stack",
+                        "url": "https://epsdz.com",
+                        "email": "mailto:mohammedbenhamada0611@gmail.com",
+                        "worksFor": {
+                            "@type": "Organization",
+                            "name": "EPS DZ",
+                            "url": "https://epsdz.com"
+                        }
+                    })
+                }}
+            />
             <section className={SECTION_CONTAINER_CLASS}>
                 <div className="grid md:grid-cols-12 gap-12 items-center">
 
