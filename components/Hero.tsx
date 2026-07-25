@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
+import Testimonials from "./Trstimonials";
 
 const Hero = () => {
 
@@ -165,7 +166,7 @@ const Hero = () => {
                         <div
                             className="bg-white text-blue-700 font-bold text-[15px] px-8 py-3.5 rounded-xl inline-block transition-transform duration-200 hover:scale-[1.03] shadow-md"
                         >
-                           اضغط اذا كان لديك استفسار ←
+                            اضغط اذا كان لديك استفسار ←
                         </div>
                     </a>
 
@@ -187,6 +188,7 @@ const Hero = () => {
                     </div>
 
                 </div>
+                <Testimonials />
                 <Offers />
             </header >
         </>

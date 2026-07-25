@@ -8,7 +8,7 @@ export type Teacher = {
     birthday: string, birthloc: string, statu: string,
     email: string, phone: string, univerLic: string,
     anneLic: string, univerMas: string, anneMas: string,
-    photo: string,
+    photo: string, review: string,
 }
 
 const defaultTeacher: Teacher = {
@@ -16,7 +16,7 @@ const defaultTeacher: Teacher = {
     birthday: '', birthloc: '', statu: '',
     email: '', phone: '', univerLic: '',
     anneLic: '', univerMas: '', anneMas: '',
-    photo: '',
+    photo: '', review: '',
 }
 
 export const useTeacher = () => {

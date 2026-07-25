@@ -1,5 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook, faInstagram, faTiktok, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
+import { Phone } from 'lucide-react';
+import Link from 'next/link';
 
 const Footer = () => {
     return (
@@ -9,46 +11,52 @@ const Footer = () => {
 
             {/* Layout Container */}
             <div className='flex flex-col mx-10 sm:flex-row justify-between items-center gap-4 text-center sm:text-start' >
-                
+
                 {/* Copyright Text */}
                 <div className='text-gray-500 text-sm tracking-wide order-2 sm:order-1' dir="ltr">
                     © 2026 BENHAMADA M | ronneyDev. All rights reserved.
                 </div>
-                
+
                 {/* Social Media Links Container */}
                 <div className='order-1 sm:order-2'>
                     <div className='flex items-center gap-4 text-gray-500' >
-                        <a 
-                            className='hover:text-blue-600 transition-colors p-1' 
-                            href="https://www.facebook.com/benhammada.mohamed/" 
-                            target="_blank" 
+                        <Link
+                            className='hover:text-white transition-colors p-1'
+                            href="/aboutus"
+                        >
+                            <Phone />
+                        </Link>
+                        <a
+                            className='hover:text-blue-600 transition-colors p-1'
+                            href="https://www.facebook.com/benhammada.mohamed/"
+                            target="_blank"
                             rel="noopener noreferrer"
                             aria-label="Facebook"
                         >
                             <FontAwesomeIcon icon={faFacebook} className="w-5 h-5 block" />
                         </a>
-                        <a 
-                            className='hover:text-pink-600 transition-colors p-1' 
-                            href="https://instagram.com/rney.mo/" 
-                            target="_blank" 
+                        <a
+                            className='hover:text-pink-600 transition-colors p-1'
+                            href="https://instagram.com/rney.mo/"
+                            target="_blank"
                             rel="noopener noreferrer"
                             aria-label="Instagram"
                         >
                             <FontAwesomeIcon icon={faInstagram} className="w-5 h-5 block" />
                         </a>
-                        <a 
-                            className='hover:text-white transition-colors p-1' 
-                            href="https://www.tiktok.com/@rney.mo" 
-                            target="_blank" 
+                        <a
+                            className='hover:text-white transition-colors p-1'
+                            href="https://www.tiktok.com/@rney.mo"
+                            target="_blank"
                             rel="noopener noreferrer"
                             aria-label="TikTok"
                         >
                             <FontAwesomeIcon icon={faTiktok} className="w-5 h-5 block" />
                         </a>
-                        <a 
-                            className='hover:text-green-500 transition-colors p-1' 
-                            href="https://wa.me/+213795972858" 
-                            target="_blank" 
+                        <a
+                            className='hover:text-green-500 transition-colors p-1'
+                            href="https://wa.me/+213795972858"
+                            target="_blank"
                             rel="noopener noreferrer"
                             aria-label="WhatsApp"
                         >

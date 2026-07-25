@@ -1,7 +1,6 @@
 'use client'
 import { useTeacher } from '@/hooks/useTeacher'
 import Image from 'next/image'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
@@ -19,6 +18,7 @@ const fields = [
     { label: 'سنة الليسانس', key: 'anneLic', type: 'text', placeholder: '2015' },
     { label: 'جامعة الماستر', key: 'univerMas', type: 'text', placeholder: 'جامعة...' },
     { label: 'سنة الماستر', key: 'anneMas', type: 'text', placeholder: '2017' },
+    { label: 'اترك تعليق عن التطبيق', key: 'review', type: 'text', placeholder: 'رايك يهمنا' },
 ]
 
 const ManageTeacherProfile = () => {
