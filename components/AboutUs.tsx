@@ -79,7 +79,7 @@ const AboutUs = () => {
                                 <span className="font-extrabold text-white">اسلمى نورية</span>
                             </h3>
                             <p className="text-lg text-red-50 leading-relaxed font-medium">
-                                نتقدم بأسمى عبارات الشكر والتقدير الى من كان لإشرافها الدقيق، وتوجيهاتها البيداغوجية القيمة، ومعلوماتها السديدة الأثر البالغ في إثراء محتوى المنصة وضبطها وفق أرقى المعايير التعليمية المطلوبة. شكراً لكونكِ منارة للعلم والاحترافية.
+                                نتقدم بأسمى عبارات الشكر والتقدير اليها، نظيرا لإشرافها الدقيق، وتوجيهاتها البيداغوجية القيمة، ومعلوماتها السديدة التي كان لها الأثر البالغ في إثراء محتوى المنصة وضبطها وفق أرقى المعايير التعليمية المطلوبة. شكراً لكونكِ منارة للعلم والاحترافية.
                             </p>
                         </div>
 
@@ -118,7 +118,7 @@ const AboutUs = () => {
                             <Mail className="w-8 h-8 text-neutral-600 group-hover:text-red-500 transition-colors" />
                             <div className="flex flex-col items-start">
                                 <span className="text-sm text-neutral-500 group-hover:text-neutral-300">البريد الإلكتروني</span>
-                                <span className="text-xl font-bold dir-ltr tracking-wide group-hover:text-red-500">mohammedbenhamada0611@gmail.com</span>
+                                <span className="text-xs lg:text-lg font-bold dir-ltr tracking-wide group-hover:text-red-500">mohammed<br/>benhamada0611<br />@gmail.com</span>
                             </div>
                         </div>
 
