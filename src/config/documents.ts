@@ -63,7 +63,7 @@ export const documentsConfig =
         mokhatat: {
             id: 'first',
             name: ' المخطط السنوي الابتدائي',
-            image: '/images/wihda.jpg',
+            image: '/images/planpr.jpg',
             levels: ['primaire'],
             youtubeVideoId: 'xx',
             description: 'أنشئ وحداتك التعلمية بشكل تفاعلي —  بعد التقويم التشخيصي اختر النشاط وطبع الوحدة جاهزة بناء على مستويات الاقسام. كل شيء مرتبط بالمنهاج الرسمي تلقائياً.',
@@ -97,7 +97,7 @@ export const documentsConfig =
         tawzi3: {
             id: 'first',
             name: 'التوزيع السنوي',
-            image: '/images/wihda.jpg',
+            image: '/images/annepart.jpg',
             levels: ['primaire'],
             youtubeVideoId:'xx',
             description: 'أنشئ وحداتك التعلمية بشكل تفاعلي —  بعد التقويم التشخيصي اختر النشاط وطبع الوحدة جاهزة بناء على مستويات الاقسام. كل شيء مرتبط بالمنهاج الرسمي تلقائياً.',
@@ -131,7 +131,7 @@ export const documentsConfig =
         wahdaP: {
             id: 'first',
             name: 'المقاطع التعلمية',
-            image: '/images/wihda.jpg',
+            image: '/images/party.jpg',
             levels: ['primaire'],
             youtubeVideoId:'xx',
             description: 'أنشئ وحداتك التعلمية بشكل تفاعلي —  بعد التقويم التشخيصي اختر النشاط وطبع الوحدة جاهزة بناء على مستويات الاقسام. كل شيء مرتبط بالمنهاج الرسمي تلقائياً.',
@@ -147,7 +147,7 @@ export const documentsConfig =
         },
         ficheNote: {
             id: 'first',
-            image: '/images/info.jpg',
+            image: '/images/dayly.jpg',
             name: 'الدفتر اليومي', 
             levels: ['primaire'],
             youtubeVideoId:'xx',
@@ -280,7 +280,7 @@ export const documentsConfig =
         },
         disp: {
             id: 'first',
-            image: '/images/info.jpg',
+            image: '/images/wwx.png',
             name: '  قائمة الاعفاءات / الحالات الخاصة',
             levels: ['primaire'],
             youtubeVideoId:'xx',

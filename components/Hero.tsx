@@ -178,7 +178,7 @@ const Hero = () => {
                         <iframe
                             allow="autoplay; encrypted-media; picture-in-picture"
                             allowFullScreen
-                            src='https://www.youtube.com/embed/uBFFxl2f-S0'
+                            src='https://www.youtube.com/embed/hTxMJjAuQZ0'
                             className='rounded-3xl w-full aspect-video relative'
                             style={{
                                 zIndex: 1,

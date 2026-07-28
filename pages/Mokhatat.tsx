@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { primaireMokhatatatConfig } from "@/src/config/primairDoc"
 
 const levelLabels: Record<string, string> = {
@@ -13,14 +13,37 @@ const levelLabels: Record<string, string> = {
 
 const Mokhatat = () => {
   // نجعل السنة الأولى ابتدائي (s1) هي الاختيار الافتراضي عند فتح الصفحة
-  const [selectedLevel, setSelectedLevel] = useState<'s1' | 's2' | 's3' | 's4' | 's5'>('s1')
+  const [selectedLevel, setSelectedLevel] = useState<'s1' | 's2' | 's3' | 's4' | 's5'>('s1');
+  const printRef = useRef<HTMLDivElement>(null);
+  const [printScale, setPrintScale] = useState(1);
 
-  const data = primaireMokhatatatConfig[selectedLevel]
-  
+  const data = primaireMokhatatatConfig[selectedLevel];
+
   // تنسيقات الخلايا الموحدة للطباعة والوضوح
-  const th = 'border border-black p-2 text-center font-bold text-xs bg-blue-100'
-  const labelTd = 'border border-black p-2 text-center font-bold text-xs bg-gray-50 w-[15%]'
+  const th = 'border border-black p-2 text-center font-bold text-xs bg-blue-100' ;
+  const labelTd = 'border border-black p-2 text-center font-bold text-xs bg-blue-100 w-[15%]' ;
   const td = 'border border-black p-2 text-right text-[11px] leading-relaxed align-top w-[28%]'
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  useEffect(() => {
+    const handleBeforePrint = () => {
+      if (!printRef.current) return
+      const contentHeightPx = printRef.current.scrollHeight
+      const pageHeightPx = 1080 // ~A4 height at 96dpi minus 8mm margins
+      setPrintScale(Math.min(1, pageHeightPx / contentHeightPx))
+    }
+    const handleAfterPrint = () => setPrintScale(1)
+
+    window.addEventListener('beforeprint', handleBeforePrint)
+    window.addEventListener('afterprint', handleAfterPrint)
+    return () => {
+      window.removeEventListener('beforeprint', handleBeforePrint)
+      window.removeEventListener('afterprint', handleAfterPrint)
+    }
+  }, [])
 
   // دالة مساعدة لتحويل النص المفصول بنجمات إلى قائمة مرتبة
   const formatList = (text: string) => {
@@ -38,8 +61,8 @@ const Mokhatat = () => {
   };
 
   return (
-    <div dir="rtl" className="bg-white text-black p-6 max-w-5xl mx-auto my-4 rounded-md shadow-sm print:shadow-none print:p-0">
-      
+    <div ref={printRef} dir="rtl" style={{ transform: `scale(${printScale})`, transformOrigin: 'top center' }} className="bg-white text-black p-6 max-w-5xl mx-auto my-4 rounded-md shadow-sm print:shadow-none print:p-0 print:mt-[-4]">
+
       {/* 🔘 أداة اختيار مستوى السنة - تختفي تلقائياً عند الطباعة print:hidden */}
       <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg flex flex-col sm:flex-row items-center gap-4 print:hidden">
         <label htmlFor="level-select" className="font-bold text-gray-700 text-sm">
@@ -57,6 +80,18 @@ const Mokhatat = () => {
             </option>
           ))}
         </select>
+        <div className="max-w-4xl mx-auto mb-6 flex justify-between items-center print:hidden ">
+          <button
+            onClick={handlePrint}
+            className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-medium px-5 py-2.5 rounded-lg shadow transition-colors duration-150 cursor-pointer"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
+            طباعة الوثيقة
+          </button>
+        </div>
+
       </div>
 
       {/* عنوان المخطط الرئيسي */}
@@ -117,20 +152,60 @@ const Mokhatat = () => {
             {/* معايير ومؤشرات التقويم */}
             <tr>
               <td className={labelTd}>معايير ومؤشرات التقويم</td>
-              {data.maidans.map((_, i) => (
-                <td key={i} className={td}></td>
+              {data.maidans.map((m, i) => (
+                <td key={i} className={td}>
+                  <ul className="text-right">
+                    {m.mayayir.map((miyar, j) => (
+                      <li key={j}>
+                        {miyar.title}
+                      </li>
+                    ))}
+                  </ul>
+                </td>
               ))}
             </tr>
             {/* الحجم الزمني */}
             <tr>
               <td className={labelTd}>الزمن الإجمالي</td>
               {data.maidans.map((_, i) => (
-                <td key={i} className={`${td} text-center text-gray-400 italic`}>ساعات الممارسة المقررة</td>
+                <td key={i} className={`${td} text-center text-gray-400 italic`}></td>
               ))}
             </tr>
           </tbody>
         </table>
       )}
+      <footer className="mt-12 pt-4">
+        <div className="grid grid-cols-3 text-center text-sm font-bold gap-4">
+          <div>
+            <p className="underline mb-12"> أستاذ المادة</p>
+
+          </div>
+          <div>
+            <p className="underline mb-12">مفتش المادة</p>
+
+          </div>
+          <div>
+            <p className="underline mb-12">مدير المؤسسة</p>
+
+          </div>
+        </div>
+      </footer>
+      <style>{`
+                @media print {
+                    @page {
+                        size: A4 portrait;
+                        margin: 8mm;
+                    }
+                    body {
+                         color: black !important;
+                        -webkit-print-color-adjust: exact;
+                    }
+                    .print\\:hidden {
+                        display: none !important;
+                    }
+                    
+                }
+            `}</style>
     </div>
   )
 }

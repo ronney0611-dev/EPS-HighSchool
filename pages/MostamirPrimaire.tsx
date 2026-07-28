@@ -177,7 +177,7 @@ const MostamirPrimaire = () => {
               <tr>
                 {Array.from({ length: 12 }).map((_, i) => (
                   <th key={i} colSpan={2} className='border border-black' style={{ width: '16px' }}>
-                    {(i % 4) + 1}
+                    الاسبوع {(i % 4) + 1} 
                   </th>
                 ))}
               </tr>
@@ -191,7 +191,7 @@ const MostamirPrimaire = () => {
                   {Array.from({ length: 24 }).map((_, j) => {
                     const globalIdx = offset + j;
                     return (
-                      <td key={j} className={`border border-black ${studentColor(s.status, s.gender)}`}>
+                      <td key={j} className={`border border-black  ${studentColor(s.status, s.gender)}`}>
                         <select
                           value={grid[`${s._id}-${globalIdx}`] ?? ''}
                           onChange={e => setGrid(prev => ({
@@ -203,7 +203,7 @@ const MostamirPrimaire = () => {
                           <option value=""></option>
                           <option value="P">P</option>
                           <option value="A">A</option>
-                          <option value="0">0</option>
+                          <option value="0">ST</option>
                           <option value="M">M</option>
                         </select>
                       </td>
@@ -221,7 +221,7 @@ const MostamirPrimaire = () => {
             <tr>
               <th className='border text-xs border-black px-2 py-1'>الحضور = P</th>
               <th className='border text-xs border-black px-2 py-1'>الغياب = A</th>
-              <th className='border text-xs border-black px-2 py-1'>بدون بدلة = 0</th>
+              <th className='border text-xs border-black px-2 py-1'>بدون بدلة = ST</th>
               <th className='border text-xs border-black px-2 py-1'>مرض = M</th>
             </tr>
           </thead>

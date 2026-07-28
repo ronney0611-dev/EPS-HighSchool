@@ -22,6 +22,7 @@ import Mokhatat from "@/pages/Mokhatat";
 import Tawzi3 from "@/pages/Tawzi3";
 import TakwimTaskhisiP from "@/pages/TakwimTaskhisiP";
 import Barmaja from "@/pages/Barmaja";
+import DispoCard from "@/pages/DispoCard";
 
 interface FileConfig {
   id: string;
@@ -93,6 +94,7 @@ const FilePage = ({ params }: { params: Promise<{ file: string; category: string
     { key: 'taqwimTakwiniCem', component: <TaqwimTakwiniCem /> },
     { key: 'taqwimTahsili', component: <TakwinTahsili /> },
     { key: 'taqwimTahsiliCem', component: <TaqwimTahsiliCem /> },
+    { key: 'dispoCard', component: <DispoCard /> }, 
   ];
 
   const matched = components.find(c => c.key === activeComponentKey);

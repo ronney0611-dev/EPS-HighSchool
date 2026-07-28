@@ -47,7 +47,7 @@ const TaqwimMostamirPrimaire = () => {
       if (mostamir.length > 0) {
         setScores(mostamir.map(s => s.scores));
       } else {
-        setScores(foundStudents.map(() => [2.5, 2.5, 2.5, 2.5]));
+        setScores(foundStudents.map(() => [2, 2, 2, 2, 2]));
       }
     }, 0);
   }, [mostamir, studentsByClass, classSelect, classes]);
@@ -68,10 +68,11 @@ const TaqwimMostamirPrimaire = () => {
           ${isMalade
           ? `<td colspan="5" style="border:1px solid black; padding:4px; text-align:center; color:#dc2626; font-weight:bold;">اعفاء</td>`
           : `
-              <td style="border:1px solid black; padding:4px; text-align:center;">${scores[index]?.[0] ?? 2.5}</td>
-              <td style="border:1px solid black; padding:4px; text-align:center;">${scores[index]?.[1] ?? 2.5}</td>
-              <td style="border:1px solid black; padding:4px; text-align:center;">${scores[index]?.[2] ?? 2.5}</td>
-              <td style="border:1px solid black; padding:4px; text-align:center;">${scores[index]?.[3] ?? 2.5}</td>
+              <td style="border:1px solid black; padding:4px; text-align:center;">${scores[index]?.[0] ?? 2}</td>
+              <td style="border:1px solid black; padding:4px; text-align:center;">${scores[index]?.[1] ?? 2}</td>
+              <td style="border:1px solid black; padding:4px; text-align:center;">${scores[index]?.[2] ?? 2}</td>
+              <td style="border:1px solid black; padding:4px; text-align:center;">${scores[index]?.[3] ?? 2}</td>
+              <td style="border:1px solid black; padding:4px; text-align:center;">${scores[index]?.[4] ?? 2}</td>
               <td style="border:1px solid black; padding:4px; text-align:center; font-weight:bold;">${total}</td>
             `
         }
@@ -110,20 +111,22 @@ const TaqwimMostamirPrimaire = () => {
               <th rowspan="3">#</th>
               <th rowspan="3">اسماء التلاميذ</th>
               <th rowspan="3">الفوج</th>
-              <th colspan="5">علامة المراقبة المستمرة</th>
+              <th colspan="6">علامة المراقبة المستمرة</th>
             </tr>
             <tr>
-              <th>المواظبة/ح/ل</th>
-              <th>المشاركة/مب</th>
-              <th>ج معرفي</th>
-              <th>ج وجداني</th>
+              <th>التحكم في الحركات القاعدية</th>
+              <th>سلوك المتعلم</th>
+              <th>المشاركة الفعالة</th>
+              <th>الهندام</th>
+              <th>الانضباط و الغياب</th>
               <th>ن ت مستمر</th>
             </tr>
             <tr>
-              <th>2.5/2.5</th>
-              <th>2.5/2.5</th>
-              <th>2.5/2.5</th>
-              <th>2.5/2.5</th>
+              <th>2/2</th>
+              <th>2/2</th>
+              <th>2/2</th>
+              <th>2/2</th>
+              <th>2/2</th>
               <th>10/10</th>
             </tr>
           </thead>
@@ -179,15 +182,15 @@ const TaqwimMostamirPrimaire = () => {
                 <th className={th} rowSpan={3}>#</th>
                 <th className={th} rowSpan={3}>اسماء التلاميذ</th>
                 <th className={th} rowSpan={3}>الفوج</th>
-                <th className={th} colSpan={5}>علامة المراقبة المستمرة</th>
+                <th className={th} colSpan={6}>علامة المراقبة المستمرة</th>
               </tr>
               <tr>
-                {['تنفيذ التعليمات', 'المشاركة الفعالة', 'الهندام', 'الانضباط و الغياب', 'ن ت مستمر'].map((item, i) => (
+                {['التحكم في الحركات القاعدية', 'سلوك المتعلم', 'المشاركة الفعالة', 'الهندام', 'الانضباط و الغياب', 'ن ت مستمر'].map((item, i) => (
                   <th key={i} className={th}>{item}</th>
                 ))}
               </tr>
               <tr>
-                {['2.5/2.5', '2.5/2.5', '2.5/2.5', '2.5/2.5', '10/10'].map((item, i) => (
+                {['2/2', '2/2', '2/2', '2/2', '2/2', '10/10'].map((item, i) => (
                   <th key={i} className={th}>{item}</th>
                 ))}
               </tr>
@@ -204,13 +207,13 @@ const TaqwimMostamirPrimaire = () => {
                     <td className={`${cell} text-right whitespace-nowrap px-2`}>{student.name}</td>
                     <td className={cell}>{getStudentGroup(student._id)}</td>
                     {isMalade ? (
-                      <td className={`${cell} text-red-600 font-bold`} colSpan={5}>اعفاء</td>
+                      <td className={`${cell} text-red-600 font-bold`} colSpan={6}>اعفاء</td>
                     ) : (
                       <>
-                        {Array.from({ length: 4 }).map((_, i) => (
+                        {Array.from({ length: 5 }).map((_, i) => (
                           <td key={i} className={cell}>
                             <select
-                              value={scores[index]?.[i] ?? 2.5}
+                              value={scores[index]?.[i] ?? 2}
                               className="bg-transparent border-none outline-none text-center text-xs w-full appearance-none"
                               onChange={e => {
                                 const updated = scores.map((s, si) =>
@@ -218,7 +221,7 @@ const TaqwimMostamirPrimaire = () => {
                                 );
                                 setScores(updated);
                               }}>
-                              {[2.5, 2, 1.5, 1, 0.5, 0].map(n => (
+                              {[2, 1.5, 1, 0.5, 0].map(n => (
                                 <option key={n} value={n}>{n}</option>
                               ))}
                             </select>
@@ -246,7 +249,7 @@ const TaqwimMostamirPrimaire = () => {
             saveMostamir(selectedClassData._id, classStudents.map((s, i) => ({
               studentId: s._id,
               name: s.name,
-              scores: scores[i] ?? [2.5, 2.5, 2.5, 2.5],
+              scores: scores[i] ?? [2, 2, 2, 2, 2],
               total: scores[i]?.reduce((a, b) => a + b, 0) ?? 10,
             })));
           }}
