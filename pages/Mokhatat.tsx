@@ -20,8 +20,8 @@ const Mokhatat = () => {
   const data = primaireMokhatatatConfig[selectedLevel];
 
   // تنسيقات الخلايا الموحدة للطباعة والوضوح
-  const th = 'border border-black p-2 text-center font-bold text-xs bg-blue-100' ;
-  const labelTd = 'border border-black p-2 text-center font-bold text-xs bg-blue-100 w-[15%]' ;
+  const th = 'border border-black p-2 text-center font-bold text-xs bg-blue-100';
+  const labelTd = 'border border-black p-2 text-center font-bold text-xs bg-blue-100 w-[15%]';
   const td = 'border border-black p-2 text-right text-[11px] leading-relaxed align-top w-[28%]'
 
   const handlePrint = () => {
@@ -31,8 +31,19 @@ const Mokhatat = () => {
   useEffect(() => {
     const handleBeforePrint = () => {
       if (!printRef.current) return
-      const contentHeightPx = printRef.current.scrollHeight
-      const pageHeightPx = 1080 // ~A4 height at 96dpi minus 8mm margins
+      const el = printRef.current
+      const originalWidth = el.style.width
+
+      // A4 width (210mm) minus 8mm margins each side = 194mm, at 96dpi
+      const printWidthPx = 194 * 3.7795
+      el.style.width = `${printWidthPx}px`
+
+      const contentHeightPx = el.scrollHeight
+
+      el.style.width = originalWidth
+
+      // A4 height (297mm) minus 8mm margins each side = 281mm, at 96dpi
+      const pageHeightPx = 281 * 3.7795
       setPrintScale(Math.min(1, pageHeightPx / contentHeightPx))
     }
     const handleAfterPrint = () => setPrintScale(1)
