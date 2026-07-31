@@ -20,9 +20,9 @@ import React from "react";
 import TaqwimTahsiliCem from "@/pages/TaqwimTahsiliCem";
 import Mokhatat from "@/pages/Mokhatat";
 import Tawzi3 from "@/pages/Tawzi3";
-import TakwimTaskhisiP from "@/pages/TakwimTaskhisiP";
 import Barmaja from "@/pages/Barmaja";
 import DispoCard from "@/pages/DispoCard";
+import ShabakaTahliliyaPrimaire from "@/pages/ShabakaTahliliyaPrimaire";
 
 interface FileConfig {
   id: string;
@@ -81,7 +81,7 @@ const FilePage = ({ params }: { params: Promise<{ file: string; category: string
     // Diagnostic evaluation variations
     { key: 'taqwimTach', component: <TakwimTachkhisiForm /> },
     { key: 'taqwimTachCem', component: <TakwimTachkhisiForm /> },
-    { key: 'taqwimTachPrimaire', component: <TakwimTaskhisiP /> },
+    { key: 'taqwimTachPrimaire', component: <ShabakaTahliliyaPrimaire /> },
 
     // Presence/Monitoring tracking variants
     { key: 'mostamir', component: <Mostamir /> },

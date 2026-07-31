@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import type { Class, Student } from '@/hooks/useClasses'
+import { getSession, useSession } from "next-auth/react";
+import { Session } from 'inspector/promises';
 
 type ManageClassesProps = {
     classes: Class[]
@@ -17,12 +19,12 @@ type ManageClassesProps = {
 const ManageClasses = ({
     classes = [],
     studentsByClass = {},
-    fetchStudents = () => {},
-    addClass = () => {},
-    deleteClass = () => {},
-    addStudent = () => {},
-    deleteStudent = () => {},
-    updateStudent = () => {}
+    fetchStudents = () => { },
+    addClass = () => { },
+    deleteClass = () => { },
+    addStudent = () => { },
+    deleteStudent = () => { },
+    updateStudent = () => { }
 }: ManageClassesProps) => {
     const [expandedClassId, setExpandedClassId] = useState<string | null>(null)
     const [classInput, setClassInput] = useState('');
