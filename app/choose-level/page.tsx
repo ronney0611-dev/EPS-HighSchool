@@ -124,15 +124,7 @@ export default function ChooseLevel() {
                             >
                                 <span className="text-3xl">{level.emoji}</span>
                                 {
-                                    level.key !== 'lycee' ? (
-                                        <>
-                                            <div className={`font-bold text-base transition-colors ${isSelected ? 'text-white' : 'text-gray-300'}`}>
-                                                {level.label}
-                                            </div>
-                                            <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-xl p-3 text-center font-medium mb-4">
-                                                ⚠️ هذا الطور التعليمي غير مدعوم حالياً، سيتم تفعيله لاحقاً
-                                            </div></>
-                                    ) : (
+                                    level.key !== 'cem' ? (
                                         <>
                                             <div className="flex-1 text-right">
                                                 <div className={`font-bold text-base transition-colors ${isSelected ? 'text-white' : 'text-gray-300'}`}>
@@ -143,6 +135,15 @@ export default function ChooseLevel() {
                                             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200
                                                 ${isSelected ? 'border-emerald-500 bg-emerald-500' : 'border-white/20 bg-transparent'}`}>
                                                 {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className={`font-bold text-base transition-colors ${isSelected ? 'text-white' : 'text-gray-300'}`}>
+                                                {level.label}
+                                            </div>
+                                            <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-xl p-3 text-center font-medium mb-4">
+                                                ⚠️ هذا الطور التعليمي غير مدعوم حالياً، سيتم تفعيله لاحقاً
                                             </div>
                                         </>
                                     )
