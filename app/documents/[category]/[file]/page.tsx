@@ -23,6 +23,7 @@ import Barmaja from "@/pages/Barmaja";
 import DispoCard from "@/pages/DispoCard";
 import ShabakaTahliliyaPrimaire from "@/pages/ShabakaTahliliyaPrimaire";
 import WahdaPrimaireGeneratorPage from "@/pages/Wahdaprimairegeneratorpage";
+import DailyLogPage from "@/pages/Dailylogpage";
 
 interface FileConfig {
   id: string;
@@ -95,6 +96,7 @@ const FilePage = ({ params }: { params: Promise<{ file: string; category: string
     { key: 'taqwimTahsili', component: <TakwinTahsili /> },
     { key: 'taqwimTahsiliCem', component: <TaqwimTahsiliCem /> },
     { key: 'dispoCard', component: <DispoCard /> }, 
+    { key: 'ficheNote', component: <DailyLogPage /> }, 
   ];
 
   const matched = components.find(c => c.key === activeComponentKey);

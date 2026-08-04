@@ -39,23 +39,23 @@ export default function WahdaPrimaireGeneratorPage() {
     )
 
     const [classId, setClassId] = useState<string>('')
-    const [level, setLevel] = useState<PrimaireLevelKey>('s1')
     const [maidanId, setMaidanId] = useState<number>(1)
     const [current, setCurrent] = useState<WahdaPrimaireState | null>(null)
     const [isLoading, setIsLoading] = useState(false)
 
-    useEffect(() => {
-        if (primaireClasses.length > 0 && !classId) {
-            setClassId(primaireClasses[0]._id)
-            setLevel(getPrimaireLevelFromClassName(primaireClasses[0].name))
-        }
-    }, [primaireClasses, classId])
+    // Derived, not synced via effect: falls back to the first primaire class
+    // until the teacher explicitly picks one.
+    const effectiveClassId = classId || primaireClasses[0]?._id || ''
+    const level: PrimaireLevelKey = useMemo(
+        () => getPrimaireLevelFromClassName(primaireClasses.find(c => c._id === effectiveClassId)?.name),
+        [primaireClasses, effectiveClassId]
+    )
 
     const loadWahda = async () => {
-        if (!classId) return
+        if (!effectiveClassId) return
         setIsLoading(true)
         try {
-            const saved = await fetchWahda(classId, level, maidanId)
+            const saved = await fetchWahda(effectiveClassId, level, maidanId)
             if (saved && saved.sessions?.length > 0) {
                 setCurrent({
                     level: saved.level,
@@ -85,18 +85,17 @@ export default function WahdaPrimaireGeneratorPage() {
     }
 
     useEffect(() => {
-        const fetchDoc = async () => {
-            if (classId && level && maidanId) {
-                await loadWahda();
-            }
-        };
-        fetchDoc();
-    }, [classId, level, maidanId])
+        if (!effectiveClassId || !level || !maidanId) return
+        let cancelled = false
+        Promise.resolve().then(() => {
+            if (!cancelled) loadWahda()
+        })
+        return () => { cancelled = true }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [effectiveClassId, level, maidanId])
 
     const handleClassChange = (id: string) => {
         setClassId(id)
-        const cls = primaireClasses.find(c => c._id === id)
-        setLevel(getPrimaireLevelFromClassName(cls?.name))
     }
 
     const handleCellChange = (index: number, field: keyof ISessionPrimaire, value: string) => {
@@ -112,8 +111,8 @@ export default function WahdaPrimaireGeneratorPage() {
     }
 
     const handleSave = async () => {
-        if (!current || !classId) return
-        const result = await saveWahda(classId, current)
+        if (!current || !effectiveClassId) return
+        const result = await saveWahda(effectiveClassId, current)
         if (result) {
             toast('تم حفظ الوحدة التعلمية بنجاح !', { type: 'success' })
         }
@@ -133,7 +132,7 @@ export default function WahdaPrimaireGeneratorPage() {
                         <label className="block text-sm font-semibold mb-1 text-gray-600">القسم</label>
                         <select
                             className="w-full border p-2 rounded-xl bg-gray-50 text-gray-700"
-                            value={classId}
+                            value={effectiveClassId}
                             onChange={(e) => handleClassChange(e.target.value)}
                         >
                             {primaireClasses.map(c => (
@@ -216,6 +215,7 @@ export default function WahdaPrimaireGeneratorPage() {
                     <table className="w-full border-collapse border-2 border-black text-center text-sm">
                         <thead>
                             <tr className="bg-gray-100 font-bold text-gray-900">
+                                <th className="border border-black p-2 w-[10%]">التاريخ</th>
                                 <th className="border border-black p-2 w-[13%]">طبيعة الحصة</th>
                                 <th className="border border-black p-2 w-[19%]">مركبات الكفاءة</th>
                                 <th className="border border-black p-2 w-[16%]">الموارد المعرفية</th>
@@ -227,6 +227,7 @@ export default function WahdaPrimaireGeneratorPage() {
                         <tbody>
                             {current.sessions.map((session, index) => (
                                 <tr key={index} className="border border-black hover:bg-gray-50/50">
+                                    <td className="border border-black p-2 text-gray-400 font-mono text-xs"> --/--/----</td>
                                     <td className={`border border-black p-2 font-bold cursor-default ${TYPE_COLOR[session.type]}`}>
                                         {session.unit_name || TYPE_LABEL[session.type]}
                                     </td>
