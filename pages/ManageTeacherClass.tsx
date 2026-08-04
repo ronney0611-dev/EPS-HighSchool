@@ -7,7 +7,7 @@ import { toast } from 'react-toastify'
 
 const fields = [
     { label: 'الاسم واللقب', key: 'name', type: 'text', placeholder: 'الاسم واللقب' },
-    { label: 'الثانوية', key: 'school', type: 'text', placeholder: 'ثانوية ...' },
+    { label: 'المؤسسة', key: 'school', type: 'text', placeholder: 'المؤسسة ...' },
     { label: 'الولاية', key: 'birthloc', type: 'text', placeholder: 'الولاية' },
     { label: 'الجنسية', key: 'nationality', type: 'text', placeholder: 'جزائري' },
     { label: 'تاريخ الميلاد', key: 'birthday', type: 'date', placeholder: '' },

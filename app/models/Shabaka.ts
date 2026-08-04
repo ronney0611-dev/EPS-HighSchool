@@ -38,6 +38,6 @@ const ShabakaSchema = new Schema<IShabaka>({
     },
 }, { timestamps: true });
 
-ShabakaSchema.index({ classId: 1, maidanIndex: 1, teacher: 1 }, { unique: true });
+ShabakaSchema.index({ classId: 1, level: 1, maidanIndex: 1, teacher: 1 }, { unique: true });
 
 export default mongoose.models.Shabaka || mongoose.model<IShabaka>('Shabaka', ShabakaSchema);

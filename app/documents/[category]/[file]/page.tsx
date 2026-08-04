@@ -12,7 +12,6 @@ import TaqwimMostamirPrimaire from "@/pages/TaqwimMostamirPrimaire";
 import TaqwimTakwini from "@/pages/TaqwimTakwini";
 import TaqwimTakwiniCem from "@/pages/TaqwimTakwiniCem";
 import WahdaCem from "@/pages/WahdaCem";
-import WahdaP from "@/pages/WahdaP";
 import WahdaT from "@/pages/WahdaT";
 import { documentsConfig } from "@/src/config/documents";
 import { useSession } from "next-auth/react";
@@ -23,6 +22,7 @@ import Tawzi3 from "@/pages/Tawzi3";
 import Barmaja from "@/pages/Barmaja";
 import DispoCard from "@/pages/DispoCard";
 import ShabakaTahliliyaPrimaire from "@/pages/ShabakaTahliliyaPrimaire";
+import WahdaPrimaireGeneratorPage from "@/pages/Wahdaprimairegeneratorpage";
 
 interface FileConfig {
   id: string;
@@ -76,7 +76,7 @@ const FilePage = ({ params }: { params: Promise<{ file: string; category: string
     // Wahda variants
     { key: 'wahda', component: <WahdaT /> },
     { key: 'wahdaCem', component: <WahdaCem /> },
-    { key: 'wahdaPrimaire', component: <WahdaP /> },
+    { key: 'wahdaPrimaire', component: <WahdaPrimaireGeneratorPage /> },
 
     // Diagnostic evaluation variations
     { key: 'taqwimTach', component: <TakwimTachkhisiForm /> },

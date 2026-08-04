@@ -85,11 +85,17 @@ const ShabakaTahliliyaPrimaire = () => {
         setLevelKey(newLevel);
         setMaidanIndex(0);
         resetSelectionState();
+        if (classSelect) {
+            loadShabakaFor(classSelect, mode, newLevel, 0);
+        }
     };
 
     const handleMaidanChange = (index: number) => {
         setMaidanIndex(index);
         resetSelectionState();
+        if (classSelect) {
+            loadShabakaFor(classSelect, mode, levelKey, index);
+        }
     };
 
     const handleModeChange = (newMode: Mode) => {
@@ -97,17 +103,16 @@ const ShabakaTahliliyaPrimaire = () => {
         setLoadedFromSave(false);
         // نعيد التحميل عند تبديل الوضع إن كان القسم محددا مسبقا
         if (classSelect) {
-            loadShabakaFor(classSelect, newMode);
+            loadShabakaFor(classSelect, newMode, levelKey, maidanIndex);
         }
     };
 
-    const loadShabakaFor = async (className: string, targetMode: Mode) => {
+    const loadShabakaFor = async (className: string, targetMode: Mode, level: string, maidanIdx: number) => {
         const found = classes.find(c => c.name === className);
         if (!found) return;
 
-        const data = await fetchShabaka(found._id, maidanIndex);
+        const data = await fetchShabaka(found._id, level, maidanIdx);
 
-        // لقطة التشخيصي دائما تُحمّل للمقارنة، بغض النظر عن الوضع الحالي
         if (data?.tashkhisi?.students?.length) {
             setTashkhisiSnapshot(data.tashkhisi.students);
         } else {
@@ -122,7 +127,6 @@ const ShabakaTahliliyaPrimaire = () => {
             setLoadedFromSave(false);
         }
     };
-
     const handleClassSelect = async (className: string) => {
         setClassSelect(className);
         resetSelectionState();
@@ -131,7 +135,7 @@ const ShabakaTahliliyaPrimaire = () => {
         if (!found) return;
         fetchStudents(found._id);
 
-        await loadShabakaFor(className, mode);
+        await loadShabakaFor(className, mode, levelKey, maidanIndex);
     };
 
     const toggleCheck = (studentIndex: number, maiyarIndex: number, mouachirIndex: number) => {

@@ -130,7 +130,7 @@ export const documentsConfig =
         },
         wahdaP: {
             id: 'first',
-            name: 'المقاطع التعلمية',
+            name: '  المقاطع التعلمية (الوحدة التعلمية) ',
             image: '/images/party.jpg',
             levels: ['primaire'],
             youtubeVideoId: 'xx',

@@ -22,11 +22,11 @@ export const useShabaka = () => {
     const [shabaka, setShabaka] = useState<ShabakaData | null>(null);
     const [loading, setLoading] = useState(false);
 
-    const fetchShabaka = async (classId: string, maidanIndex: number) => {
+    const fetchShabaka = async (classId: string, level: string, maidanIndex: number) => {
         setLoading(true);
         try {
             const response = await axios.get('/api/shabaka', {
-                params: { classId, maidanIndex },
+                params: { classId, level, maidanIndex },
             });
             setShabaka(response.data.shabaka);
             return response.data.shabaka as ShabakaData | null;

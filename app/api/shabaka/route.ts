@@ -12,13 +12,15 @@ export async function GET(req: Request) {
         const { searchParams } = new URL(req.url);
         const classId = searchParams.get('classId');
         const maidanIndex = searchParams.get('maidanIndex');
+        const level = searchParams.get('level');
 
-        if (!classId || maidanIndex === null) {
-            return Response.json({ message: 'classId و maidanIndex مطلوبان' }, { status: 400 });
+        if (!classId || !level || maidanIndex === null) {
+            return Response.json({ message: 'classId و level و maidanIndex مطلوبان' }, { status: 400 });
         }
 
         const doc = await Shabaka.findOne({
             classId,
+            level,
             maidanIndex: Number(maidanIndex),
             teacher: session.user.id,
         });
@@ -57,7 +59,7 @@ export async function POST(req: Request) {
         };
 
         const saved = await Shabaka.findOneAndUpdate(
-            { classId, maidanIndex, teacher: session.user.id },
+            { classId, level, maidanIndex, teacher: session.user.id },
             update,
             { upsert: true, new: true }
         );
