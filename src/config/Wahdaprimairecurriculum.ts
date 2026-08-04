@@ -90,8 +90,8 @@ export const PRIMAIRE_LEVELS: { key: PrimaireLevelKey; name: string }[] = [
 // this array is only used to populate the selector before loading.
 export const PRIMAIRE_MAIDANS: { id: number; slug: string; name: string }[] = [
     { id: 1, slug: 'alwad3iyat', name: 'الوضعيات والتنقلات' },
-    { id: 2, slug: 'harakat', name: 'الحركات' },
-    { id: 3, slug: 'alhaykala', name: 'الهيكلة' },
+    { id: 2, slug: 'harakat', name: 'الحركات القاعدية' },
+    { id: 3, slug: 'alhaykala', name: 'الهيكلة و البناء' },
 ]
 
 // Parses a class name like "1ère année", "2ème année A" -> 's1', 's2'...
