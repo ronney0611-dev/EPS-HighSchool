@@ -5,6 +5,7 @@ import axios from "axios"
 import { useRouter } from "next/navigation"
 import { useSessionRefresh } from "@/hooks/useSessionRefresh";
 import { useSession } from 'next-auth/react';
+import { Copy, Check } from 'lucide-react';
 
 type PaymentMethod = 'BARIDIMOB' | 'BARIDI' | 'CHARGILY'
 
@@ -21,6 +22,19 @@ export default function Payment() {
     const [fileName, setFileName] = useState('')
     const fileRef = useRef<HTMLInputElement>(null)
     const { refresh } = useSessionRefresh();
+
+    const ripNumber = "00799999002369898483";
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(ripNumber)
+            setCopied(true)
+            setTimeout(() => setCopied(false), 2000) // Resets back to Copy icon after 2 seconds
+        } catch (err) {
+            console.error('Failed to copy: ', err)
+        }
+    };
 
     const AMOUNT = 3000
     const PLAN = 'YEARLY'
@@ -192,16 +206,35 @@ export default function Payment() {
                             <ol className="text-gray-400 text-sm space-y-2 list-decimal list-inside">
                                 <li>افتح تطبيق بريدي موب</li>
                                 <li>أرسل <span className="text-white font-bold">3000 دج</span> إلى الرقم:</li>
-                                <div className="bg-[#0a0a0f] border border-white/10 rounded-lg px-4 py-2 text-center my-2">
-                                    <p dir="ltr" className="text-emerald-400 font-black text-lg tracking-widest">00799999<br></br>0023698984 83</p>
+                                <div className="bg-[#0a0a0f] border border-white/10 rounded-lg px-3 py-2 my-2 flex items-center justify-between gap-2 max-w-full overflow-hidden">
+                                    <p
+                                        dir="ltr"
+                                        className="text-emerald-400 font-black select-all break-all text-xs sm:text-sm md:text-base tracking-wide"
+                                    >
+                                        {ripNumber}
+                                    </p>
+
+                                    <button
+                                        type="button"
+                                        onClick={handleCopy}
+                                        className="p-1 rounded hover:bg-white/5 transition-colors shrink-0 flex items-center justify-center"
+                                        title="Copied!"
+                                    >
+                                        {copied ? (
+                                            <Check className="w-4 h-4 text-emerald-400" />
+                                        ) : (
+                                            <Copy className="w-4 h-4 text-emerald-400 hover:text-emerald-300 cursor-pointer" />
+                                        )}
+                                    </button>
                                 </div>
                                 <li>خذ لقطة شاشة للإيصال ( سكرين شوت ) </li>
                                 <li> ارسل الصورة عبر الواتساب او ارفعها أدناه وأرسل الطلب</li>
                             </ol>
+
                         </div>
 
                         <div className="bg-[#0a0a0f] border border-white/10 rounded-lg px-4 py-2 text-center my-2">
-                            <p dir="ltr" className="text-emerald-400 font-black text-lg tracking-widest">WhatsApp: 0795972858</p>
+                            <p dir="ltr" className="text-emerald-400 font-black text-lg tracking-widest">WhatsApp: <span className="select-all">0795972858</span></p>
                         </div>
 
                         {/* Receipt upload */}
@@ -290,8 +323,26 @@ export default function Payment() {
                             <ol className="text-gray-400 text-sm space-y-2 list-decimal list-inside">
                                 <li>توجه إلى أقرب مكتب بريد</li>
                                 <li>حوّل <span className="text-white font-bold">3000 دج</span> إلى حساب CCP رقم:</li>
-                                <div className="bg-[#0a0a0f] border border-white/10 rounded-lg px-4 py-2 text-center my-2">
-                                    <p dir="ltr" className="text-emerald-400 font-black text-lg tracking-widest">00799999<br />0023698984 83</p>
+                                <div className="bg-[#0a0a0f] border border-white/10 rounded-lg px-3 py-2 my-2 flex items-center justify-between gap-2 max-w-full overflow-hidden">
+                                    <p
+                                        dir="ltr"
+                                        className="text-emerald-400 font-black select-all break-all text-xs sm:text-sm md:text-base tracking-wide"
+                                    >
+                                        {ripNumber}
+                                    </p>
+
+                                    <button
+                                        type="button"
+                                        onClick={handleCopy}
+                                        className="p-1 rounded hover:bg-white/5 transition-colors shrink-0 flex items-center justify-center"
+                                        title="Copied!"
+                                    >
+                                        {copied ? (
+                                            <Check className="w-4 h-4 text-emerald-400" />
+                                        ) : (
+                                            <Copy className="w-4 h-4 text-emerald-400 hover:text-emerald-300 cursor-pointer" />
+                                        )}
+                                    </button>
                                 </div>
                                 <li>الاسم واللقب ادناه</li>
                                 <div className="bg-[#0a0a0f] border border-white/10 rounded-lg px-4 py-2 text-center my-2">
@@ -299,7 +350,7 @@ export default function Payment() {
                                 </div>
                                 <li>رقم الهاتف ( يمكنك التواصل معنا قبل العملية )</li>
                                 <div className="bg-[#0a0a0f] border border-white/10 rounded-lg px-4 py-2 text-center my-2">
-                                    <p dir="ltr" className="text-emerald-400 font-black text-lg tracking-widest">0795972858</p>
+                                    <p dir="ltr" className="text-emerald-400 font-black text-lg tracking-widest select-all">0795972858</p>
                                 </div>
                                 <li>احتفظ بوصل التحويل</li>
                                 <li>ارفع صورة الوصل عبر الواتساب أو ارفعها أدناه وأرسل الطلب</li>
