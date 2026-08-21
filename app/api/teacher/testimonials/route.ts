@@ -8,7 +8,7 @@ export async function GET() {
         const teachers = await Teacher.find(
             { review: { $exists: true, $ne: "" } },
             "name birthloc photo review"
-        ).limit(12);
+        ).limit(50);
 
         return Response.json({ success: true, teachers });
     } catch (error) {

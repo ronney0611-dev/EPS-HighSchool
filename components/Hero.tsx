@@ -85,7 +85,7 @@ const Hero = () => {
             <header dir="rtl" className='bg-black lg:mt-[-20] lg:mb-[-100] text-white flex flex-col items-center bg-[url("https://assets.prebuiltui.com/images/components/hero-section/hero-background-image.png")] bg-cover bg-center bg-no-repeat pb-10'>
 
                 <h1 className="text-3xl mt-20 md:text-5xl font-extrabold text-center max-w-4xl tracking-wide leading-tight px-4 bg-linear-to-b from-white to-gray-300 bg-clip-text text-transparent font-['Cairo',sans-serif]">
-                    <span className="text-red-500"> قف في الملعب.</span> واترك تطبيقنا يتولى صياغة وثائقك البيداغوجية في ثوان
+                    <span className="text-red-500"> قف في الملعب.</span> واترك تطبيقنا يتولى صياغة وثائقك البيداغوجية في ثوان <span className="text-lg md:text-2xl text-green-400 font-bold" >(جميع الاطوار الدراسية)</span>
                 </h1>
                 <p className="text-center text-sm md:text-lg text-gray-200 max-w-2xl mx-auto mt-6 px-6 leading-relaxed font-['Tajawal',sans-serif]">
                     ودع الأوراق المبعثرة وساعات الصياغة الطويلة. ركّز جهدك على تدريب وتطوير طلابك، ونحن من نتكفل بجميع الوثائق؛ من قوائم الأقسام والتلاميذ إلى رصد النقاط وإرسالها للإدارة.
@@ -157,8 +157,8 @@ const Hero = () => {
                             لماذا تختارنا ؟
                         </div>
                     </div>
-                    <a
-                        href="https://wa.me/+213795972858?text=مرحباً،%20أريد%20الاستفسار%20عن%20تطبيق%20الوثائق%20البيداغوجية"
+                    <Link
+                        href="/about"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-center w-full sm:w-auto block"
@@ -168,7 +168,7 @@ const Hero = () => {
                         >
                             اضغط اذا كان لديك استفسار ←
                         </div>
-                    </a>
+                    </Link>
 
                 </div>
 

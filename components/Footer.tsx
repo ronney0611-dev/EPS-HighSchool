@@ -28,7 +28,7 @@ const Footer = () => {
                         </Link>
                         <a
                             className='hover:text-blue-600 transition-colors p-1'
-                            href="https://www.facebook.com/benhammada.mohamed/"
+                            href="https://www.facebook.com/profile.php?id=61592867994083"
                             target="_blank"
                             rel="noopener noreferrer"
                             aria-label="Facebook"

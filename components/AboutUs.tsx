@@ -118,7 +118,7 @@ const AboutUs = () => {
                             <Mail className="w-8 h-8 text-neutral-600 group-hover:text-red-500 transition-colors" />
                             <div className="flex flex-col items-start">
                                 <span className="text-sm text-neutral-500 group-hover:text-neutral-300">البريد الإلكتروني</span>
-                                <span className="text-xs lg:text-lg font-bold dir-ltr tracking-wide group-hover:text-red-500">mohammed<br/>benhamada0611<br />@gmail.com</span>
+                                <span className="text-xs lg:text-lg font-bold dir-ltr tracking-wide group-hover:text-red-500">epsdzadmin<br />@gmail.com</span>
                             </div>
                         </div>
 
@@ -128,10 +128,14 @@ const AboutUs = () => {
                             className="group flex items-center gap-4 px-8 py-5 bg-black rounded-2xl border-2 border-neutral-800 hover:border-red-600 hover:bg-neutral-900 transition-all duration-300 w-full justify-center shadow-lg"
                         >
                             <Phone className="w-8 h-8 text-neutral-600 group-hover:text-red-500 transition-colors" />
-                            <div className="flex flex-col items-start">
+                            <a
+                                href="https://wa.me/+213795972858"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex flex-col items-start">
                                 <span className="text-sm text-neutral-500 group-hover:text-neutral-300">رقم الهاتف</span>
                                 <span className="text-xl font-bold dir-ltr tracking-wide group-hover:text-red-500">07 95972858</span>
-                            </div>
+                            </a>
                         </div>
 
                     </div>

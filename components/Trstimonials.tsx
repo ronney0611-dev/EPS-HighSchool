@@ -70,18 +70,6 @@ const Testimonials = () => {
                         </button>
                     </div>
                 )}
-
-                {teachers.length > 1 && (
-                    <div className="flex justify-center gap-2 mt-6">
-                        {teachers.map((_, i) => (
-                            <button
-                                key={i}
-                                onClick={() => setCurrent(i)}
-                                className={`w-2 h-2 rounded-full transition-colors ${i === current ? 'bg-red-500' : 'bg-white/20'}`}
-                            />
-                        ))}
-                    </div>
-                )}
             </div>
         </section>
     )
