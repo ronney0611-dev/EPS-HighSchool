@@ -166,7 +166,7 @@ const Hero = () => {
                         <div
                             className="bg-white text-blue-700 font-bold text-[15px] px-8 py-3.5 rounded-xl inline-block transition-transform duration-200 hover:scale-[1.03] shadow-md"
                         >
-                            اضغط اذا كان لديك استفسار ←
+                            تواصل معنا هنا ←
                         </div>
                     </Link>
 
