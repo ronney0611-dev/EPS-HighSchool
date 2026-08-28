@@ -63,7 +63,7 @@ export default function Login() {
     }
 
     return (
-        <div className="relative min-h-screen flex items-center justify-center bg-[#0a0a0f] text-white antialiased select-none overflow-hidden font-sans" style={{ direction: 'rtl' }}>
+        <div className="relative min-h-screen flex items-center justify-center bg-black text-white antialiased select-none overflow-hidden font-sans" style={{ direction: 'rtl' }}>
 
             {/* Background glows */}
             <div className="absolute inset-0 pointer-events-none opacity-40 mix-blend-screen">
