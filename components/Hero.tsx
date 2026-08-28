@@ -1,6 +1,5 @@
 'use client'
 
-import BorderAnimationButton from "@/src/components/nurui/border-button";
 import Offers from "./Offers";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -85,7 +84,7 @@ const Hero = () => {
             <header dir="rtl" className='bg-black lg:mt-[-20] lg:mb-[-100] text-white flex flex-col items-center bg-[url("https://assets.prebuiltui.com/images/components/hero-section/hero-background-image.png")] bg-cover bg-center bg-no-repeat pb-10'>
 
                 <h1 className="text-3xl mt-20 md:text-5xl font-extrabold text-center max-w-4xl tracking-wide leading-tight px-4 bg-linear-to-b from-white to-gray-300 bg-clip-text text-transparent font-['Cairo',sans-serif]">
-                    <span className="text-red-500"> قف في الملعب.</span> واترك تطبيقنا يتولى صياغة وثائقك البيداغوجية في ثوان <span className="text-lg md:text-2xl text-green-400 font-bold" >(جميع الاطوار الدراسية)</span>
+                    <span className="text-red-500"> قف في الملعب.</span> واترك تطبيقنا يتولى صياغة وثائقك البيداغوجية في ثوان <span className="text-lg md:text-2xl text-white font-bold" >(جميع الاطوار الدراسية)</span>
                 </h1>
                 <p className="text-center text-sm md:text-lg text-gray-200 max-w-2xl mx-auto mt-6 px-6 leading-relaxed font-['Tajawal',sans-serif]">
                     ودع الأوراق المبعثرة وساعات الصياغة الطويلة. ركّز جهدك على تدريب وتطوير طلابك، ونحن من نتكفل بجميع الوثائق؛ من قوائم الأقسام والتلاميذ إلى رصد النقاط وإرسالها للإدارة.
@@ -142,7 +141,7 @@ const Hero = () => {
                                 <div className="flex gap-3 justify-center flex-wrap">
                                     <a
                                         href="/login"
-                                        className="bg-white text-blue-700 font-bold text-[15px] px-8 py-3.5 rounded-xl inline-block transition-transform duration-200 hover:scale-[1.03] shadow-md"
+                                        className=" bg-indigo-500 hover:bg-indigo-600 font-bold text-[15px] px-8 py-3.5 rounded-xl inline-block transition-transform duration-200 hover:scale-[1.03] shadow-md"
                                     >
                                         سجل الدخول الآن ←
                                     </a>

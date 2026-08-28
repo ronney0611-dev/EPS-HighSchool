@@ -6,15 +6,13 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const EMAIL_TEXT = () => `السلام عليكم أستاذ(ة)，
+const EMAIL_TEXT = () => `
 
-لاحظنا أنك سجلت مؤخرًا في منصة EPSDZ، ونود أن نطمئن عليك ونسألك إذا واجهتك أي مشكلة أو استفسار أثناء استخدام المنصة، رأيك يهمنا كثيرًا في تطوير المنصة لخدمتك بشكل أفضل.
-
-لا تتردد في التواصل معي مباشرة عبر الهاتف او الواتساب : 0795972858
-
-بانتظار ردك، وشكرًا لك على وقتك.
-
-مع خالص التقدير، منصة EPSDZ`;
+    when you need it (manually) to send a reminder email to users who have not paid for the service.
+    
+    The email text is in Arabic and is intended to check if the user faced any issues during registration
+      
+    or activation of their account on the EPSDZ platform. `;
 
 async function main() {
     await mongoose.connect(process.env.MONGODB_URI!, {
