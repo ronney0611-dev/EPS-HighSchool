@@ -9,6 +9,7 @@ export interface IUser extends Document {
   paidUntil: Date | null
   level: 'lycee' | 'cem' | 'primaire'
   createdAt: Date
+  reminderSent: boolean
 }
 
 const UserSchema = new Schema<IUser>({
@@ -19,7 +20,8 @@ const UserSchema = new Schema<IUser>({
   isPaid: { type: Boolean, default: false },
   paidUntil: { type: Date, default: null },
   level: { type: String, enum: ['lycee', 'cem', 'primaire'], default: 'lycee' },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+  reminderSent: { type: Boolean, default: false }
 })
 
 export default mongoose.models.User || mongoose.model<IUser>('User', UserSchema)
