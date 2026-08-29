@@ -36,7 +36,7 @@ const DocumentsPage = () => {
   );
 
   return (
-    <div dir="rtl" className='my-8 mx-8 grid gap-4 bg-black text-white' >
+    <div dir="rtl" className='mb-8 mt-2 mx-8 grid gap-4 bg-black text-white' >
 
       <div className='flex flex-col justify-center items-center' >
         <div className='flex justify-center text-center '>

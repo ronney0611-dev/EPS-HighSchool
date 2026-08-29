@@ -41,7 +41,7 @@ const Navbare = () => {
                 )
                     :
                     (
-                        <Banner className="text-white bg-linear-to-r from-[#de5454] via-[#500303] to-black my-10" />
+                        <Banner className="text-white bg-linear-to-r from-[#de5454] via-[#500303] to-black mb-10" />
 
                     )
             }
