@@ -114,7 +114,13 @@ export default function LockedDocCard({
                             </p>
 
                             <div onClick={() => router.push(activationHref)} className="flex justify-center my-2">
-                                <BorderAnimationButton text="  تفعيل الحساب 🔓" className='my-1 h-10' />
+                                <button
+                                    className="w-full h-12 bg-linear-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 
+                                    active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none rounded-xl cursor-pointer
+                                    text-white font-bold shadow-[0_4px_24px_rgba(16,185,129,0.2)] transition-all duration-200 mt-2"
+                                >
+                                    تفعيل الحساب 🔓
+                                </button>
                             </div>
 
                         </div>

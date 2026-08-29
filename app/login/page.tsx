@@ -91,7 +91,7 @@ export default function Login() {
                 <h1 className="text-center text-xl font-bold text-white mb-6">
                     {state === 'login' ? ' مرحبا بعودتك ! ادخل إلى حسابك ' : 'انشئ حساب جديد وانضم إلى منصة أساتذة التربية البدنية والرياضية'}
                 </h1>
-               
+
                 {/* Google 
                 <button
                     type="button"
@@ -111,6 +111,15 @@ export default function Login() {
                     <div className="flex-1 h-px bg-white/8" />
                     <span className="text-[11px] text-gray-600 font-medium tracking-wide whitespace-nowrap"></span>
                     <div className="flex-1 h-px bg-white/8" />
+                </div>
+                <div className="text-center text-gray-300 my-8">
+                    {state === 'login' ? 'اذا كنت لا تملك حساباً ؟' : ' اذا كنت تملك حساباً مسجلاً مسبقاً ؟ '}
+                    <button
+                        onClick={() => { setState(prev => prev === 'login' ? 'register' : 'login'); setError('') }}
+                        className="w-full h-12 bg-linear-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none rounded-xl text-white text-sm font-bold shadow-[0_4px_24px_rgba(16,185,129,0.2)] transition-all duration-200 mt-2"
+                    >
+                        {state === 'login' ? 'سجّل الآن هنا' : 'اضغط لتسجيل الدخول'}
+                    </button>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -184,7 +193,7 @@ export default function Login() {
                         <div className="text-left">
                             <a href="https://wa.me/+213795972858" target="_blank"
                                 rel="noopener noreferrer" aria-label="WhatsApp"
-                                className="text-[11px] text-emerald-400 hover:text-emerald-300 hover:underline transition-all">
+                                className="text-[11px] text-emerald-400 hover:text-emerald-300 hover:underline underline transition-all">
                                 الرجاء التواصل معنا اذا نسيت كلمة المرور
                             </a>
                         </div>
@@ -208,15 +217,6 @@ export default function Login() {
                         )}
                     </button>
                 </form>
-                 <div className="text-center text-gray-300 mt-8">
-                    {state === 'login' ? 'اذا كنت لا تملك حساباً ؟' : ' اذا كنت تملك حساباً مسجلاً مسبقاً ؟ '}
-                    <button
-                        onClick={() => { setState(prev => prev === 'login' ? 'register' : 'login'); setError('') }}
-                        className="w-full h-12 bg-linear-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none rounded-xl text-white text-sm font-bold shadow-[0_4px_24px_rgba(16,185,129,0.2)] transition-all duration-200 mt-2"
-                    >
-                        {state === 'login' ? 'سجّل الآن هنا' : 'اضغط لتسجيل الدخول'}
-                    </button>
-                </div>
 
             </div>
         </div>

@@ -145,7 +145,7 @@ export default function Payment() {
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">الخطة المختارة</p>
-                            <p className="text-white font-bold text-lg">اشتراك موسمي كامل</p>
+                            <p className="text-white font-bold text-lg">موسم دراسي كامل</p>
                             <p className="text-gray-500 text-xs mt-1">وصول كامل لجميع الوثائق والأدوات</p>
                         </div>
                         <div className="text-left">
@@ -158,7 +158,7 @@ export default function Payment() {
                 {/* Method selection */}
                 {step === 'select' && (
                     <div className="bg-[#0f0f14]/80 border border-white/5 backdrop-blur-xl rounded-2xl p-6 shadow-[0_24px_64px_rgba(0,0,0,0.7)]">
-                        <p className="text-sm font-semibold text-gray-400 mb-4">اختر طريقة الدفع</p>
+                        <p className="text-sm font-semibold text-white mb-4">اختر طريقة الدفع</p>
                         <div className="grid grid-cols-2 gap-3 mb-6">
                             <MethodCard
                                 selected={method === 'BARIDIMOB'}
@@ -196,14 +196,14 @@ export default function Payment() {
                 {/* BaridiMob payment */}
                 {step === 'pay' && method === 'BARIDIMOB' && (
                     <div className="bg-[#0f0f14]/80 border border-white/5 backdrop-blur-xl rounded-2xl p-6 shadow-[0_24px_64px_rgba(0,0,0,0.7)]">
-                        <button onClick={() => setStep('select')} className="text-gray-500 hover:text-gray-300 text-xs mb-5 flex items-center gap-1 transition-colors">
+                        <button onClick={() => setStep('select')} className="text-white hover:text-gray-300 text-xs mb-5 flex items-center gap-1 transition-colors">
                             ← رجوع
                         </button>
 
                         {/* Instructions */}
                         <div className="bg-emerald-500/5 border border-emerald-500/15 rounded-xl p-4 mb-5">
-                            <p className="text-emerald-400 text-xs font-bold mb-3">📋 خطوات الدفع عبر بريدي موب</p>
-                            <ol className="text-gray-400 text-sm space-y-2 list-decimal list-inside">
+                            <p className="text-emerald-400 text-sm font-bold mb-3">📋 خطوات الدفع عبر بريدي موب</p>
+                            <ol className="text-white text-sm space-y-2 list-decimal list-inside">
                                 <li>افتح تطبيق بريدي موب</li>
                                 <li>أرسل <span className="text-white font-bold">3000 دج</span> إلى الرقم:</li>
                                 <div className="bg-[#0a0a0f] border border-white/10 rounded-lg px-3 py-2 my-2 flex items-center justify-between gap-2 max-w-full overflow-hidden">
@@ -227,7 +227,7 @@ export default function Payment() {
                                         )}
                                     </button>
                                 </div>
-                                <li>خذ لقطة شاشة للإيصال ( سكرين شوت ) </li>
+                                <li>خذ صورة للإيصال ( سكرين شوت ) </li>
                                 <li> ارسل الصورة عبر الواتساب او ارفعها أدناه وأرسل الطلب</li>
                             </ol>
 
@@ -239,7 +239,7 @@ export default function Payment() {
 
                         {/* Receipt upload */}
                         <div className="mb-5">
-                            <label className="block text-xs font-semibold text-gray-400 mb-1.5">صورة الإيصال <span className="text-red-400">*</span></label>
+                            <label className="block text-xs font-semibold text-white mb-1.5">صورة الإيصال <span className="text-red-400">*</span></label>
                             <input ref={fileRef} type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
                             <button
                                 type="button"
@@ -256,24 +256,11 @@ export default function Payment() {
                                 ) : (
                                     <>
                                         <span className="text-2xl">📎</span>
-                                        <span className="text-gray-500 text-xs">اضغط لرفع صورة الإيصال</span>
+                                        <span className="text-white text-xs">اضغط لرفع صورة الإيصال</span>
                                     </>
                                 )}
                             </button>
                         </div>
-
-                        {/* Transaction number */}
-                        <div className="mb-4">
-                            <label className="block text-xs font-semibold text-gray-400 mb-1.5">رقم العملية (اختياري)</label>
-                            <input
-                                type="text"
-                                value={transactionNumber}
-                                onChange={e => setTransactionNumber(e.target.value)}
-                                placeholder="مثال: TXN123456"
-                                className="w-full h-11 bg-white/3 border border-white/8 focus:border-emerald-500/40 focus:ring-4 focus:ring-emerald-500/10 rounded-xl px-4 text-white text-sm outline-none transition-all duration-200 text-left"
-                            />
-                        </div>
-
 
                         {error && (
                             <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-xl p-3 text-center mb-4">
@@ -314,13 +301,13 @@ export default function Payment() {
                 )}
                 {step === 'pay' && method === 'BARIDI' && (
                     <div className="bg-[#0f0f14]/80 border border-white/5 backdrop-blur-xl rounded-2xl p-6 shadow-[0_24px_64px_rgba(0,0,0,0.7)]">
-                        <button onClick={() => setStep('select')} className="text-gray-500 hover:text-gray-300 text-xs mb-5 flex items-center gap-1 transition-colors">
+                        <button onClick={() => setStep('select')} className="text-white hover:text-gray-300 text-xs mb-5 flex items-center gap-1 transition-colors">
                             ← رجوع
                         </button>
 
                         <div className="bg-emerald-500/5 border border-emerald-500/15 rounded-xl p-4 mb-5">
-                            <p className="text-emerald-400 text-xs font-bold mb-3">📋 خطوات الدفع عبر مكتب البريد CCP</p>
-                            <ol className="text-gray-400 text-sm space-y-2 list-decimal list-inside">
+                            <p className="text-emerald-400 text-sm font-bold mb-3">📋 خطوات الدفع عبر مكتب البريد CCP</p>
+                            <ol className="text-white text-sm space-y-2 list-decimal list-inside">
                                 <li>توجه إلى أقرب مكتب بريد</li>
                                 <li>حوّل <span className="text-white font-bold">3000 دج</span> إلى حساب CCP رقم:</li>
                                 <div className="bg-[#0a0a0f] border border-white/10 rounded-lg px-3 py-2 my-2 flex items-center justify-between gap-2 max-w-full overflow-hidden">
@@ -359,7 +346,7 @@ export default function Payment() {
 
 
                         <div className="mb-5">
-                            <label className="block text-xs font-semibold text-gray-400 mb-1.5">صورة الوصل <span className="text-red-400">*</span></label>
+                            <label className="block text-xs font-semibold text-white mb-1.5">صورة الوصل <span className="text-red-400">*</span></label>
                             <input ref={fileRef} type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
                             <button
                                 type="button"
@@ -376,21 +363,10 @@ export default function Payment() {
                                 ) : (
                                     <>
                                         <span className="text-2xl">📎</span>
-                                        <span className="text-gray-500 text-xs">اضغط لرفع صورة الوصل</span>
+                                        <span className="text-white text-xs">اضغط لرفع صورة الوصل</span>
                                     </>
                                 )}
                             </button>
-                        </div>
-                        {/* Transaction number */}
-                        <div className="mb-4">
-                            <label className="block text-xs font-semibold text-gray-400 mb-1.5">رقم العملية (اختياري)</label>
-                            <input
-                                type="text"
-                                value={transactionNumber}
-                                onChange={e => setTransactionNumber(e.target.value)}
-                                placeholder="مثال: TXN123456"
-                                className="w-full h-11 bg-white/3 border border-white/8 focus:border-emerald-500/40 focus:ring-4 focus:ring-emerald-500/10 rounded-xl px-4 text-white text-sm outline-none transition-all duration-200 text-left"
-                            />
                         </div>
 
                         {error && (
