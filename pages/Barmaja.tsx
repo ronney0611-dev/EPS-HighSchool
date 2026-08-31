@@ -264,8 +264,8 @@ export default function PlanOfYear() {
       <style jsx global>{`
         @media print {
           @page {
-            size: A4;
-            margin: 8mm;
+            size: A4 portrait;
+            margin: 2mm;
           }
 
           * {
@@ -293,8 +293,8 @@ export default function PlanOfYear() {
             position: fixed !important;
             top: 0;
             left: 0;
-            width: 194mm;
-            max-width: 194mm;
+            width: 0 auto !important;
+            max-width: 0 auto !important;
             min-height: 0 !important;
             height: auto !important;
             margin: 0 !important;
