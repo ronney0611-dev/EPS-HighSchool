@@ -87,7 +87,7 @@ export const documentsConfig =
             files: {
                 planOfYear1: {
                     id: 's1',
-                    name: 'plan of the year',
+                    name: 'المخطط السنوي',
                     description: "أنشئ التوزيع السنوي واطبعها مباشرة",
                     type: 'interactive',
                     component: { lycee: 'planOfYear', cem: 'planOfYearCem' },

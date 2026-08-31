@@ -24,6 +24,7 @@ import DispoCard from "@/pages/DispoCard";
 import ShabakaTahliliyaPrimaire from "@/pages/ShabakaTahliliyaPrimaire";
 import WahdaPrimaireGeneratorPage from "@/pages/Wahdaprimairegeneratorpage";
 import DailyLogPage from "@/pages/Dailylogpage";
+import PlanOfYearLeecy from "@/pages/PlanOfYearLeecy";
 
 interface FileConfig {
   id: string;
@@ -83,6 +84,7 @@ const FilePage = ({ params }: { params: Promise<{ file: string; category: string
     { key: 'taqwimTach', component: <TakwimTachkhisiForm /> },
     { key: 'taqwimTachCem', component: <TakwimTachkhisiForm /> },
     { key: 'taqwimTachPrimaire', component: <ShabakaTahliliyaPrimaire /> },
+    { key: 'planOfYear', component: <PlanOfYearLeecy /> },
 
     // Presence/Monitoring tracking variants
     { key: 'mostamir', component: <Mostamir /> },
