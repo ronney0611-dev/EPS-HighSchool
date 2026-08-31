@@ -2,21 +2,30 @@
 
 import { useTeacher } from '@/hooks/useTeacher';
 import Image from 'next/image';
+import { useState } from 'react';
 
 const ProfileDoc = () => {
     const { teacher } = useTeacher();
+    const [printing, setPrinting] = useState(false);
+
+    const handlePrint = () => {
+        if (printing) return;
+        setPrinting(true);
+        window.print();
+        setTimeout(() => setPrinting(false), 1500);
+    };
 
     return (
         <div dir="rtl" className='p-4'>
             {/* print button */}
             <button
-                onClick={() => window.print()}
+                onClick={handlePrint}
                 className='print:hidden bg-blue-500 text-white px-6 py-2 rounded-xl mb-4 block mx-auto cursor-pointer'>
                 طباعة
             </button>
 
             {/* A4 card */}
-            <div id="a4-card" className='w-full max-w-[210mm] mx-auto bg-white text-black p-4 md:p-10 shadow-lg print:shadow-none'>
+            <div id="print-profile" className='w-full max-w-[210mm] mx-auto bg-white text-black p-4 md:p-10 shadow-lg print:shadow-none'>
 
                 {/* header */}
                 <div className='flex justify-between items-center border-b-2 border-blue-600 pb-4 mb-6'>
@@ -106,65 +115,63 @@ const ProfileDoc = () => {
             {/* print-only CSS: forces exactly one A4 page, hides everything else, forces real colors */}
             <style jsx global>{`
                 @media print {
-                    @page {
-                        size: A4;
-                        margin: 10mm;
-                    }
+    @page {
+        size: A4;
+        margin: 0;
+    }
 
-                    * {
-                        -webkit-print-color-adjust: exact !important;
-                        print-color-adjust: exact !important;
-                        color-adjust: exact !important;
-                    }
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
 
-                    html, body {
-                        margin: 0 !important;
-                        padding: 0 !important;
-                        height: auto !important;
-                        background: white !important;
-                    }
+    html, body {
+        margin: 0 !important;
+        padding: 0 !important;
+        height: auto !important;
+        background: white !important;
+    }
 
-                    body *:not(#a4-card):not(#a4-card *) {
-                        visibility: hidden !important;
-                        height: 0 !important;
-                        min-height: 0 !important;
-                        max-height: 0 !important;
-                        overflow: hidden !important;
-                        padding: 0 !important;
-                        margin: 0 !important;
-                        border: none !important;
-                    }
+    body *:not(#print-profile):not(#print-profile *):not(:has(#print-profile)) {
+        visibility: hidden !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        max-height: 0 !important;
+        overflow: hidden !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: none !important;
+    }
 
-                    #a4-card, #a4-card * {
-                        visibility: visible !important;
-                    }
+    #print-profile, #print-profile * {
+        visibility: visible !important;
+    }
 
-                    #a4-card {
-                        position: static !important;
-                        top: 0;
-                        left: 0;
-                        width: 190mm;
-                        max-width: 190mm;
-                        margin: 0 !important;
-                        padding: 0 !important;
-                        box-shadow: none !important;
-                    }
+    #print-profile {
+    position: static !important;
+    width: 190mm;
+    max-width: 190mm;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+}
 
-                    #a4-card > div {
-                        break-inside: avoid;
-                        page-break-inside: avoid;
-                    }
+    #print-profile > div {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
 
-                    table, tr, thead, tbody {
-                        break-inside: avoid;
-                        page-break-inside: avoid;
-                    }
+    table, tr, thead, tbody {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
 
-                    #a4-card {
-                        break-after: avoid;
-                        page-break-after: avoid;
-                    }
-                }
+    #print-profile {
+        break-after: avoid;
+        page-break-after: avoid;
+    }
+}
             `}</style>
 
         </div>
