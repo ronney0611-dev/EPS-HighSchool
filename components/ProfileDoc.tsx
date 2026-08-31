@@ -140,7 +140,7 @@ const ProfileDoc = () => {
                     }
 
                     #a4-card {
-                        position: fixed !important;
+                        position: static !important;
                         top: 0;
                         left: 0;
                         width: 190mm;
