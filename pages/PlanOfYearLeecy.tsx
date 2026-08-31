@@ -214,10 +214,10 @@ export default function AnnualDistribution() {
                 </div>
 
                 {/* Main Schedule Table */}
-                <div className="border border-slate-300  overflow-hidden print:rounded-none">
+                <div className="border border-slate-300  overflow-hidden print:rounded-none overflow-x-auto ">
                     <table className="w-full border-collapse text-[11px] text-center">
                         <thead>
-                            <tr className="bg-slate-800 text-slate-100 font-bold">
+                            <tr className="bg-slate-800 text-slate-100 font-bold"> 
                                 <th className="border-b border-slate-700 p-2 w-12">المجال</th>
                                 <th className="border-b border-slate-700 p-2 w-14">الشهر</th>
                                 <th className="border-b border-slate-700 p-2 w-28">الأسابيع</th>
@@ -325,7 +325,7 @@ function DomainSection({
                     {idx === 0 && (
                         <td
                             rowSpan={rows.length}
-                            className="border border-slate-300 font-extrabold bg-slate-100 text-slate-800 align-middle [writing-mode:vertical-rl] rotate-180 p-2 text-xs tracking-wider border-l-2 border-l-slate-400"
+                            className="border border-slate-300 font-extrabold bg-slate-100 text-slate-800 align-middle [writing-mode:vertical-rl] p-2 text-xs tracking-wider border-l-2 border-l-slate-400"
                         >
                             {domainTitle}
                         </td>
@@ -338,7 +338,7 @@ function DomainSection({
                     {idx === 0 && (
                         <td
                             rowSpan={rows.length}
-                            className="border border-slate-300 font-bold bg-amber-50/80 text-amber-950 align-middle [writing-mode:vertical-rl] rotate-180 p-2"
+                            className="border border-slate-300 font-bold bg-amber-50/80 text-amber-950 align-middle [writing-mode:vertical-rl]  p-2"
                         >
                             <div className="print:hidden">
                                 <select
@@ -369,7 +369,7 @@ function DomainSection({
                     {idx === 0 && (
                         <td
                             rowSpan={rows.length}
-                            className="border border-slate-300 font-bold bg-blue-50/80 text-blue-950 align-middle [writing-mode:vertical-rl] rotate-180 p-2"
+                            className="border border-slate-300 font-bold bg-blue-50/80 text-blue-950 align-middle [writing-mode:vertical-rl]  p-2"
                         >
                             <div className="print:hidden">
                                 <select
