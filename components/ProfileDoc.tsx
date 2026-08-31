@@ -12,7 +12,7 @@ const ProfileDoc = () => {
         if (printing) return;
         setPrinting(true);
         window.print();
-        setTimeout(() => setPrinting(false), 1500);
+        setTimeout(() => setPrinting(false), 1000);
     };
 
     return (
@@ -115,63 +115,63 @@ const ProfileDoc = () => {
             {/* print-only CSS: forces exactly one A4 page, hides everything else, forces real colors */}
             <style jsx global>{`
                 @media print {
-    @page {
-        size: A4;
-        margin: 0;
-    }
+                    @page {
+                        size: A4;
+                        margin: 0;
+                    }
 
-    * {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-        color-adjust: exact !important;
-    }
+                    * {
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                        color-adjust: exact !important;
+                    }
 
-    html, body {
-        margin: 0 !important;
-        padding: 0 !important;
-        height: auto !important;
-        background: white !important;
-    }
+                    html, body {
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        height: auto !important;
+                        background: white !important;
+                    }
 
-    body *:not(#print-profile):not(#print-profile *):not(:has(#print-profile)) {
-        visibility: hidden !important;
-        height: 0 !important;
-        min-height: 0 !important;
-        max-height: 0 !important;
-        overflow: hidden !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        border: none !important;
-    }
+                    body *:not(#print-profile):not(#print-profile *):not(:has(#print-profile)) {
+                        visibility: hidden !important;
+                        height: 0 !important;
+                        min-height: 0 !important;
+                        max-height: 0 !important;
+                        overflow: hidden !important;
+                        padding: 0 !important;
+                        margin: 0 !important;
+                        border: none !important;
+                    }
 
-    #print-profile, #print-profile * {
-        visibility: visible !important;
-    }
+                    #print-profile, #print-profile * {
+                        visibility: visible !important;
+                    }
 
-    #print-profile {
-    position: static !important;
-    width: 190mm;
-    max-width: 190mm;
-    margin: 0 auto !important;
-    padding: 0 !important;
-    box-shadow: none !important;
-}
+                    #print-profile {
+                    position: static !important;
+                    width: 0 auto !important;
+                    max-width: 0 auto !important;
+                    margin: 0 auto !important;
+                    padding: 0 !important;
+                    box-shadow: none !important;
+                }
 
-    #print-profile > div {
-        break-inside: avoid;
-        page-break-inside: avoid;
-    }
+                    #print-profile > div {
+                        break-inside: avoid;
+                        page-break-inside: avoid;
+                    }
 
-    table, tr, thead, tbody {
-        break-inside: avoid;
-        page-break-inside: avoid;
-    }
+                    table, tr, thead, tbody {
+                        break-inside: avoid;
+                        page-break-inside: avoid;
+                    }
 
-    #print-profile {
-        break-after: avoid;
-        page-break-after: avoid;
-    }
-}
+                    #print-profile {
+                        break-after: avoid;
+                        page-break-after: avoid;
+                    }
+                }
             `}</style>
 
         </div>
