@@ -76,9 +76,9 @@ const CategoryPage = ({ params }: { params: Promise<{ category: string }> }) => 
                   ) : (
                     /* ⚡ INTERACTIVE DOCUMENT FORM CARDS */
                     <div className='flex flex-col gap-2 border border-gray-200 transition-transform duration-300 hover:scale-105 p-6 rounded-2xl' >
-                      <Link href={`/documents/${category}/${key}`}>
+                      <a href={`/documents/${category}/${key}`}>
                         <Image src={post.image} alt={doc.name} width={300} height={300} className='rounded-2xl object-fill w-[300px] h-[300px]' />
-                      </Link>
+                      </a>
                       <h2 className="text-white text-center text-lg mt-2 font-medium">{doc.name}</h2>
                       <div className="w-[300px]">
                         <CurvedLoop
@@ -90,7 +90,7 @@ const CategoryPage = ({ params }: { params: Promise<{ category: string }> }) => 
                           className="custom-text-style"
                         />
                       </div>
-                      <Link className='flex justify-center cursor-pointer mt-2' href={`/documents/${category}/${key}`}>
+                      <a className='flex justify-center cursor-pointer mt-2' href={`/documents/${category}/${key}`}>
                         <StarBorder
                           as="button"
                           className="custom-class cursor-pointer"
@@ -100,7 +100,7 @@ const CategoryPage = ({ params }: { params: Promise<{ category: string }> }) => 
                         >
                           اضغط هنا
                         </StarBorder>
-                      </Link>
+                      </a>
                     </div>
                   )
                 }

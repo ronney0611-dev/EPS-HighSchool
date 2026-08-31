@@ -2,17 +2,12 @@
 
 import { useTeacher } from '@/hooks/useTeacher';
 import Image from 'next/image';
-import { useState } from 'react';
 
 const ProfileDoc = () => {
     const { teacher } = useTeacher();
-    const [printing, setPrinting] = useState(false);
 
     const handlePrint = () => {
-        if (printing) return;
-        setPrinting(true);
         window.print();
-        setTimeout(() => setPrinting(false), 1000);
     };
 
     return (

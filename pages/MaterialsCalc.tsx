@@ -3,115 +3,190 @@
 import { useTeacher } from "@/hooks/useTeacher"
 import { useState } from "react"
 
+interface MaterialItem {
+    name: string;
+    quantity: string;
+    condition: { bad: string; used: string; new: string };
+    note: string;
+}
+
+const DEFAULT_MATERIALS: MaterialItem[] = [
+    { name: 'كرة الطائرة', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
+    { name: 'كرات السلة', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
+    { name: 'كرات اليد', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
+    { name: 'كرات القدم', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
+    { name: 'كرات طبية', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
+    { name: 'كرات طبية', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
+    { name: 'كرات حديدية', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
+    { name: 'كرات حديدية', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
+    { name: 'كرات بلاستيكية', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
+    { name: 'بساط ارضي', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
+    { name: 'حواجز', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
+    { name: 'أقماع ', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
+    { name: 'شواخص ', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
+    { name: 'حبال القفز', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
+    { name: 'صدرية رياضية ', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
+    { name: 'حلقات ', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
+    { name: 'مضخة هواء ', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
+    { name: 'ديكامتر ', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
+    { name: 'ميقاتي ', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
+    { name: 'معالم ارضية assiette ', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
+    { name: 'جهاز الانطلاق Starting Block ', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
+    { name: 'لوحة الارتقاء ', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
+];
+
 const MaterialsCalc = () => {
-    const { teacher } = useTeacher()
+    const { teacher } = useTeacher();
     const [newMaterial, setNewMaterial] = useState('');
-    const [material, setMaterial] = useState<{
-        name: string,
-        quantity: string,
-        quandition: { bad: string, good: string, new: string },
-        note: string,
-    }[]>([]);
+    const [materials, setMaterials] = useState<MaterialItem[]>(DEFAULT_MATERIALS);
 
     const addMaterial = () => {
-        if (!newMaterial.trim()) return
-        setMaterial([...material, {
-            name: newMaterial,
-            quantity: '',
-            quandition: { bad: '', good: '', new: '' },
-            note: '',
-        }]);
+        if (!newMaterial.trim()) return;
+        setMaterials([
+            ...materials,
+            {
+                name: newMaterial.trim(),
+                quantity: '',
+                condition: { bad: '', used: '', new: '' },
+                note: '',
+            }
+        ]);
         setNewMaterial('');
-    }
+    };
 
-    const updateMaterial = (index: number, field: string, value: string) => {
-        const updated = [...material];
+    const removeMaterial = (index: number) => {
+        setMaterials(materials.filter((_, i) => i !== index));
+    };
+
+    const updateMaterial = (index: number, field: keyof MaterialItem, value: string) => {
+        const updated = [...materials];
         updated[index] = { ...updated[index], [field]: value };
-        setMaterial(updated);
-    }
+        setMaterials(updated);
+    };
 
-    const updateCondition = (index: number, field: string, value: string) => {
-        const updated = [...material];
+    const updateCondition = (index: number, field: keyof MaterialItem['condition'], value: string) => {
+        const updated = [...materials];
         updated[index] = {
             ...updated[index],
-            quandition: { ...updated[index].quandition, [field]: value }
+            condition: { ...updated[index].condition, [field]: value }
         };
-        setMaterial(updated);
-    }
+        setMaterials(updated);
+    };
 
     return (
-        <div dir="rtl" className="m-4 lg:m-10 flex justify-center  flex-col">
-            {/* input handler - hidden on print */}
-            <div className="print:hidden flex flex-col justify-center items-center  my-4 p-2 lg:p-6 gap-2">
-                <div className='flex-col justify-center w-fit items-center lg:flex lg:flex-row gap-2 border p-2'>
-                    <div className="flex flex-col justify-center md:flex-row items-center gap-2 p-2">
-                        <label>الوسائل التدريبية</label>
-                        <input type="text" value={newMaterial} onChange={e => setNewMaterial(e.target.value)}
-                            onKeyDown={e => e.key === 'Enter' && addMaterial()}
-                            placeholder="اسم الوسيلة"
-                            className="border p-1 rounded" />
-                    </div>
-                    <button onClick={addMaterial} className="rounded-full cursor-pointer bg-red-600 text-white px-4 py-1">ادخال</button>
+        <div dir="rtl" className="m-4 lg:m-10 flex justify-center flex-col">
+            {/* Input Handler - Hidden on Print */}
+            <div className="print:hidden flex flex-col justify-center items-center my-4 p-2 lg:p-6 gap-2">
+                <div className="flex flex-col sm:flex-row justify-center items-center gap-2 border p-3 rounded-xl bg-gray-50">
+                    <label className="font-semibold text-gray-700">إضافة وسيلة جديدة:</label>
+                    <input
+                        type="text"
+                        value={newMaterial}
+                        onChange={e => setNewMaterial(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && addMaterial()}
+                        placeholder="اسم الوسيلة (مثال: شريط قياس)"
+                        className="border p-2 rounded-lg bg-white text-black"
+                    />
+                    <button
+                        onClick={addMaterial}
+                        className="rounded-lg cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 transition-all"
+                    >
+                        إضافة
+                    </button>
                 </div>
             </div>
 
-            {/* print button */}
-            <button onClick={() => window.print()}
-                className='print:hidden bg-blue-500 text-white px-6 py-2 rounded-xl mb-4 w-fit mx-auto'>
-                طباعة
+            {/* Print Button */}
+            <button
+                onClick={() => window.print()}
+                className="print:hidden bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-2.5 rounded-xl mb-6 w-fit mx-auto shadow-md cursor-pointer transition-all"
+            >
+                طباعة الوثيقة
             </button>
 
-            {/* A4 document */}
-            <div id="a4-card" className="w-full max-w-[210mm] mx-auto bg-white text-black p-4 md:p-10 shadow-lg print:shadow-none">
-                {/* header */}
-                <div className='flex justify-center items-center border border-gray-400 bg-blue-600 text-white font-bold text-xl py-4 rounded-2xl my-2'>
+            {/* A4 Document Container */}
+            <div id="matcal" className="w-full max-w-[210mm] mx-auto bg-white text-black p-4 md:p-8 shadow-lg print:shadow-none print:p-0 print:m-0">
+                {/* Header */}
+                <div className="flex justify-center items-center border border-blue-700 bg-blue-600 text-white font-bold text-xl py-3 rounded-xl mb-4">
                     <h1>قائمة جرد وسائل التربية البدنية والرياضية</h1>
                 </div>
-                <div className="flex flex-col my-2">
-                    <p className='text-sm font-bold text-blue-600'>الاستاذ: <span className='font-medium text-black mx-2'>{teacher.name || '—'}</span></p>
-                    <p className='text-sm font-bold text-blue-600'>المؤسسة: <span className='font-medium text-black mx-2'>{teacher.school || '—'}</span></p>
+
+                <div className="flex justify-between items-center my-3 border-b pb-2 text-sm font-bold text-blue-900">
+                    <p>الأستاذ(ة): <span className="font-medium text-black mr-1">{teacher?.name || '—'}</span></p>
+                    <p>المؤسسة: <span className="font-medium text-black mr-1">{teacher?.school || '—'}</span></p>
+                    <p>الموسم الدراسي: <span className="font-medium text-black mr-1">2026 / 2027</span></p>
                 </div>
 
-                {/* table */}
+                {/* Table */}
                 <div className="overflow-x-auto">
-                    <table className="w-full border-collapse">
+                    <table className="w-full border-collapse border border-gray-400 text-center text-sm">
                         <thead>
-                            <tr>
-                                <th className="border"></th>
-                                <th className="border"></th>
-                                <th className="border"></th>
-                                <th className="border" colSpan={3}>حالة العتاد</th>
-                                <th className="border"></th>
+                            <tr className="bg-gray-100">
+                                <th className="border border-gray-400 p-1 w-10" rowSpan={2}>الرقم</th>
+                                <th className="border border-gray-400 p-2" rowSpan={2}>اسم العتاد</th>
+                                <th className="border border-gray-400 p-1 w-16" rowSpan={2}>العدد الإجمالي</th>
+                                <th className="border border-gray-400 p-1" colSpan={3}>حالة العتاد</th>
+                                <th className="border border-gray-400 p-2" rowSpan={2}>ملاحظات</th>
+                                <th className="border border-gray-400 p-1 w-10 print:hidden" rowSpan={2}>حذف</th>
                             </tr>
-                            <tr className="border">
-                                <th className="border">الرقم</th>
-                                <th className="border">اسم العتاد</th>
-                                <th className="border">العدد</th>
-                                <th className="border">سيئ</th>
-                                <th className="border">مستعمل</th>
-                                <th className="border">جديد</th>
-                                <th className="border">ملاحظات</th>
+                            <tr className="bg-gray-100">
+                                <th className="border border-gray-400 p-1 w-14">سيئ</th>
+                                <th className="border border-gray-400 p-1 w-14">مستعمل</th>
+                                <th className="border border-gray-400 p-1 w-14">جديد</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {material.map((m, i) => (
-                                <tr className="border" key={i}>
-                                    <td className="border text-center text-sm font-semibold">{i + 1}</td>
-                                    <td className="border px-2 text-center text-sm font-semibold">{m.name}</td>
-                                    <td className="border text-center">
-                                        <input className="w-full text-center border-none outline-none" type="number" value={m.quantity} onChange={e => updateMaterial(i, 'quantity', e.target.value)} />
+                            {materials.map((m, i) => (
+                                <tr className="border border-gray-400 hover:bg-gray-50" key={i}>
+                                    <td className="border border-gray-400 font-semibold">{i + 1}</td>
+                                    <td className="border border-gray-400 px-2 font-medium text-right">{m.name}</td>
+                                    <td className="border border-gray-400 p-0">
+                                        <input
+                                            className="w-full text-center p-1 bg-transparent outline-none"
+                                            type="number"
+                                            value={m.quantity}
+                                            onChange={e => updateMaterial(i, 'quantity', e.target.value)}
+                                        />
                                     </td>
-                                    <td className="border text-center">
-                                        <input className="w-full text-center border-none outline-none" type="number" value={m.quandition.bad} onChange={e => updateCondition(i, 'bad', e.target.value)} />
+                                    <td className="border border-gray-400 p-0">
+                                        <input
+                                            className="w-full text-center p-1 bg-transparent outline-none"
+                                            type="number"
+                                            value={m.condition.bad}
+                                            onChange={e => updateCondition(i, 'bad', e.target.value)}
+                                        />
                                     </td>
-                                    <td className="border text-center">
-                                        <input className="w-full text-center border-none outline-none" type="number" value={m.quandition.good} onChange={e => updateCondition(i, 'good', e.target.value)} />
+                                    <td className="border border-gray-400 p-0">
+                                        <input
+                                            className="w-full text-center p-1 bg-transparent outline-none"
+                                            type="number"
+                                            value={m.condition.used}
+                                            onChange={e => updateCondition(i, 'used', e.target.value)}
+                                        />
                                     </td>
-                                    <td className="border text-center">
-                                        <input className="w-full text-center border-none outline-none" type="number" value={m.quandition.new} onChange={e => updateCondition(i, 'new', e.target.value)} />
+                                    <td className="border border-gray-400 p-0">
+                                        <input
+                                            className="w-full text-center p-1 bg-transparent outline-none"
+                                            type="number"
+                                            value={m.condition.new}
+                                            onChange={e => updateCondition(i, 'new', e.target.value)}
+                                        />
                                     </td>
-                                    <td className="border text-center">
-                                        <input className="w-full text-center border-none outline-none" type="text" value={m.note} onChange={e => updateMaterial(i, 'note', e.target.value)} />
+                                    <td className="border border-gray-400 p-0">
+                                        <input
+                                            className="w-full text-center p-1 bg-transparent outline-none"
+                                            type="text"
+                                            value={m.note}
+                                            onChange={e => updateMaterial(i, 'note', e.target.value)}
+                                        />
+                                    </td>
+                                    <td className="border border-gray-400 p-1 print:hidden">
+                                        <button
+                                            onClick={() => removeMaterial(i)}
+                                            className="text-red-500 hover:text-red-700 font-bold px-1"
+                                        >
+                                            ✕
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
@@ -119,20 +194,20 @@ const MaterialsCalc = () => {
                     </table>
                 </div>
 
-                {/* footer */}
-                <div className="my-6 font-semibold flex justify-between">
-                    <div>الاستاذ</div>
-                    <div>المقتصد</div>
-                    <div>المدير</div>
+                {/* Footer Signatures */}
+                <div className="mt-12 font-semibold flex justify-between text-sm px-4">
+                    <div>توقيع الأستاذ:</div>
+                    <div>توقيع المقتصد:</div>
+                    <div>توقيع وختم المدير:</div>
                 </div>
             </div>
 
-            {/* print-only CSS: forces exactly one A4 page, hides everything else */}
+            {/* Print CSS Rules */}
             <style jsx global>{`
                 @media print {
                     @page {
                         size: A4;
-                        margin: 10mm;
+                        margin: 0mm;
                     }
 
                     * {
@@ -148,18 +223,18 @@ const MaterialsCalc = () => {
                         background: white !important;
                     }
 
-                    body *:not(#a4-card):not(#a4-card *) {
+                    body *:not(#matcal):not(#matcal *) {
                         visibility: hidden !important;
                     }
 
-                    #a4-card, #a4-card * {
+                    #matcal, #matcal * {
                         visibility: visible !important;
                     }
 
-                    #a4-card {
+                    #matcal {
                         position: static !important;
-                        width: 190mm;
-                        max-width: 190mm;
+                        width: 0 auto !important;
+                        max-width: 0 auto !important;
                         margin: 0 !important;
                         padding: 0 !important;
                         box-shadow: none !important;
@@ -186,7 +261,7 @@ const MaterialsCalc = () => {
                 }
             `}</style>
         </div>
-    )
-}
+    );
+};
 
-export default MaterialsCalc
+export default MaterialsCalc;

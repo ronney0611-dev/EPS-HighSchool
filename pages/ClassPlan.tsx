@@ -63,19 +63,19 @@ const ClassPlan = () => {
         const groupsHTML = groupe.map((group, i) => {
             const leaderName = group.students?.find(s => s.id === group.leader)?.name || '—'
             return `
-    <div style="margin-bottom: 20px; border: 1px solid #2563eb; border-radius: 10px; padding: 12px; position: relative;">
-        <div style="position: absolute; top: -12px; right: 10px; background: #1e40af; color: white; padding: 2px 10px; border-radius: 8px; font-size: 11px;">
-            الفوج ${groupLabels[i]} / القائد: ${leaderName}
-        </div>
-        <ul style="margin-top: 16px; padding: 0; list-style: none;">
-            ${group.students?.map((s, j) => `
-                <li style="color: ${s.gender === 'male' ? '#1d4ed8' : '#db2777'}; font-size: 12px; padding: 2px 0;">
-                    ${j + 1}. ${s.name} ${group.leader === s.id ? '⭐' : ''}
-                </li>
-            `).join('')}
-        </ul>
-    </div>
-`}).join('')
+                <div style="margin-bottom: 20px; border: 1px solid #2563eb; border-radius: 10px; padding: 12px; position: relative;">
+                    <div style="position: absolute; top: -12px; right: 10px; background: #1e40af; color: white; padding: 2px 10px; border-radius: 8px; font-size: 11px;">
+                        الفوج ${groupLabels[i]} / القائد: ${leaderName}
+                    </div>
+                    <ul style="margin-top: 16px; padding: 0; list-style: none;">
+                        ${group.students?.map((s, j) => `
+                            <li style="color: ${s.gender === 'male' ? '#1d4ed8' : '#db2777'}; font-size: 12px; padding: 2px 0;">
+                                ${j + 1}. ${s.name} ${group.leader === s.id ? '⭐' : ''}
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `}).join('')
 
         win.document.write(`
         <html>
@@ -190,7 +190,7 @@ const ClassPlan = () => {
 
             {/* Groups display */}
             {/* A4 Document */}
-            <div id="a4-card" className="bg-white text-black p-6 flex flex-col gap-4 border border-gray-300 shadow-md w-full">
+            <div id="class-plan" className="bg-white text-black p-6 flex flex-col gap-4 border border-gray-300 shadow-md w-full">
                 {/* Header */}
                 <div className="text-center border-b-2 border-gray-400 pb-4">
                     <h1 className="text-xl font-bold">بطاقة تفويج القسم</h1>
