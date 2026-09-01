@@ -33,18 +33,18 @@ const Testimonials = () => {
         <section dir="rtl" id="features-section" className="py-20 px-6 w-full mx-auto font-['Noto_Kufi_Arabic','Cairo',sans-serif]">
             <div className="w-full">
                 <div className="flex items-center justify-center gap-3 mx-auto mb-4">
-                    <hr className='border border-white w-full my-4 mx-8' />
+                    <hr className='border border-white w-full my-4 ' />
                     <div className='flex justify-center text-center w-full'>
                         <GradientText
                             colors={["#ffffff", "#ff0000", "#ffffff"]}
                             animationSpeed={5}
                             showBorder={false}
-                            className="custom-class my-6 text-5xl md:text-6xl lg:text-6xl"
+                            className="custom-class mb-6 text-3xl md:text-4xl p-4 "
                         >
-                            ماذا يقول الاساتذة عنا؟
+                            يقول الاساتذة
                         </GradientText>
                     </div>
-                    <hr className='border border-white w-full my-4 mx-8' />
+                    <hr className='border border-red-500 w-full my-4 ' />
                 </div>
 
                 {teachers.length === 0 ? null : (

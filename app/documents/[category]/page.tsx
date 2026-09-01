@@ -59,10 +59,10 @@ const CategoryPage = ({ params }: { params: Promise<{ category: string }> }) => 
                         تحميل
                       </a>
                       <a href={doc.src} target='_blank' rel="noreferrer">
-                        <Image src={doc.thumbnail || post.image} width={300} height={300} alt={doc.name} className='rounded-2xl object-fill w-[300px] h-[300px]' />
+                        <Image src={doc.thumbnail || post.image} width={300} height={300} alt={doc.name} className='rounded-2xl object-fill w-75 h-75' />
                       </a>
                       <h2 className="text-white text-center text-lg mt-2 font-medium">{doc.name}</h2>
-                      <div className="w-[300px]">
+                      <div className="w-75">
                         <CurvedLoop
                           marqueeText="حمل ✦  الوثائق  ✦ الخاصة  ✦  بك  ✦  بلمسة زر واحدة  ✦"
                           speed={1.6}
@@ -76,11 +76,11 @@ const CategoryPage = ({ params }: { params: Promise<{ category: string }> }) => 
                   ) : (
                     /* ⚡ INTERACTIVE DOCUMENT FORM CARDS */
                     <div className='flex flex-col gap-2 border border-gray-200 transition-transform duration-300 hover:scale-105 p-6 rounded-2xl' >
-                      <a href={`/documents/${category}/${key}`}>
-                        <Image src={post.image} alt={doc.name} width={300} height={300} className='rounded-2xl object-fill w-[300px] h-[300px]' />
-                      </a>
+                      <Link href={`/documents/${category}/${key}`}>
+                        <Image src={post.image} alt={doc.name} width={300} height={300} className='rounded-2xl object-fill w-75 h-75' />
+                      </Link>
                       <h2 className="text-white text-center text-lg mt-2 font-medium">{doc.name}</h2>
-                      <div className="w-[300px]">
+                      <div className="w-75">
                         <CurvedLoop
                           marqueeText=" Education ✦  physique   ✦  et  ✦  sportive  ✦ EPS ✦"
                           speed={1.6}
@@ -90,7 +90,7 @@ const CategoryPage = ({ params }: { params: Promise<{ category: string }> }) => 
                           className="custom-text-style"
                         />
                       </div>
-                      <a className='flex justify-center cursor-pointer mt-2' href={`/documents/${category}/${key}`}>
+                      <Link href={`/documents/${category}/${key}`} className='flex justify-center cursor-pointer mt-2'>
                         <StarBorder
                           as="button"
                           className="custom-class cursor-pointer"
@@ -100,7 +100,7 @@ const CategoryPage = ({ params }: { params: Promise<{ category: string }> }) => 
                         >
                           اضغط هنا
                         </StarBorder>
-                      </a>
+                      </Link>
                     </div>
                   )
                 }

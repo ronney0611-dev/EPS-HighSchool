@@ -7,7 +7,7 @@ const Footer = () => {
     return (
         <footer className='print:hidden max-w-7xl mx-auto w-full px-6 pb-8 font-["Noto_Kufi_Arabic","Cairo",sans-serif] bg-black text-white' >
             {/* Divider line */}
-            <hr className='my-5 border-gray-300' />
+            <hr className='my-5 border-gray-800' />
 
             {/* Layout Container */}
             <div className='flex flex-col mx-10 sm:flex-row justify-between items-center gap-4 text-center sm:text-start' >

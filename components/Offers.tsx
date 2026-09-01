@@ -35,13 +35,13 @@ function FeatureCard({ f, index }: { f: typeof features[0]; index: number }) {
             />
             <div className="text-[36px] current-line-height-1 z-10">{f.icon}</div>
             <div className="z-10">
-                <h3 className="text-xl font-bold text-gray-900 mb-2 leading-[1.4] font-['Noto_Kufi_Arabic','Cairo',sans-serif]">
+                <h3 className="text-lg font-bold text-gray-900 mb-2 leading-[1.4] font-['Noto_Kufi_Arabic','Cairo',sans-serif]">
                     {f.title}
                 </h3>
-                <p className="text-lg text-red-500 font-semibold mb-3 ">
+                <p className="text-sm text-red-500 font-semibold mb-3 ">
                     {f.pain}
                 </p>
-                <p className="text-md text-gray-900 leading-[1.8] m-0 ">
+                <p className="text-xs text-gray-900 leading-[1.8] m-0 ">
                     {f.value}
                 </p>
             </div>
@@ -121,28 +121,24 @@ export default function WhatWeOffer() {
                     }`}
             >
                 <div className="flex items-center justify-center gap-3 mx-auto">
-                    <hr className='border border-white w-full my-4 mx-8' />
+                    <hr className='border border-white w-full my-4 ' />
                     <div className='flex justify-center text-center w-full'>
                         <GradientText
                             colors={["#ffffff", "#ff0000", "#ffffff"]}
                             animationSpeed={5}
                             showBorder={false}
-                            className="custom-class my-6 text-5xl md:text-6xl lg:text-6xl"
+                            className="custom-class mb-6 text-3xl md:text-4xl p-4"
                         >
                             لماذا تختارنا؟
                         </GradientText>
                     </div>
-                    <hr className='border border-white w-full my-4 mx-8' />
+                    <hr className='border border-red-500 w-full my-4' />
                 </div>
 
-                <h2 className="text-[clamp(0.75rem,4vw,1.75rem)] font-extrabold text-gradient-red my-4 leading-[1.35]">
+                <h2 className="text-[clamp(0.75rem,4vw,1.75rem)] font-extrabold text-gradient-red mt-6 leading-[1.35]">
                     كل ما تحتاجه كأستاذ تربية بدنية
                     <span className="text-red-600 mx-2">في مكان واحد</span>
                 </h2>
-
-                <p className="text-[16px] text-white max-w-130 mx-auto leading-[1.9]">
-                    المنصة الأولى في الجزائر المصممة خصيصاً لأستاذ التربية البدنية والرياضية. وفّر وقتك، نظّم عملك، وركّز على ما يهم — تلاميذك.
-                </p>
             </div>
 
             <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-6 mb-16">
