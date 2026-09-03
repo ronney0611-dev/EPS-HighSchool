@@ -67,13 +67,17 @@ export default function FicheTechSheet({
             <span className="meta-label">النشاط الفردي</span>
             <span className="meta-value">{levelData.curriculum.sports[individual.sport]?.activity}</span>
           </div>
-          <div className="meta-item">
+          <div className="meta-item border-b border-gray-300">
             <span className="meta-label">النشاط الجماعي</span>
             <span className="meta-value">{levelData.curriculum.sports[collective.sport]?.activity}</span>
           </div>
-          <div className="meta-item">
-            <span className="meta-label">رقم الحصة التعليمية</span>
+          <div className="meta-item border-b border-gray-300">
+            <span className="meta-label ">رقم الحصة التعليمية</span>
             <span className="meta-value">{sessionNumber}</span>
+          </div>
+          <div className="meta-item border-t border-l border-gray-300 w-full">
+            <span className="meta-label">الوسائل </span>
+            <span className="meta-value" ></span>
           </div>
         </div>
 
@@ -86,52 +90,72 @@ export default function FicheTechSheet({
           <span contentEditable suppressContentEditableWarning></span>
         </div>
 
-        <table className="phases overflow-x-auto">
-          <thead>
-            <tr>
-              <th>المراحل</th>
-              <th>الأهداف الإجرائية</th>
-              <th>وضعيات التعلم</th>
-              <th>المدة</th>
-              <th>ظروف الإنجاز</th>
-              <th>معايير النجاح</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="phase-label">المرحلة التحضيرية</td>
-              <td contentEditable suppressContentEditableWarning></td>
-              <td contentEditable suppressContentEditableWarning></td>
-              <td contentEditable suppressContentEditableWarning></td>
-              <td contentEditable suppressContentEditableWarning></td>
-              <td contentEditable suppressContentEditableWarning></td>
-            </tr>
-            <tr>
-              <td className="phase-label">المرحلة الرئيسية — النشاط الفردي</td>
-              <td><div className="multi">{individualExercises.map((ex, i) => <div key={i}>{ex.but}</div>)}</div></td>
-              <td><div className="multi">{individualExercises.map((ex, i) => <div key={i}>{ex.description}</div>)}</div></td>
-              <td contentEditable suppressContentEditableWarning></td>
-              <td contentEditable suppressContentEditableWarning></td>
-              <td><div className="multi">{individualExercises.map((ex, i) => <div key={i}>{ex.najah}</div>)}</div></td>
-            </tr>
-            <tr>
-              <td className="phase-label">المرحلة الرئيسية — النشاط الجماعي</td>
-              <td><div className="multi">{collectiveExercises.map((ex, i) => <div key={i}>{ex.but}</div>)}</div></td>
-              <td><div className="multi">{collectiveExercises.map((ex, i) => <div key={i}>{ex.description}</div>)}</div></td>
-              <td contentEditable suppressContentEditableWarning></td>
-              <td contentEditable suppressContentEditableWarning></td>
-              <td><div className="multi">{collectiveExercises.map((ex, i) => <div key={i}>{ex.najah}</div>)}</div></td>
-            </tr>
-            <tr>
-              <td className="phase-label">المرحلة الختامية</td>
-              <td contentEditable suppressContentEditableWarning></td>
-              <td contentEditable suppressContentEditableWarning></td>
-              <td contentEditable suppressContentEditableWarning></td>
-              <td contentEditable suppressContentEditableWarning></td>
-              <td contentEditable suppressContentEditableWarning></td>
-            </tr>
-          </tbody>
-        </table>
+        <div className="table-wrap overflow-x-auto">
+          <table className="phases ">
+            <thead>
+              <tr>
+                <th>المراحل</th>
+                <th>الأهداف الإجرائية</th>
+                <th>وضعيات التعلم</th>
+                <th>المدة</th>
+                <th>ظروف الإنجاز</th>
+                <th>معايير النجاح</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="phase-label">المرحلة التحضيرية</td>
+                <td contentEditable suppressContentEditableWarning>
+                  <div className="multi">التحضير النفسي. <br /> التحضير البدني العام ثم الخاص</div>
+                </td>
+                <td contentEditable suppressContentEditableWarning>الاصطفاف, مراقبة اللباس, المنادات, شرح هدف الحصة ثم تحية,
+                  احماء عام: جري خفيف حول الملعب لمدة قصيرة ثم القيام بحركات الاحماء العام.
+                  احماء خاص.
+                </td>
+                <td contentEditable suppressContentEditableWarning>15د</td>
+                <td contentEditable suppressContentEditableWarning></td>
+                <td contentEditable suppressContentEditableWarning>الالتزام بالاصطفاف, اللباس الرياضي, الانضباط, الانتباه, التركيز, الاحترام, التعاون</td>
+              </tr>
+              <tr>
+                <td className="phase-label">المرحلة الرئيسية — النشاط الفردي</td>
+                <td contentEditable suppressContentEditableWarning>
+                  <div className="multi">{individualExercises.map((ex, i) => <div key={i}>{ex.but}</div>)}</div>
+                </td>
+                <td contentEditable suppressContentEditableWarning>
+                  <div className="multi">{individualExercises.map((ex, i) => <div key={i}>{ex.description}</div>)}</div>
+                  <br />
+                  <div className=" border-t border-gray-300 border-dashed">تقويم تكويني: شبه منافسة</div>
+                </td>
+                <td contentEditable suppressContentEditableWarning>40د</td>
+                <td contentEditable suppressContentEditableWarning></td>
+                <td contentEditable suppressContentEditableWarning>
+                  <div className="multi">{individualExercises.map((ex, i) => <div key={i}>{ex.najah}</div>)}</div>
+                </td>
+              </tr>
+              <tr>
+                <td className="phase-label">المرحلة الرئيسية — النشاط الجماعي</td>
+                <td contentEditable suppressContentEditableWarning><div className="multi">{collectiveExercises.map((ex, i) => <div key={i}>{ex.but}</div>)}</div></td>
+                <td contentEditable suppressContentEditableWarning>
+                  <div className="border-b pb-2 border-gray-300 border-dashed">احماء خاص:</div><br />
+                  <div className="multi">{collectiveExercises.map((ex, i) => <div key={i}>{ex.description}</div>)}</div>
+                  <br />
+                  <div className=" border-t border-gray-300 border-dashed">تقويم تكويني: شبه منافسة</div>
+                </td>
+                <td contentEditable suppressContentEditableWarning>50د</td>
+                <td contentEditable suppressContentEditableWarning></td>
+                <td contentEditable suppressContentEditableWarning><div className="multi">{collectiveExercises.map((ex, i) => <div key={i}>{ex.najah}</div>)}</div></td>
+              </tr>
+              <tr>
+                <td className="phase-label">المرحلة الختامية</td>
+                <td contentEditable suppressContentEditableWarning>العودة بالجسم الى الحالة الطبيعية (الاسترخاء)</td>
+                <td contentEditable suppressContentEditableWarning>جري خفيف حول الملعب, اصطفاف ( تمديدات ) , ومناقشة الحصة ثم تحية و انصراف.</td>
+                <td contentEditable suppressContentEditableWarning>5د</td>
+                <td contentEditable suppressContentEditableWarning></td>
+                <td contentEditable suppressContentEditableWarning>العمل على استرخاء عضلات الجسم</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </>
   );

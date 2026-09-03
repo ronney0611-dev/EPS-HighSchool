@@ -9,7 +9,6 @@ export default function FicheTechWizard() {
   const [page, setPage] = useState<1 | 2>(1);
   const [level, setLevel] = useState("level1");
   const [sessionNumber, setSessionNumber] = useState(1);
-
   const [individual, setIndividual] = useState<SportPickState>(EMPTY_PICK);
   const [collective, setCollective] = useState<SportPickState>(EMPTY_PICK);
 
@@ -66,101 +65,100 @@ export default function FicheTechWizard() {
         table.phases td[contenteditable]:focus { background:#FCFBEF; }
         .phase-label { font-weight:700; font-family:'Amiri',serif; font-size:13px; white-space:nowrap; }
         .multi div + div { margin-top:5px; padding-top:5px; border-top:1px dashed var(--line); }
-        @media print {
-  @page {
-    size: A4 landscape;
-    margin: 2mm;
-  }
-  * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-    color-adjust: exact !important;
-  }
-  html, body {
-    margin: 2mm !important;
-    padding: 0 !important;
-    height: auto !important;
-    background: white !important;
-  }
-  .toolbar { display: none !important; }
-  .fiche-root {
-    background: #fff !important;
-    padding: 0 !important;
-    max-width: 100% !important;
-    margin: 0 !important;
-  }
-  #print-fiche-sheet {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 auto !important;
-    box-shadow: none !important;
-    border: none !important;
-    font-size: 11px !important;
-  }
-  table.phases {
-    font-size: 10.5px !important;
-  }
-  table.phases th,
-  table.phases td {
-    padding: 6px 8px !important;
-  }
-  table.phases tr {
-    break-inside: avoid;
-    page-break-inside: avoid;
-  }
-  .meta-strip {
-    break-inside: avoid;
-    page-break-inside: avoid;
-  }
-    .letterhead {
-    padding: 4px 8px !important;
-    border-bottom: 2px solid var(--green) !important;
-  }
-  .letterhead h1 {
-    font-size: 15px !important;
-    margin: 0 !important;
-  }
-  .letterhead .eyebrow {
-    display: none !important;
-  }
+          @media print {
+            @page {
+              size: A4 landscape;
+              margin: 2mm;
+            }
 
-  .meta-strip {
-    display: grid !important;
-  }
-  .meta-item {
-    padding: 3px 10px !important;
-  }
-  .meta-label {
-    font-size: 8.5px !important;
-  }
-  .meta-value {
-    font-size: 11px !important;
-  }
+            * {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+              color-adjust: exact !important;
+            }
 
-  .objective-box {
-    margin: 4px 8px !important;
-    padding: 3px 10px !important;
-    font-size: 10px !important;
-  }
+            html, body {
+              margin: 2mm !important;
+              padding: 0 !important;
+              height: auto !important;
+              background: white !important;
+            }
 
-  table.phases {
-    margin-top: 6px !important;
-  }
-  #print-fiche-sheet {
-    display: flex !important;
-    flex-direction: column !important;
-    height: 202mm !important; /* A4 landscape height (210mm) minus 4mm top/bottom margin */
-  }
+            .toolbar { display: none !important; }
 
-  table.phases {
-    flex: 1 !important;
-    height: 100% !important;
-  }
+            .fiche-root {
+              background: #fff !important;
+              padding: 0 !important;
+              max-width: 100% !important;
+              margin: 0 !important;
+            }
 
-  table.phases tbody {
-    height: 100% !important;
-  }
-}
+            #print-fiche-sheet {
+              display: flex !important;
+              flex-direction: column !important;
+              width: 100% !important;
+              max-width: 100% !important;
+              height: 202mm !important;
+              margin: 0 auto !important;
+              box-shadow: none !important;
+              border: none !important;
+              font-size: 11px !important;
+            }
+
+            .letterhead {
+              padding: 4px 8px !important;
+              border-bottom: 2px solid var(--green) !important;
+            }
+            .letterhead h1 {
+              font-size: 15px !important;
+              margin: 0 !important;
+            }
+            .letterhead .eyebrow {
+              display: none !important;
+            }
+
+            .meta-strip {
+              display: grid !important;
+              break-inside: avoid;
+              page-break-inside: avoid;
+            }
+            .meta-item {
+              padding: 3px 10px !important;
+            }
+            .meta-label {
+              font-size: 8.5px !important;
+            }
+            .meta-value {
+              font-size: 11px !important;
+            }
+
+            .objective-box {
+              margin: 4px 8px !important;
+              padding: 3px 10px !important;
+              font-size: 10px !important;
+            }
+
+            .table-wrap {
+              flex: 1 !important;
+              height: 100% !important;
+              overflow: visible !important;
+              margin-top: 6px !important;
+            }
+
+            table.phases {
+              width: 100% !important;
+              height: 100% !important;
+              font-size: 10.5px !important;
+            }
+            table.phases th,
+            table.phases td {
+              padding: 6px 8px !important;
+            }
+            table.phases tr {
+              break-inside: avoid;
+              page-break-inside: avoid;
+            }
+          }
       `}</style>
 
       {page === 1 ? (
