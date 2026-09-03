@@ -70,7 +70,7 @@ const ManageClasses = ({
     }
 
     return (
-        <div dir="rtl" className='w-full p-4 bg-black text-white'>
+        <div dir="rtl" className='w-full bg-black text-white '>
             {/* Add Class */}
             <div className='w-full border border-white rounded-2xl p-8 my-8 text-center' >
                 <h1 className='text-lg font-bold mb-4'> في حالة عدم توفر ملف Excel من طرف الادارة. يمكنك ادخال الأقسام والتلاميذ يدوياً </h1>
@@ -87,7 +87,7 @@ const ManageClasses = ({
             {/* Classes list */}
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
                 {classes.map((c) => (
-                    <div key={c._id} className='bg-white text-black border border-gray-400'>
+                    <div key={c._id} className='bg-white text-black border border-gray-400 rounded-lg'>
 
                         {/* header */}
                         <div
@@ -99,7 +99,7 @@ const ManageClasses = ({
                                     fetchStudents(c._id)
                                 }
                             }}
-                            className='flex justify-between items-center p-2 cursor-pointer'>
+                            className='flex justify-between items-center p-2 cursor-pointer rounded-2xl'>
                             <h2 className='font-bold text-lg bg-blue-500 text-white rounded py-1 flex-1 text-center'>{c.name}</h2>
                             <button
                                 onClick={e => { e.stopPropagation(); deleteClasses(c._id) }}
@@ -113,7 +113,7 @@ const ManageClasses = ({
                                     {(studentsByClass[c._id] || []).map((s, j) => (
                                         <li key={s._id}
                                             className={`flex flex-wrap items-center gap-1 px-1 py-1 rounded text-xs
-                ${s.status === 'malade' ? 'bg-red-300' :
+                                                    ${s.status === 'malade' ? 'bg-red-300' :
                                                     s.status === 'special' ? 'bg-yellow-300' :
                                                         s.gender === 'female' ? 'bg-pink-200' : 'bg-blue-200'}`}>
                                             <span className='border border-black rounded px-1 font-bold min-w-6 text-center'>{j + 1}</span>

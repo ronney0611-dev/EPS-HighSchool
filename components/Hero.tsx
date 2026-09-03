@@ -89,7 +89,7 @@ const Hero = () => {
 
                 {/* Subtitle */}
                 <p className="relative z-10 text-center text-xs sm:text-sm md:text-base text-zinc-400 max-w-xl mx-auto mt-4 px-6 leading-relaxed font-normal">
-                    نحن من نتكفل بجميع الوثائق؛ من قوائم الأقسام والتلاميذ إلى رصد النقاط وإرسالها للإدارة.
+                   من ملف إكسل واحد إلى دفتر الوثائق التربوية كاملاً
                 </p>
 
                 {/* Navbar-Styled Buttons */}

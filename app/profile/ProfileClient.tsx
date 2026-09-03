@@ -158,9 +158,9 @@ const ProfilePage = () => {
                     </div>
                 ))}
             </div>
-
+            <hr className='border border-white w-full my-4 mx-8' />
             <div className='flex w-full flex-col  justify-center items-center'>
-                <hr className='border border-white w-full my-4 mx-8' />
+                
                 <div className='flex justify-center text-center w-full'>
                     <GradientText
                         colors={["#ffffff", "#ff0000", "#ffffff"]}
@@ -171,8 +171,8 @@ const ProfilePage = () => {
                         ادخال الاقسام و التلاميذ
                     </GradientText>
                 </div>
-                {/* Excel import button */}
 
+                {/* Excel import button */}
                 <div className='w-full border border-white rounded-2xl p-8 my-8 text-center'>
                     <h2 className='text-lg font-medium mb-2'>ادخل الأقسام و أسماء التلاميذ من ملف Excel تلقائيا</h2>
                     <label className='flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl cursor-pointer font-semibold w-full'>
@@ -196,59 +196,61 @@ const ProfilePage = () => {
             </div>
 
             {/* Modal */}
-            {showModal && (
-                <div className='fixed inset-0 bg-black/70 flex items-center justify-center z-50'>
-                    <div dir="rtl" className='bg-white text-black rounded-2xl p-6 w-full max-w-md flex flex-col gap-4 max-h-[80vh] overflow-y-auto'>
-                        <h2 className='text-xl font-bold'>اختر الأقسام للاستيراد</h2>
-                        <p className='text-sm text-gray-500'>تم العثور على {parsedSheets.length} قسم</p>
+            {
+                showModal && (
+                    <div className='fixed inset-0 bg-black/70 flex items-center justify-center z-50'>
+                        <div dir="rtl" className='bg-white text-black rounded-2xl p-6 w-full max-w-md flex flex-col gap-4 max-h-[80vh] overflow-y-auto'>
+                            <h2 className='text-xl font-bold'>اختر الأقسام للاستيراد</h2>
+                            <p className='text-sm text-gray-500'>تم العثور على {parsedSheets.length} قسم</p>
 
-                        <div className='flex flex-col gap-2'>
-                            {parsedSheets.map((sheet) => (
-                                <label key={sheet.name} className='flex items-center gap-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50'>
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedSheets.includes(sheet.name)}
-                                        onChange={e => {
-                                            if (e.target.checked) setSelectedSheets([...selectedSheets, sheet.name])
-                                            else setSelectedSheets(selectedSheets.filter(s => s !== sheet.name))
-                                        }}
-                                        className='w-4 h-4'
-                                    />
-                                    <span className='font-medium'>{sheet.name}</span>
-                                    <input
-                                        type="text"
-                                        placeholder="اسم مخصص (اختياري)"
-                                        className='border rounded px-2 py-1 text-sm flex-1 text-right'
-                                        onChange={e => setCustomNames({ ...customNames, [sheet.name]: e.target.value })}
-                                    />
-                                    <span className='text-gray-400 text-sm mr-auto'>{sheet.students.length} تلميذ</span>
-                                </label>
-                            ))}
-                        </div>
+                            <div className='flex flex-col gap-2'>
+                                {parsedSheets.map((sheet) => (
+                                    <label key={sheet.name} className='flex items-center gap-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50'>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedSheets.includes(sheet.name)}
+                                            onChange={e => {
+                                                if (e.target.checked) setSelectedSheets([...selectedSheets, sheet.name])
+                                                else setSelectedSheets(selectedSheets.filter(s => s !== sheet.name))
+                                            }}
+                                            className='w-4 h-4'
+                                        />
+                                        <span className='font-medium'>{sheet.name}</span>
+                                        <input
+                                            type="text"
+                                            placeholder="اسم مخصص (اختياري)"
+                                            className='border rounded px-2 py-1 text-sm flex-1 text-right'
+                                            onChange={e => setCustomNames({ ...customNames, [sheet.name]: e.target.value })}
+                                        />
+                                        <span className='text-gray-400 text-sm mr-auto'>{sheet.students.length} تلميذ</span>
+                                    </label>
+                                ))}
+                            </div>
 
-                        <div className='flex gap-3'>
-                            <button
-                                onClick={
-                                    () => {
-                                        if (handleImportConfirm) {
-                                            handleImportConfirm();
-                                            toast("تم استيراد الأقسام بنجاح !", { type: "success" });
+                            <div className='flex gap-3'>
+                                <button
+                                    onClick={
+                                        () => {
+                                            if (handleImportConfirm) {
+                                                handleImportConfirm();
+                                                toast("تم استيراد الأقسام بنجاح !", { type: "success" });
+                                            }
                                         }
                                     }
-                                }
-                                className='bg-green-600 text-white px-6 py-2 rounded-xl flex-1 font-semibold cursor-pointer'>
-                                استيراد
-                            </button>
-                            <button
-                                onClick={() => setShowModal(false)}
-                                className='bg-gray-300 text-black px-6 py-2 rounded-xl flex-1 cursor-pointer'>
-                                إلغاء
-                            </button>
+                                    className='bg-green-600 text-white px-6 py-2 rounded-xl flex-1 font-semibold cursor-pointer'>
+                                    استيراد
+                                </button>
+                                <button
+                                    onClick={() => setShowModal(false)}
+                                    className='bg-gray-300 text-black px-6 py-2 rounded-xl flex-1 cursor-pointer'>
+                                    إلغاء
+                                </button>
+                            </div>
                         </div>
-                    </div>
 
-                </div>
-            )}
+                    </div>
+                )
+            }
             <hr className='border border-white w-full my-4 mx-8' />
 
             <div className='flex flex-col justify-center items-center' >
@@ -267,7 +269,7 @@ const ProfilePage = () => {
                 </div>
                 <ToastContainer />
             </div>
-        </div>
+        </div >
     )
 }
 
