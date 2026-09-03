@@ -274,7 +274,7 @@ export default function WahdaGeneratorPage() {
                 <div className="flex items-center justify-between border-b border-gray-100 pb-4">
                     <h1 className="text-2xl font-black text-gray-800 tracking-tight flex items-center gap-2">
                         <span className="bg-blue-50 text-blue-600 p-2 rounded-xl text-xl">🛠️</span>
-                        مولد الوحدة التعلمية 
+                        مولد الوحدة التعلمية
                     </h1>
                     <span className="text-xs font-semibold px-3 py-1 bg-blue-50 text-blue-600 rounded-full">وحدات تعلمية</span>
                 </div>
@@ -337,7 +337,7 @@ export default function WahdaGeneratorPage() {
                                 onClick={() => window.print()}
                                 className="bg-purple-600 hover:bg-purple-700 active:scale-95 text-white font-bold px-7 py-3 rounded-2xl shadow-lg shadow-purple-500/20 transition-all flex items-center gap-2"
                             >
-                                🖨️ طباعة 
+                                🖨️ طباعة
                             </button>
                         </>
                     )}
@@ -406,18 +406,6 @@ export default function WahdaGeneratorPage() {
                                 <tr className="border border-black">
                                     <td className="border border-black p-2.5 text-gray-400 font-mono text-xs"> --/--/----</td>
                                     <td
-                                        onClick={() => {
-                                            const params = new URLSearchParams({
-                                                level: level,
-                                                session: "منافسة اولية",
-                                                sport: sport,
-                                                trimester: trimester,
-                                                indicatorId: "0",
-                                                indicatorText: "إجراء معاينة أولية للمكتسبات",
-                                                goal: "تقويم تشخيصي",
-                                            });
-                                            window.open(`/FicheTech?${params}`, "_blank");
-                                        }}
                                         className="border border-black p-2.5 font-bold text-rose-600 bg-rose-50/50 hover:bg-rose-100/50 transition cursor-pointer">
                                         منافسة اولية
                                     </td>
@@ -428,18 +416,7 @@ export default function WahdaGeneratorPage() {
                                 {wahda.sessions.map((session, index) => (
                                     <tr key={index} className="border border-black hover:bg-gray-50/80 transition-colors">
                                         <td className="border border-black p-2 text-gray-400 font-mono text-xs"> --/--/----</td>
-                                        <td onClick={() => {
-                                            const params = new URLSearchParams({
-                                                level: level,
-                                                session: String(session.sessionNumber),
-                                                sport: sport,
-                                                trimester: trimester,
-                                                indicatorId: String(session.indicatorId),
-                                                indicatorText: session.indicatorText,
-                                                goal: session.goal,
-                                            });
-                                            window.open(`/FicheTech?${params}`, "_blank");
-                                        }} className="border border-black p-2.5 font-bold text-blue-700 bg-blue-50/40 hover:bg-blue-100/40 transition cursor-pointer">
+                                        <td className="border border-black p-2.5 font-bold text-blue-700 bg-blue-50/40 hover:bg-blue-100/40 transition cursor-pointer">
                                             {session.isReminder ? "حصة تذكيرية" : `تعليمية ${String(session.sessionNumber).padStart(2, '0')}`}
                                         </td>
                                         <td className="border-t-white">
@@ -471,18 +448,6 @@ export default function WahdaGeneratorPage() {
                                 <tr className="border border-black">
                                     <td className="border border-black p-2.5 text-gray-400 font-mono text-xs"> --/--/----</td>
                                     <td
-                                        onClick={() => {
-                                            const params = new URLSearchParams({
-                                                level: level,
-                                                session: "منافسة نهائية",
-                                                sport: sport,
-                                                trimester: trimester,
-                                                indicatorId: "0",
-                                                indicatorText: "قياس مدى تحقق الأهداف البيداغوجية والمؤشرات",
-                                                goal: "تقويم تحصيلي",
-                                            });
-                                            window.open(`/FicheTech?${params}`, "_blank");
-                                        }}
                                         className="border border-black p-2.5 font-bold text-rose-600 bg-rose-50/50 hover:bg-rose-100/50 transition cursor-pointer">
                                         منافسة نهائية
                                     </td>

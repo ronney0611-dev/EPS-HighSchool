@@ -128,6 +128,23 @@ export const documentsConfig =
                 },
             }
         },
+        fich: {
+            id: 'first',
+            name: ' (مذكرات) الوحدة التعليمية',
+            image: '/images/fich.jpg',
+            levels: ['lycee', 'cem', 'primaire'],
+            youtubeVideoId: 'SsCEbuVl2Xc',
+            description: 'أنشئ وحداتك التعليمية بشكل تفاعلي —  بناءا على الاهداف التعليمية. كل شيء مرتبط بالمنهاج الرسمي تلقائياً.',
+            files: {
+                fich1: {
+                    id: 's1',
+                    name: ' (مذكرات) الوحدة التعليمية',
+                    description: "أنشئ وحدتك التعليمية واطبعها مباشرة",
+                    type: 'interactive',
+                    component: { lycee: 'fich', cem: 'fichCem', primaire: 'fichPrimaire' },
+                },
+            }
+        },
         wahdaP: {
             id: 'first',
             name: '  المقاطع التعلمية (الوحدة التعلمية) ',

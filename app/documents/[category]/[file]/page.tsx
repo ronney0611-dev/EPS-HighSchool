@@ -25,6 +25,7 @@ import ShabakaTahliliyaPrimaire from "@/pages/ShabakaTahliliyaPrimaire";
 import WahdaPrimaireGeneratorPage from "@/pages/Wahdaprimairegeneratorpage";
 import DailyLogPage from "@/pages/Dailylogpage";
 import PlanOfYearLeecy from "@/pages/PlanOfYearLeecy";
+import FicheTechWizard from "@/pages/FicheTechWizard";
 
 interface FileConfig {
   id: string;
@@ -74,6 +75,7 @@ const FilePage = ({ params }: { params: Promise<{ file: string; category: string
     { key: 'baladiyat', component: <ClassPlan /> },
     { key: 'mokhatat', component: <Mokhatat /> }, 
     { key: 'tawzi3', component: <Tawzi3 /> }, 
+    { key: 'fich', component: <FicheTechWizard /> }, 
     
     // Wahda variants
     { key: 'wahda', component: <WahdaT /> },
@@ -105,7 +107,7 @@ const FilePage = ({ params }: { params: Promise<{ file: string; category: string
 
   return (
     <div>
-      {matched ? matched.component : <div className="text-center text-red-500 my-20">الواجهة غير متوفرة لهذا المستوى</div>}
+      {matched ? matched.component : <div className="text-center text-red-500 my-20">قريبا </div>}
     </div>
   );
 };
