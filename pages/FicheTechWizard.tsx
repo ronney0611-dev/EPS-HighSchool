@@ -6,7 +6,7 @@ import FicheTechSheet from "@/components/FicheTechSheet";
 import { EMPTY_PICK, type SportPickState } from "@/src/config/ficheTechData";
 
 export default function FicheTechWizard() {
-  const [page, setPage] = useState<1 | 2>(1);
+  const [page, setPage] = useState<1 | 2 | 3>(1);
   const [level, setLevel] = useState("level1");
   const [sessionNumber, setSessionNumber] = useState(1);
   const [individual, setIndividual] = useState<SportPickState>(EMPTY_PICK);
@@ -65,6 +65,38 @@ export default function FicheTechWizard() {
         table.phases td[contenteditable]:focus { background:#FCFBEF; }
         .phase-label { font-weight:700; font-family:'Amiri',serif; font-size:13px; white-space:nowrap; }
         .multi div + div { margin-top:5px; padding-top:5px; border-top:1px dashed var(--line); }
+        .reminder-screen {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              min-height: 50vh;
+              padding: 24px;
+            }
+            .reminder-box {
+              max-width: 520px;
+              background: #fff;
+              border: 2px solid #B08D3B;
+              border-radius: 12px;
+              padding: 28px;
+              text-align: center;
+            }
+            .reminder-box h2 {
+              font-family: 'Amiri', serif;
+              color: var(--green);
+              font-size: 20px;
+              margin: 0 0 14px;
+            }
+            .reminder-box p {
+              font-size: 14px;
+              line-height: 1.9;
+              color: var(--ink);
+              margin: 0 0 22px;
+            }
+            .reminder-actions {
+              display: flex;
+              gap: 10px;
+              justify-content: center;
+            }
           @media print {
             @page {
               size: A4 landscape;
@@ -161,7 +193,7 @@ export default function FicheTechWizard() {
           }
       `}</style>
 
-      {page === 1 ? (
+      {page === 1 && (
         <FicheTechConfig
           level={level} setLevel={setLevel}
           sessionNumber={sessionNumber} setSessionNumber={setSessionNumber}
@@ -170,7 +202,32 @@ export default function FicheTechWizard() {
           canProceed={canProceed}
           onNext={() => setPage(2)}
         />
-      ) : (
+      )}
+
+      {page === 2 && (
+        <div className="reminder-screen">
+          <div className="reminder-box">
+            <h2>⚠️ تنبيه قبل المتابعة</h2>
+            <p>
+              المسؤولية البيداغوجية الكاملة في اختيار وصياغة محتوى الحصة
+              تقع على عاتق الأستاذ(ة).
+              التمارين هي مقترحات فقط.  <strong className="text-red-500">يجب على الأستاذ(ة) مراجعتها وتعديلها </strong> 
+               لتناسب مستوى وخصوصيات تلاميذه قبل الطباعة أو الاعتماد
+              عليها.
+            </p>
+            <div className="reminder-actions">
+              <button className="btn btn-ghost" onClick={() => setPage(1)}>
+                رجوع
+              </button>
+              <button className="btn btn-primary" onClick={() => setPage(3)}>
+                فهمت، متابعة →
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {page === 3 && (
         <FicheTechSheet
           level={level} sessionNumber={sessionNumber}
           individual={individual} collective={collective}

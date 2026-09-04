@@ -129,7 +129,6 @@ export default function FicheTechConfig({
   setIndividual,
   collective,
   setCollective,
-  canProceed,
   onNext,
 }: {
   level: string;
@@ -197,7 +196,7 @@ export default function FicheTechConfig({
 
       <div className="flex justify-end pt-2">
         <button
-          disabled={!canProceed}
+          
           onClick={onNext}
           className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-red-500 disabled:bg-neutral-800 disabled:text-neutral-500"
         >
