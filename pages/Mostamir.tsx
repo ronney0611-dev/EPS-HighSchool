@@ -119,7 +119,7 @@ const Mostamir = () => {
       </div>
 
       {/* document card printable */}
-      <div id="mostamir-card" className='bg-white text-black p-2 sm:p-4 rounded-2xl shadow-2xl max-w-7xl mx-auto overflow-x-auto overflow-hidden'>
+      <div id="mostamir-card" className='bg-white text-black p-2 sm:p-4 rounded-2xl shadow-2xl max-w-7xl mx-auto overflow-hidden'>
 
         {/* header */}
         <table className='border border-black w-full text-center text-xs border-collapse '>
@@ -154,12 +154,12 @@ const Mostamir = () => {
         </table>
 
         {/* attendance table — only this trimester's 12 columns */}
-        <div className='overflow-x-auto mt-2'>
-          <table className='border border-black w-full text-center border-collapse' style={{ fontSize: '8px' }}>
+        <div className='overflow-x-auto'>
+           <table className='border border-black w-full mt-2 text-center' style={{ fontSize: '7px' }}>
             <thead>
               <tr>
-                <th className='border border-black' rowSpan={3} style={{ width: '18px' }}>#</th>
-                <th className='border border-black text-xs font-bold' rowSpan={3} style={{ width: '110px' }}>الاسم واللقب</th>
+                <th className='border px-2 border-black' rowSpan={3} style={{ width: '18px' }}>#</th>
+                <th className='border border-black text-xs font-bold' rowSpan={3} style={{ width: '90px' }}>الاسم واللقب</th>
                 <th className='border border-black text-xs font-bold' rowSpan={3} style={{ width: '22px' }}>الفوج</th>
                 <th className='border border-black text-xs font-bold py-0.5' colSpan={12}>الشهر</th>
               </tr>
@@ -179,7 +179,7 @@ const Mostamir = () => {
                 <tr key={i} className='h-5'>
                   <td className={`border border-black font-semibold text-[9px] ${studentColor(s.status, s.gender)}`}>{i + 1}</td>
                   <td className={`border border-black text-right text-[10px] font-medium px-1 leading-tight whitespace-nowrap ${studentColor(s.status, s.gender)}`}>{s.name}</td>
-                  <td className={`border border-black text-[9px] font-bold ${studentColor(s.status, s.gender)}`}>{getStudentGroup(s._id)}</td>
+                  <td className={`border px-1 border-black text-[9px] font-bold ${studentColor(s.status, s.gender)}`}>{getStudentGroup(s._id)}</td>
                   {Array.from({ length: 12 }).map((_, j) => {
                     const sessionIndex = activeTrimester.startIndex + j;
                     return (
@@ -187,7 +187,7 @@ const Mostamir = () => {
                         <select
                           value={grid[`${s._id}-${sessionIndex}`] ?? ''}
                           onChange={e => setGrid(prev => ({ ...prev, [`${s._id}-${sessionIndex}`]: e.target.value }))}
-                          className="border-none w-full h-full text-center text-[9px] font-bold appearance-none bg-transparent cursor-pointer focus:outline-none"
+                          className="border-none w-5 h-full text-center text-[9px] font-bold appearance-none bg-transparent cursor-pointer focus:outline-none"
                         >
                           <option value=""></option>
                           <option value="P">P</option>
