@@ -130,7 +130,7 @@ export default function FicheTechWizard() {
               flex-direction: column !important;
               width: 100% !important;
               max-width: 100% !important;
-              height: 202mm !important;
+              height: auto !important;
               margin: 0 auto !important;
               box-shadow: none !important;
               border: none !important;
@@ -142,7 +142,7 @@ export default function FicheTechWizard() {
               border-bottom: 2px solid var(--green) !important;
             }
             .letterhead h1 {
-              font-size: 15px !important;
+              font-size: 12px !important;
               margin: 0 !important;
             }
             .letterhead .eyebrow {
@@ -180,7 +180,7 @@ export default function FicheTechWizard() {
             table.phases {
               width: 100% !important;
               height: 100% !important;
-              font-size: 10.5px !important;
+              font-size: 8.5px !important;
             }
             table.phases th,
             table.phases td {

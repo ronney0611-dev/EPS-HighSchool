@@ -75,9 +75,9 @@ export default function FicheTechSheet({
             <span className="meta-label ">رقم الحصة التعليمية</span>
             <span className="meta-value">{sessionNumber}</span>
           </div>
-          <div className="meta-item border-t border-l border-gray-300 w-full">
-            <span className="meta-label">الوسائل </span>
-            <span className="meta-value" ></span>
+          <div className="meta-item border-t flex gap-4 border-gray-300 w-full">
+            <span className="meta-label">الوسائل :</span>
+            <span className="meta-value" contentEditable ></span>
           </div>
         </div>
 
@@ -104,7 +104,7 @@ export default function FicheTechSheet({
             </thead>
             <tbody>
               <tr>
-                <td className="phase-label">المرحلة التحضيرية</td>
+                <td className="phase-label">مرحلة التحضير</td>
                 <td contentEditable suppressContentEditableWarning>
                   <div className="multi">التحضير النفسي. <br /> التحضير البدني العام ثم الخاص</div>
                 </td>
@@ -117,7 +117,7 @@ export default function FicheTechSheet({
                 <td contentEditable suppressContentEditableWarning>الالتزام بالاصطفاف, اللباس الرياضي, الانضباط, الانتباه, التركيز, الاحترام, التعاون</td>
               </tr>
               <tr>
-                <td className="phase-label">المرحلة الرئيسية — النشاط الفردي</td>
+                <td className="phase-label">مرحلة التعلم — النشاط الفردي</td>
                 <td contentEditable suppressContentEditableWarning>
                   <div className="multi">{individualExercises.map((ex, i) => <div key={i}>{ex.but}</div>)}</div>
                 </td>
@@ -133,7 +133,7 @@ export default function FicheTechSheet({
                 </td>
               </tr>
               <tr>
-                <td className="phase-label">المرحلة الرئيسية — النشاط الجماعي</td>
+                <td className="phase-label">مرحلة التعلم — النشاط الجماعي</td>
                 <td contentEditable suppressContentEditableWarning><div className="multi">{collectiveExercises.map((ex, i) => <div key={i}>{ex.but}</div>)}</div></td>
                 <td contentEditable suppressContentEditableWarning>
                   <div className="border-b pb-2 border-gray-300 border-dashed">احماء خاص:</div><br />
@@ -146,7 +146,7 @@ export default function FicheTechSheet({
                 <td contentEditable suppressContentEditableWarning><div className="multi">{collectiveExercises.map((ex, i) => <div key={i}>{ex.najah}</div>)}</div></td>
               </tr>
               <tr>
-                <td className="phase-label">المرحلة الختامية</td>
+                <td className="phase-label">مرحلة التقييم</td>
                 <td contentEditable suppressContentEditableWarning>العودة بالجسم الى الحالة الطبيعية (الاسترخاء)</td>
                 <td contentEditable suppressContentEditableWarning>جري خفيف حول الملعب, اصطفاف ( تمديدات ) , ومناقشة الحصة ثم تحية و انصراف.</td>
                 <td contentEditable suppressContentEditableWarning>5د</td>

@@ -5,7 +5,7 @@ import { useTeacher } from "@/hooks/useTeacher";
 import { useGroupe } from '@/hooks/useGroupe';
 import { useMostamir } from '@/hooks/useTakwimMostamir';
 import { useEffect, useState } from "react";
-import { ToastContainer ,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 
 const TaqwimMostamir = () => {
 
@@ -168,7 +168,9 @@ const TaqwimMostamir = () => {
 
         <div className="grid grid-cols-2 border border-gray-400 text-sm">
           <div className="border-l border-gray-400 p-2">المؤسسة : {teacher.school || '—'}</div>
-          <div className="p-2">المستوى : {selectedClassData?.level || '—'}</div>
+          <div className="p-2">
+            المستوى : {!selectedClassData ? '—' : selectedClassData.level === 'lycee' ? 'ثانوي' : 'الابتدائي'}
+          </div>
           <div className="border-t border-l border-gray-400 p-2">الأستاذ : {teacher.name || '—'}</div>
           <div className="border-t border-gray-400 p-2">القسم : {classSelect || '—'}</div>
         </div>
