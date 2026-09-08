@@ -181,7 +181,7 @@ export default function WahdaPrimaireGeneratorPage() {
 
             {/* Document Render Sheet */}
             {current && current.sessions.length > 0 ? (
-                <div id="a4-card" className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 print:shadow-none print:border-none print:p-0">
+                <div id="a4-wahda-primaire" className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 print:shadow-none print:border-none print:p-0">
 
                     <div className="grid grid-cols-3 text-sm font-bold text-gray-800 mb-6 border-b pb-4">
                         <div>
@@ -310,15 +310,15 @@ export default function WahdaPrimaireGeneratorPage() {
             background: white !important;
         }
 
-        body *:not(#a4-card):not(#a4-card *) {
+        body *:not(#a4-wahda-primaire):not(#a4-wahda-primaire *) {
             visibility: hidden !important;
         }
 
-        #a4-card, #a4-card * {
+        #a4-wahda-primaire, #a4-wahda-primaire * {
             visibility: visible !important;
         }
 
-        #a4-card {
+        #a4-wahda-primaire {
             position: static !important;
             width: 100% !important;
             margin: 0 !important;
@@ -327,7 +327,7 @@ export default function WahdaPrimaireGeneratorPage() {
             font-size: 12px !important;
         }
 
-        #a4-card h2 {
+        #a4-wahda-primaire h2 {
             font-size: 18px !important;
             padding: 6px 20px !important;
         }

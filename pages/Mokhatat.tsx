@@ -179,7 +179,12 @@ const Mokhatat = () => {
             <tr>
               <td className={labelTd}>الزمن الإجمالي</td>
               {data.maidans.map((_, i) => (
-                <td key={i} className={`${td} text-center text-gray-400 italic`}></td>
+                <td key={i} className={`${td} text-center text-gray-400 `}>
+                  <input
+                    className="w-full text-center text-black focus:outline-none focus:ring-1 focus:border-transparent text-sm"
+                    placeholder="أدخل الزمن هنا"
+                  />
+                </td>
               ))}
             </tr>
           </tbody>

@@ -213,7 +213,7 @@ export default function DailyLogPage() {
 
             {/* Log Table */}
             {entries.length > 0 ? (
-                <div id="a4-card" className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 print:shadow-none print:border-none print:p-0">
+                <div id="a4-daily-log" className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 print:shadow-none print:border-none print:p-0">
                     <table className="w-full border-collapse border-2 border-black text-center text-sm">
                         <thead>
                             <tr className="bg-gray-100 font-bold text-gray-900">
@@ -278,15 +278,15 @@ export default function DailyLogPage() {
             background: white !important;
         }
 
-        body *:not(#a4-card):not(#a4-card *) {
+        body *:not(#a4-daily-log):not(#a4-daily-log *) {
             visibility: hidden !important;
         }
 
-        #a4-card, #a4-card * {
+        #a4-daily-log, #a4-daily-log * {
             visibility: visible !important;
         }
 
-        #a4-card {
+        #a4-daily-log {
             position: static !important;
             width: 100% !important;
             margin: 0 !important;

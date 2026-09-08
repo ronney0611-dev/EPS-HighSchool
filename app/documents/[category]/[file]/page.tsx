@@ -10,13 +10,10 @@ import TakwinTahsili from "@/pages/TakwinTahsili";
 import TaqwimMostamir from "@/pages/TaqwimMostamir";
 import TaqwimMostamirPrimaire from "@/pages/TaqwimMostamirPrimaire";
 import TaqwimTakwini from "@/pages/TaqwimTakwini";
-import TaqwimTakwiniCem from "@/pages/TaqwimTakwiniCem";
-import WahdaCem from "@/pages/WahdaCem";
 import WahdaT from "@/pages/WahdaT";
 import { documentsConfig } from "@/src/config/documents";
 import { useSession } from "next-auth/react";
 import React from "react";
-import TaqwimTahsiliCem from "@/pages/TaqwimTahsiliCem";
 import Mokhatat from "@/pages/Mokhatat";
 import Tawzi3 from "@/pages/Tawzi3";
 import Barmaja from "@/pages/Barmaja";
@@ -79,7 +76,6 @@ const FilePage = ({ params }: { params: Promise<{ file: string; category: string
     
     // Wahda variants
     { key: 'wahda', component: <WahdaT /> },
-    { key: 'wahdaCem', component: <WahdaCem /> },
     { key: 'wahdaPrimaire', component: <WahdaPrimaireGeneratorPage /> },
 
     // Diagnostic evaluation variations
@@ -96,9 +92,7 @@ const FilePage = ({ params }: { params: Promise<{ file: string; category: string
     { key: 'taqwimMostamir', component: <TaqwimMostamir /> },
     { key: 'taqwimMostamirPrimaire', component: <TaqwimMostamirPrimaire /> },
     { key: 'taqwimTakwini', component: <TaqwimTakwini /> },
-    { key: 'taqwimTakwiniCem', component: <TaqwimTakwiniCem /> },
     { key: 'taqwimTahsili', component: <TakwinTahsili /> },
-    { key: 'taqwimTahsiliCem', component: <TaqwimTahsiliCem /> },
     { key: 'dispoCard', component: <DispoCard /> }, 
     { key: 'ficheNote', component: <DailyLogPage /> }, 
   ];

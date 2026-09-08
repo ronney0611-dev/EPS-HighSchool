@@ -101,11 +101,10 @@ const MostamirPrimaire = () => {
               <button
                 key={t}
                 onClick={() => setTrimestre(t)}
-                className={`px-4 py-1 rounded text-sm font-bold border transition ${
-                  trimestre === t
+                className={`px-4 py-1 rounded text-sm font-bold border transition ${trimestre === t
                     ? 'bg-blue-700 text-white border-blue-700'
                     : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'
-                }`}
+                  }`}
               >
                 الفصل {t === 1 ? 'الأول' : t === 2 ? 'الثاني' : 'الثالث'}
               </button>
@@ -123,7 +122,7 @@ const MostamirPrimaire = () => {
       </div>
 
       {/* document */}
-      <div id="a4-card" className='bg-white text-black p-2 md:p-4'>
+      <div id="a4-mostamir-prm" className='bg-white text-black p-2 md:p-4'>
 
         {/* header */}
         <table className='border border-black w-full text-center text-xs mb-1'>
@@ -177,7 +176,7 @@ const MostamirPrimaire = () => {
               <tr>
                 {Array.from({ length: 12 }).map((_, i) => (
                   <th key={i} colSpan={2} className='border border-black' style={{ width: '16px' }}>
-                    الاسبوع {(i % 4) + 1} 
+                    الاسبوع {(i % 4) + 1}
                   </th>
                 ))}
               </tr>
@@ -240,12 +239,56 @@ const MostamirPrimaire = () => {
         </button>
         <button
           onClick={() => window.print()}
-          className='bg-blue-600 text-white px-6 py-2 rounded-xl font-semibold text-sm'
+          className='bg-blue-600 text-white px-6 py-2 rounded-xl font-semibold text-sm cursor-pointer'
         >
           🖨️ طباعة
         </button>
       </div>
+      <style jsx global>{`
+        @media print {
+          @page {
+            size: A4 landscape;
+            margin: 2mm;
+          }
 
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            height: auto !important;
+            background-color: white !important;
+          }
+
+          #a4-mostamir-prm {
+            margin: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            width: auto !important;
+            max-width: auto !important;
+          }
+
+          #a4-mostamir-prm, #a4-mostamir-prm * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+          }
+
+          tr {
+            break-inside: avoid;
+            page-break-inside: avoid;
+          }
+
+          thead {
+            display: table-header-group;
+          }
+
+          select {
+            -webkit-appearance: none;
+            appearance: none;
+            border: none !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };

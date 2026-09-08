@@ -5,6 +5,7 @@ import { useTeacher } from "@/hooks/useTeacher";
 import { useGroupe } from '@/hooks/useGroupe';
 import { useMostamir } from '@/hooks/useTakwimMostamir';
 import { useEffect, useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
 
 const TaqwimMostamirPrimaire = () => {
 
@@ -163,7 +164,7 @@ const TaqwimMostamirPrimaire = () => {
         </div>
       </div>
 
-      <div id="a4-card" className="bg-white text-black p-4 lg:p-8 border border-gray-300 shadow-md flex flex-col gap-4">
+      <div id="a4-most-prmaire" className="bg-white text-black p-4 lg:p-8 border border-gray-300 shadow-md flex flex-col gap-4">
         <div className="text-center border-b-2 border-gray-400 pb-3">
           <h1 className="text-lg font-bold">علامة المراقبة المستمرة</h1>
         </div>
@@ -254,6 +255,7 @@ const TaqwimMostamirPrimaire = () => {
               scores: scores[i] ?? [2, 2, 2, 2, 2],
               total: scores[i]?.reduce((a, b) => a + b, 0) ?? 10,
             })));
+            toast.success('تم حفظ العلامات بنجاح', { autoClose: 2000 });
           }}
           className='bg-blue-700 text-white px-6 py-2 rounded-xl text-sm cursor-pointer'>
           💾 حفظ
@@ -263,6 +265,7 @@ const TaqwimMostamirPrimaire = () => {
           className='bg-blue-700 text-white px-6 py-2 rounded-xl text-sm cursor-pointer'>
           🖨️ طباعة
         </button>
+        <ToastContainer />
       </div>
 
     </div>
