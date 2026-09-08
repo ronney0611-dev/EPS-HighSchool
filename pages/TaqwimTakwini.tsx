@@ -120,7 +120,7 @@ const TaqwimTakwini = () => {
             </div>
 
             {/* Document Grid */}
-            <div id="a4-card" className='w-full bg-white text-black p-2 md:p-6'>
+            <div id="a4-takwini" className='w-full bg-white text-black p-2 md:p-6'>
                 <div className="overflow-x-auto mt-1">
                     <table className="w-full border-collapse text-center text-xs">
                         <thead>
@@ -353,12 +353,12 @@ const TaqwimTakwini = () => {
                         height: auto !important;
                     }
 
-                    #a4-card {
+                    #a4-takwini {
                         margin: 0 !important;
                         padding: 0 !important;
                     }
 
-                    #a4-card, #a4-card * {
+                    #a4-takwini, #a4-takwini * {
                         -webkit-print-color-adjust: exact !important;
                         print-color-adjust: exact !important;
                         color-adjust: exact !important;

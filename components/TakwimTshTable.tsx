@@ -2,13 +2,14 @@
 
 import { useClasses } from "@/hooks/useClasses";
 import { useTeacher } from "@/hooks/useTeacher";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 
 import level1Data from "@/src/config/level1Curriculum.json";
 import level2Data from "@/src/config/level2Curriculum.json";
 import level3Data from "@/src/config/level3Curriculum.json";
 import { useTachkhisi } from "@/hooks/useTachkhisi";
 import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 
 interface Indicator {
     id: number;
@@ -123,23 +124,6 @@ const TakwimTshTable = () => {
         })));
     }
 
-    {/*useEffect(() => {
-        const availableIds = getDefaultIndicatorIds(dynamicLevelKey, sportSelect, mochirCount);
-
-        if (availableIds.length === 0) {
-            setSelectedIndicatorIds([]);
-            return;
-        }
-
-        setSelectedIndicatorIds(prev => {
-            const filtered = prev.filter(id => availableIds.includes(id));
-            if (filtered.length > 0) {
-                return filtered.slice(0, availableIds.length);
-            }
-            return availableIds;
-        });
-    }, [dynamicLevelKey, sportSelect, mochirCount]);*/}
-
     const indicatorsKey = `${dynamicLevelKey}::${sportSelect}::${mochirCount}`;
     const [lastIndicatorsKey, setLastIndicatorsKey] = useState('');
 
@@ -158,14 +142,6 @@ const TakwimTshTable = () => {
         }
     }
 
-    {/* useEffect(() => {
-        if (students.length > 0 && students[0].score.length !== mochirCount) {
-            setStudents(prev => prev.map(s => ({
-                ...s,
-                score: Array.from({ length: mochirCount }, (_, idx) => s.score[idx] || { t1: 0, t2: 0 })
-            })));
-        }
-    }, [mochirCount, students]); */}
     if (students.length > 0 && students[0].score.length !== mochirCount) {
         setStudents(prev => prev.map(s => ({
             ...s,
@@ -335,10 +311,10 @@ const TakwimTshTable = () => {
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 bg-gray-50 border-x border-b border-black">
-                        <div className="border-r border-black py-1.5 px-2 text-sm text-right"> الأستاذ: {teacher.name || '—'}</div>
-                        <div className="border-r border-black py-1.5 px-2 text-sm text-right"> المؤسسة: {teacher.school || '—'}</div>
-                        <div className="border-r border-black py-1.5 px-2 text-sm text-right"> المستوى: {getLevelLabel(selectedClassData?.name) || '—'}</div>
-                        <div className="py-1.5 px-2 text-sm text-right"> القسم: {classSelect || '—'}</div>
+                        <div className="border-r border-b border-black py-1.5 px-2 text-sm text-right"> الأستاذ: {teacher.name || '—'}</div>
+                        <div className="border-r border-b border-black py-1.5 px-2 text-sm text-right"> المؤسسة: {teacher.school || '—'}</div>
+                        <div className="border-r border-b border-black py-1.5 px-2 text-sm text-right"> المستوى: {getLevelLabel(selectedClassData?.name) || '—'}</div>
+                        <div className="border-r border-b border-black py-1.5 px-2 text-sm text-right"> القسم: {classSelect || '—'}</div>
                     </div>
 
                     <div className="border-x border-b border-black bg-white text-right">
@@ -478,7 +454,7 @@ const TakwimTshTable = () => {
                 </button>
                 <button
                     onClick={() => {
-                        const found = classes.find(c => c.name === classSelect);
+                        const found = classes.find(c => c._id === classSelect || c.name === classSelect);
                         if (!found) return;
                         saveTachkhisi(
                             found._id,
@@ -504,13 +480,13 @@ const TakwimTshTable = () => {
                     className='bg-green-600 text-white px-6 py-2 rounded-xl font-bold text-sm w-full md:w-auto shadow-sm'>
                     حفظ ✅
                 </button>
-                <ToastContainer />
+                
             </div>
             <style jsx global>{`
     @media print {
         @page {
             size: A4 landscape;
-            margin: 4mm;
+            margin: 2mm;
         }
 
         * {
@@ -526,7 +502,16 @@ const TakwimTshTable = () => {
             background: white !important;
         }
 
-        #a4-card-groupe, #a4-card-tch {
+         body {
+        margin-top: 0 !important;
+    }
+
+        body > div {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        #a4-card-tch, #a4-card-tch {
             display: none !important;
         }
 
@@ -535,14 +520,15 @@ const TakwimTshTable = () => {
             position: static !important;
             width: 100% !important;
             margin: 0 !important;
-            padding: 1mm !important;
+            padding: 0 !important;
             border: none !important;
             font-size: 8px !important;
         }
 
         #a4-card-tch h1 {
-            font-size: 11px !important;
+            font-size: 8px !important;
             padding: 2px 4px !important;
+            
         }
 
         #a4-card-tch .grid > div {
@@ -559,6 +545,7 @@ const TakwimTshTable = () => {
             width: 100%;
             border-collapse: collapse;
             font-size: 8px !important;
+            margin: 2px 0 2px 0 !important;
         }
 
         thead {
@@ -568,7 +555,7 @@ const TakwimTshTable = () => {
         th, td {
             padding: 0px 2px !important;
             line-height: 1 !important;
-            height: 14px !important;
+            height: 12px !important;
         }
 
         tr {
@@ -576,22 +563,22 @@ const TakwimTshTable = () => {
             page-break-inside: avoid;
         }
 
-        select, input {
+        select {
             -webkit-appearance: none;
             appearance: none;
             border: none !important;
             font-size: 8px !important;
         }
 
-        input[type="number"] {
-            width: 20px !important;
+        #a4-card-tch .overflow-x-auto {
+            margin: 0 !important;
         }
 
         #a4-card-tch .overflow-x-auto ~ div,
         #a4-card-tch > div.flex.flex-col.mt-4 {
-            margin-top: 2px !important;
-            padding: 2px !important;
-            gap: 1px !important;
+            margin: 1px 0 0 0 !important;
+            padding: 1px !important;
+            gap: 0px !important;
         }
 
         #a4-card-tch .flex.items-center.gap-2 {
@@ -602,6 +589,7 @@ const TakwimTshTable = () => {
         #a4-card-tch .flex.items-center.gap-2 p {
             font-size: 8px !important;
             margin: 0 !important;
+            line-height: 1.1 !important;
         }
     }
 `}</style>

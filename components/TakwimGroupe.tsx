@@ -3,7 +3,7 @@
 import { useClasses } from "@/hooks/useClasses";
 import { useTachkhisi } from "@/hooks/useTachkhisi";
 import { useTeacher } from "@/hooks/useTeacher";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { ToastContainer, toast } from 'react-toastify'
 
 import level1Data from "@/src/config/level1Curriculum.json";
@@ -326,10 +326,10 @@ const TakwimGroupe = () => {
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 bg-gray-50 border-x border-b border-black">
-                        <div className="border-r border-black py-1.5 px-2 text-sm text-right"> الأستاذ: {teacher.name || '—'}</div>
-                        <div className="border-r border-black py-1.5 px-2 text-sm text-right"> المؤسسة: {teacher.school || '—'}</div>
-                        <div className="border-r border-black py-1.5 px-2 text-sm text-right"> المستوى: {getLevelLabel(selectedClassData?.name) || '—'}</div>
-                        <div className="py-1.5 px-2 border-r border-black text-sm text-right"> القسم: {selectedClassData?.name || '—'}</div>
+                        <div className="border-r border-b border-black py-1.5 px-2 text-sm text-right"> الأستاذ: {teacher.name || '—'}</div>
+                        <div className="border-r border-b border-black py-1.5 px-2 text-sm text-right"> المؤسسة: {teacher.school || '—'}</div>
+                        <div className="border-r border-b border-black py-1.5 px-2 text-sm text-right"> المستوى: {getLevelLabel(selectedClassData?.name) || '—'}</div>
+                        <div className="border-r border-b border-black py-1.5 px-2 text-sm text-right"> القسم: {selectedClassData?.name || '—'}</div>
                     </div>
 
                     <div className="border-x border-b border-black bg-white text-right">
@@ -511,16 +511,16 @@ const TakwimGroupe = () => {
                         );
                         toast("تم حفظ المعلومات بنجاح !", { type: "success" });
                     }}
-                    className='bg-green-600 text-white px-6 py-2 rounded-xl font-bold text-sm w-full md:w-auto shadow-sm'>
+                    className='bg-green-600 cursor-pointer text-white px-6 py-2 rounded-xl font-bold text-sm w-full md:w-auto shadow-sm'>
                     حفظ ✅
                 </button>
-                <ToastContainer />
+                
             </div>
             <style jsx global>{`
     @media print {
         @page {
             size: A4 landscape;
-            margin: 4mm;
+            margin: 2mm;
         }
 
         * {
@@ -560,8 +560,9 @@ const TakwimGroupe = () => {
         }
 
         #a4-card-groupe h1 {
-            font-size: 11px !important;
+            font-size: 8px !important;
             padding: 2px 4px !important;
+            
         }
 
         #a4-card-groupe .grid > div {
@@ -578,7 +579,7 @@ const TakwimGroupe = () => {
             width: 100%;
             border-collapse: collapse;
             font-size: 8px !important;
-            margin: 0 !important;
+            margin: 4px 0 2px 0 !important;
         }
 
         thead {

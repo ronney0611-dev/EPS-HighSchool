@@ -85,24 +85,24 @@ const TaqwimMostamir = () => {
       <head>
         <style>
           * { box-sizing: border-box; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-          body { margin: 0; padding: 8mm; font-family: sans-serif; direction: rtl; background: white; color: black; font-size: 12px; }
-          @page { size: A4 portrait; margin: 8mm; }
+          body { margin: 0; padding: 2mm; font-family: sans-serif; direction: rtl; background: white; color: black; font-size: 12px; }
+          @page { size: A4 portrait; margin: 2mm; }
           table { width: 100%; border-collapse: collapse; }
-          th { border: 1px solid black; padding: 4px; text-align: center; background: #bfdbfe; font-size: 11px; }
+          th { border: 1px solid black; padding: 4px; text-align: center; background: #bfdbfe; font-size: 9px; }
         </style>
       </head>
       <body>
-        <div style="text-align:center; border-bottom: 2px solid #9ca3af; padding-bottom: 8px; margin-bottom: 12px;">
+        <div style="text-align:center; border-bottom: 2px solid #9ca3af; padding-bottom: 8px; margin-bottom: 8px;">
           <h1 style="font-size:16px; font-weight:bold; margin:0;">علامة المراقبة المستمرة</h1>
         </div>
-        <table style="margin-bottom:12px; border-collapse:collapse;">
+        <table style="margin-bottom:8px; border-collapse:collapse;">
           <tr>
-            <td style="border:1px solid #9ca3af; padding:6px;">المؤسسة : ${teacher.school || '—'}</td>
-            <td style="border:1px solid #9ca3af; padding:6px;">المستوى : ${selectedClassData?.level || '—'}</td>
+            <td style="border:1px solid #9ca3af; padding:4px;">المؤسسة : ${teacher.school || '—'}</td>
+            <td style="border:1px solid #9ca3af; padding:4px;">المستوى : ${selectedClassData?.level || '—'}</td>
           </tr>
           <tr>
-            <td style="border:1px solid #9ca3af; padding:6px;">الأستاذ : ${teacher.name || '—'}</td>
-            <td style="border:1px solid #9ca3af; padding:6px;">القسم : ${classSelect || '—'}</td>
+            <td style="border:1px solid #9ca3af; padding:4px;">الأستاذ : ${teacher.name || '—'}</td>
+            <td style="border:1px solid #9ca3af; padding:4px;">القسم : ${classSelect || '—'}</td>
           </tr>
         </table>
         <table>
@@ -161,7 +161,7 @@ const TaqwimMostamir = () => {
         </div>
       </div>
 
-      <div id="a4-card" className="bg-white text-black p-4 lg:p-8 border border-gray-300 shadow-md flex flex-col gap-4">
+      <div id="a4-tkm" className="bg-white text-black p-4 lg:p-8 border border-gray-300 shadow-md flex flex-col gap-4">
         <div className="text-center border-b-2 border-gray-400 pb-3">
           <h1 className="text-lg font-bold">علامة المراقبة المستمرة</h1>
         </div>

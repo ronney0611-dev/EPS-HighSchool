@@ -131,7 +131,7 @@ const DispoCard = () => {
                 @media print {
                     @page {
                         size: A4 portrait;
-                        margin: 12mm;
+                        margin: 4mm;
                     }
                     body {
                         background: white !important;

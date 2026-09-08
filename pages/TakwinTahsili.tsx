@@ -139,7 +139,7 @@ const TakwinTahsili = () => {
                 </button>
             </div>
 
-            <main id="a4-card" dir="rtl" className='w-full bg-white text-black p-2 md:p-6 overflow-x-auto'>
+            <main id="a4-tahsili" dir="rtl" className='w-full bg-white text-black p-2 md:p-6 overflow-x-auto'>
                 <table className="w-full border-collapse border border-black text-center text-xs">
                     <thead className='border border-black'>
                         <tr>
@@ -254,7 +254,7 @@ const TakwinTahsili = () => {
                 @media print {
                     @page {
                         size: A4 landscape;
-                        margin: 5mm;
+                        margin: 2mm;
                     }
 
                     html, body {
@@ -263,12 +263,12 @@ const TakwinTahsili = () => {
                         height: auto !important;
                     }
 
-                    #a4-card {
+                    #a4-tahsili {
                         margin: 0 !important;
                         padding: 0 !important;
                     }
 
-                    #a4-card, #a4-card * {
+                    #a4-tahsili, #a4-tahsili * {
                         -webkit-print-color-adjust: exact !important;
                         print-color-adjust: exact !important;
                         color-adjust: exact !important;
