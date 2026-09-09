@@ -43,7 +43,7 @@
     },
     {
       "type": "integration",
-      "unit_name": "الحصة 4 ادماجية",
+      "unit_name": "01 حصة ادماجية",
       "kafa_components": "- يتعرف على الوضعيات: الجسم وعمل الأطراف ووتيرة الجري ضمن مجموعة",
       "knowledge_resources": "ربط تدرج بين جملة من التعلمات السابقة",
       "learning_content": "دمج بين مختلف الوضعيات السابقة",
@@ -79,7 +79,7 @@
     },
     {
       "type": "integration",
-      "unit_name": "الحصة 8 ادماجية",
+      "unit_name": "02 حصة ادماجية",
       "kafa_components": "- يتعايش مع مجموعة",
       "knowledge_resources": "ربط تدرج بين جملة من التعلمات السابقة",
       "learning_content": "دمج بين مختلف الوضعيات السابقة",

@@ -96,14 +96,16 @@ export default function FicheTechSheetP({
               <tr>
                 <td className="phase-label">المرحلة التحضيرية</td>
                 <td contentEditable suppressContentEditableWarning>
-                  <div className="multi">التحضير النفسي. <br /> التحضير البدني العام ثم الخاص</div>
+                  <div className="multi"> تهيئة الجسم بالجري بوتيرة منخفضة.</div>
                 </td>
                 <td contentEditable suppressContentEditableWarning>
-                  الاصطفاف, مراقبة اللباس, المنادات, شرح هدف الحصة ثم تحية, احماء عام: جري خفيف حول الملعب لمدة قصيرة ثم القيام بحركات الاحماء العام, احماء خاص.
+                 التشكيلة, المناداة, مراقبة اللباس, نزع الاشياء الخطيرة, مراقبة الحالة الصحية, شرح هدف الحصة, التحية
+                 الاحماء. جري خفيف حول الميدان مع تمارين احماء الاطراف العلوية والسفلية.
                 </td>
                 <td contentEditable suppressContentEditableWarning>10د</td>
                 <td contentEditable suppressContentEditableWarning></td>
-                <td contentEditable suppressContentEditableWarning>الالتزام بالاصطفاف, اللباس الرياضي, الانضباط, الانتباه, التركيز, الاحترام, التعاون</td>
+                <td contentEditable suppressContentEditableWarning>الانتشار الجيد في الميدان <br /> تفادي الكلام والتزام الهدوء <br /> التنفس المنتظم شهيق زفير  
+                </td>
               </tr>
 
               <tr>
@@ -128,10 +130,10 @@ export default function FicheTechSheetP({
               <tr>
                 <td className="phase-label">المرحلة الختامية</td>
                 <td contentEditable suppressContentEditableWarning>العودة بالجسم الى الحالة الطبيعية (الاسترخاء)</td>
-                <td contentEditable suppressContentEditableWarning>جري خفيف حول الملعب, اصطفاف (تمديدات), ومناقشة الحصة ثم تحية و انصراف.</td>
+                <td contentEditable suppressContentEditableWarning>حركات الاسترخاء, جمع الوسائل الرياضية, الاصطفاف وتحية ثم انصراف</td>
                 <td contentEditable suppressContentEditableWarning>5د</td>
                 <td contentEditable suppressContentEditableWarning></td>
-                <td contentEditable suppressContentEditableWarning>العمل على استرخاء عضلات الجسم</td>
+                <td contentEditable suppressContentEditableWarning>الحفاظ على الهدوء والانضباط والاصغاء لتعليمات الأستاذ</td>
               </tr>
             </tbody>
           </table>

@@ -23,6 +23,7 @@ import s5_alhaykala from "@/src/config/s5_wihda_3_alhaykala.json";
 import ex_s1_alwad3iyat from "@/src/config/sessionP/level1/maidan1.json";
 import ex_s2_alwad3iyat from "@/src/config/sessionP/level2/maidan1.json";
 import ex_s3_alwad3iyat from "@/src/config/sessionP/level3/maidan1.json";
+import ex_s4_alwad3iyat from "@/src/config/sessionP/level4/maidan1.json";
 
 export interface CurriculumSession {
   type: string;
@@ -97,7 +98,9 @@ export const LEVEL_DATA_P: LevelEntry[] = [
   buildLevel("level3", "السنة الثالثة ابتدائي", { alwad3iyat: s3_alwad3iyat, harakat: s3_harakat, alhaykala: s3_alhaykala,
     ex_alwad3iyat: ex_s3_alwad3iyat,
    }),
-  buildLevel("level4", "السنة الرابعة ابتدائي", { alwad3iyat: s4_alwad3iyat, harakat: s4_harakat, alhaykala: s4_alhaykala }),
+  buildLevel("level4", "السنة الرابعة ابتدائي", { alwad3iyat: s4_alwad3iyat, harakat: s4_harakat, alhaykala: s4_alhaykala,
+    ex_alwad3iyat: ex_s4_alwad3iyat,
+   }),
   buildLevel("level5", "السنة الخامسة ابتدائي", { alwad3iyat: s5_alwad3iyat, harakat: s5_harakat, alhaykala: s5_alhaykala }),
 ];
 
