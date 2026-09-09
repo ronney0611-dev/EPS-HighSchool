@@ -23,6 +23,7 @@ import WahdaPrimaireGeneratorPage from "@/pages/Wahdaprimairegeneratorpage";
 import DailyLogPage from "@/pages/Dailylogpage";
 import PlanOfYearLeecy from "@/pages/PlanOfYearLeecy";
 import FicheTechWizard from "@/pages/FicheTechWizard";
+import FicheTechWizardP from "@/pages/FicheTechWizardP";
 
 interface FileConfig {
   id: string;
@@ -87,6 +88,7 @@ const FilePage = ({ params }: { params: Promise<{ file: string; category: string
     // Presence/Monitoring tracking variants
     { key: 'mostamir', component: <Mostamir /> },
     { key: 'mostamirPrimaire', component: <MostamirPrimaire /> },
+    { key: 'fichPrimaire', component: <FicheTechWizardP /> },
 
     // Continuous & final grade calculations
     { key: 'taqwimMostamir', component: <TaqwimMostamir /> },
