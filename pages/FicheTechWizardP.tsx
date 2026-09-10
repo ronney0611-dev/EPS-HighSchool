@@ -95,7 +95,7 @@ export default function FicheTechWizardP() {
           @media print {
             @page {
               size: A4 landscape;
-              margin: 4mm;
+              margin: 0;
             }
 
             * {
@@ -125,7 +125,7 @@ export default function FicheTechWizardP() {
               margin: 0 !important;
               box-shadow: none !important;
               border: none !important;
-              font-size: 11px !important;
+              font-size: 14px !important;
               page-break-after: avoid !important;
             }
 
@@ -134,8 +134,8 @@ export default function FicheTechWizardP() {
 
             .meta-strip { break-inside: avoid; }
             .meta-item { padding: 2mm 4mm !important; }
-            .meta-label { font-size: 8px !important; }
-            .meta-value { font-size: 10.5px !important; }
+            .meta-label { font-size: 11px !important; }
+            .meta-value { font-size: 14px !important; }
 
             .objective-box { margin: 2mm 4mm !important; padding: 2mm 4mm !important; font-size: 9.5px !important; }
 
@@ -145,7 +145,7 @@ export default function FicheTechWizardP() {
               width: 100% !important;
               table-layout: fixed !important;
               border-collapse: collapse !important;
-              font-size: 9.5px !important;
+              font-size: 13px !important;
             }
 
             table.phases col:nth-child(1) { width: 8% !important; }

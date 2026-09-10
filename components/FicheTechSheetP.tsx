@@ -77,7 +77,7 @@ export default function FicheTechSheetP({
           <span contentEditable suppressContentEditableWarning>{session.kafa_components}</span>
         </div>
 
-        <div className="table-wrap overflow-x-auto">
+        <div className="table-wrap overflow-x-auto ">
           <table className="phases">
             <colgroup>
               <col /><col /><col /><col /><col /><col />
@@ -116,7 +116,6 @@ export default function FicheTechSheetP({
                 <td contentEditable suppressContentEditableWarning>
                   <div className="multi">{exercises.map((ex, i) => <div key={i}><strong>{ex.title}: </strong>{ex.mohtawaInjaz}</div>)}</div>
                   <br />
-                  <div className="border-t border-gray-300 border-dashed">تقويم تكويني: شبه منافسة</div>
                 </td>
                 <td contentEditable suppressContentEditableWarning>{exercises.reduce((sum, ex) => sum + ex.duration, 0)}د</td>
                 <td contentEditable suppressContentEditableWarning>
