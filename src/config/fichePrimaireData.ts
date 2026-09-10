@@ -24,6 +24,7 @@ import ex_s1_alwad3iyat from "@/src/config/sessionP/level1/maidan1.json";
 import ex_s2_alwad3iyat from "@/src/config/sessionP/level2/maidan1.json";
 import ex_s3_alwad3iyat from "@/src/config/sessionP/level3/maidan1.json";
 import ex_s4_alwad3iyat from "@/src/config/sessionP/level4/maidan1.json";
+import ex_s5_alwad3iyat from "@/src/config/sessionP/level5/maidan1.json";
 
 export interface CurriculumSession {
   type: string;
@@ -101,7 +102,9 @@ export const LEVEL_DATA_P: LevelEntry[] = [
   buildLevel("level4", "السنة الرابعة ابتدائي", { alwad3iyat: s4_alwad3iyat, harakat: s4_harakat, alhaykala: s4_alhaykala,
     ex_alwad3iyat: ex_s4_alwad3iyat,
    }),
-  buildLevel("level5", "السنة الخامسة ابتدائي", { alwad3iyat: s5_alwad3iyat, harakat: s5_harakat, alhaykala: s5_alhaykala }),
+  buildLevel("level5", "السنة الخامسة ابتدائي", { alwad3iyat: s5_alwad3iyat, harakat: s5_harakat, alhaykala: s5_alhaykala,
+    ex_alwad3iyat: ex_s5_alwad3iyat,
+   }),
 ];
 
 export function getMaidan(levelKey: string, maidanKey: string) {
