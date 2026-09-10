@@ -99,12 +99,12 @@ export default function FicheTechSheetP({
                   <div className="multi"> تهيئة الجسم بالجري بوتيرة منخفضة.</div>
                 </td>
                 <td contentEditable suppressContentEditableWarning>
-                 التشكيلة, المناداة, مراقبة اللباس, نزع الاشياء الخطيرة, مراقبة الحالة الصحية, شرح هدف الحصة, التحية
-                 الاحماء. جري خفيف حول الميدان مع تمارين احماء الاطراف العلوية والسفلية.
+                  التشكيلة, المناداة, مراقبة اللباس, نزع الاشياء الخطيرة, مراقبة الحالة الصحية, شرح هدف الحصة, التحية
+                  الاحماء. جري خفيف حول الميدان مع تمارين احماء الاطراف العلوية والسفلية.
                 </td>
                 <td contentEditable suppressContentEditableWarning>10د</td>
                 <td contentEditable suppressContentEditableWarning></td>
-                <td contentEditable suppressContentEditableWarning>الانتشار الجيد في الميدان <br /> تفادي الكلام والتزام الهدوء <br /> التنفس المنتظم شهيق زفير  
+                <td contentEditable suppressContentEditableWarning>الانتشار الجيد في الميدان <br /> تفادي الكلام والتزام الهدوء <br /> التنفس المنتظم شهيق زفير
                 </td>
               </tr>
 
