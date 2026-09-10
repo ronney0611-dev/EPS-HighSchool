@@ -299,16 +299,15 @@ export const documentsConfig =
             id: 'first',
             image: '/images/wwx.png',
             name: '  قائمة الاعفاءات / الحالات الخاصة',
-            levels: ['primaire' , 'cem', 'lycee'],
+            levels: ['primaire', 'cem', 'lycee'],
             youtubeVideoId: 'xx',
-            description: 'أدخل معلوماتك الشخصية والمهنية مرة واحدة — الاسم، الثانوية، الولاية، المؤهلات — وستظهر تلقائياً في كل الوثائق التي تطبعها. لا حاجة لإعادة الكتابة في كل مرة.',
-            files: {
+            description: 'سجل معطيات التلاميذ المعفيين والحالات الخاصة، وسيتم توليد وتجهيز الكشوفات والوثائق الخاصة بهم تلقائياً للطباعة.', files: {
                 disp: {
                     id: 'قائمة الاعفاءات',
                     name: 'قائمة الاعفاءات',
                     description: "قائمة الاعفاءات الجاهزة للطباعة",
                     type: 'interactive',
-                    component: {primaire :'dispoCard' , cem: 'dispoCardCem', lycee: 'dispoCard' },
+                    component: { primaire: 'dispoCard', cem: 'dispoCardCem', lycee: 'dispoCard' },
                 },
             }
         },
