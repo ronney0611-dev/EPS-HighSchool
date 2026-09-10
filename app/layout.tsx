@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.epsdz.com"),
-  title: "EPS DZ | منصة وثائق التربية البدنية والرياضية (EPS Algérie)",
+  title: "EPS DZ | منصة وثائق التربية البدنية (Algeria)",
   description:
     "توليد جميع الوثائق البيداغوجية والخطط السنوية، استيراد قوائم التلاميذ من إكسل (Excel)، حساب معدلات الفروض والاختبارات تلقائياً، وتسيير شامل ومبسط لجميع الأطوار التعليمية في ثوانٍ وبنقرة واحدة.",
   keywords: [
