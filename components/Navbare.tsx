@@ -3,7 +3,7 @@
 import { images } from '@/src/config/documents'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import {  useState } from 'react'
 import { House, CircleUserRound, BookText, LogOut } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
@@ -34,7 +34,7 @@ const Navbare = () => {
                 )
             }
 
-            <nav className="print:hidden w-full fixed z-100 bg-zinc-950/80 backdrop-blur-md text-white top-0 h-20 flex items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 border-b border-zinc-800/80 shadow-lg shadow-black/40 transition-all">
+            <nav dir='ltr' className="print:hidden w-full fixed z-100 bg-zinc-950/80 backdrop-blur-md text-white top-0 h-20 flex items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 border-b border-zinc-800/80 shadow-lg shadow-black/40 transition-all">
 
                 <Link href="/" className="transition-transform hover:scale-105">
                     <Image src={images.logo} priority width="157" height="40" className='lg:w-50 lg:h-30 object-contain mt-1' alt='EpsLogo' />
