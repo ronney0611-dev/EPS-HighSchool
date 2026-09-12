@@ -23,6 +23,16 @@ const LETTER_MAP: Record<number, { letter: string; color: string }> = {
     0: { letter: 'د', color: 'bg-red-200 text-red-900' },
 };
 
+// لون مميز لكل عنوان معيار (يدور على 4 ألوان)
+const MAIYAR_HEADER_COLORS = [
+    'bg-amber-700 text-white',
+    'bg-emerald-800 text-white',
+    'bg-lime-800 text-white',
+    'bg-teal-700 text-white',
+];
+
+const MIN_PRINT_ROWS = 20;
+
 interface StudentRow {
     studentId: string;
     name: string;
@@ -71,7 +81,7 @@ const ShabakaTahliliyaPrimaire = () => {
         setStudents(hookStudents.map(s => ({
             studentId: s._id,
             name: s.name,
-            checks: mayayirList.map(m => m.mouachirat.map(() => false)),
+            checks: mayayirList.map(() => Array.from({ length: 3 }, () => false)),
         })));
     }
 
@@ -176,6 +186,8 @@ const ShabakaTahliliyaPrimaire = () => {
         };
     });
 
+    const blankRowsCount = Math.max(0, MIN_PRINT_ROWS - students.length);
+
     return (
         <div dir="rtl" className='m-2 md:m-4 flex flex-col items-center bg-white text-black font-sans'>
 
@@ -259,44 +271,38 @@ const ShabakaTahliliyaPrimaire = () => {
                     </div>
                     <div className="grid grid-cols-2 text-xs md:text-sm border-x border-b border-black">
                         <div className="border-l border-black py-1 px-2 text-right">المستوى: {LEVEL_KEYS.find(l => l.key === levelKey)?.label || '—'}</div>
-                        <div className="py-1 px-2 text-right">السنة الدراسية: 2026/2025</div>
+                        <div className="py-1 px-2 text-right">السنة الدراسية: 2027/2026</div>
                     </div>
                 </div>
 
                 <div className="overflow-x-auto mt-2">
                     <table className="w-full border-collapse border border-black text-center text-[10px]">
                         <thead>
-                            <tr className="bg-blue-100 font-bold">
-                                <th className="border border-black p-1 w-8" rowSpan={3}>رقم</th>
-                                <th className="border border-black p-1 min-w-32" rowSpan={3}>الاسم واللقب</th>
+                            <tr>
+                                <th className="border border-black p-1 w-8 bg-blue-100 font-bold" rowSpan={2}>رقم</th>
+                                <th className="border border-black p-1 min-w-32 bg-blue-100 font-bold" rowSpan={2}>الاسم واللقب</th>
                                 {mayayirList.map((m, i) => (
-                                    <th key={i} className="border border-black p-1" colSpan={m.mouachirat.length}>
+                                    <th
+                                        key={i}
+                                        className={`border border-black p-2 text-[10px] leading-tight ${MAIYAR_HEADER_COLORS[i % MAIYAR_HEADER_COLORS.length]}`}
+                                        colSpan={3}
+                                    >
                                         {m.title}
                                     </th>
                                 ))}
-                                <th className="border border-black p-1 bg-purple-100" colSpan={mayayirList.length}>نتيجة تحقيق المعايير</th>
+                                <th className="border border-black p-1 bg-purple-100 font-bold" colSpan={mayayirList.length}>نتيجة تحقيق المعايير</th>
                             </tr>
-                            <tr className="bg-blue-50">
+                            <tr className="bg-gray-100">
                                 {mayayirList.map((m, i) => (
-                                    m.mouachirat.map((mo, j) => (
-                                        <th key={`${i}-${j}`} className="border border-black p-1 font-normal text-[9px] max-w-16">
-                                            {mo}
+                                    Array.from({ length: 3 }).map((_, j) => (
+                                        <th key={`${i}-${j}`} className="border border-black p-0.5 text-[9px] min-w-9 font-normal">
+                                            0/1
                                         </th>
                                     ))
                                 ))}
                                 {mayayirList.map((_, i) => (
-                                    <th key={i} className="border border-black p-1 bg-purple-50">معيار {String(i + 1).padStart(2, '0')}</th>
+                                    <th key={i} className="border border-black p-0.5 bg-purple-50 font-normal">معيار {String(i + 1).padStart(2, '0')}</th>
                                 ))}
-                            </tr>
-                            <tr className="bg-gray-100">
-                                {mayayirList.map((m, i) => (
-                                    m.mouachirat.map((_, j) => (
-                                        <React.Fragment key={`${i}-${j}`}>
-                                            <td className="border border-black p-0.5 text-[9px]">0/1</td>
-                                        </React.Fragment>
-                                    ))
-                                ))}
-                                {mayayirList.map((_, i) => <td key={i} className="border border-black p-0.5 bg-purple-50"></td>)}
                             </tr>
                         </thead>
                         <tbody>
@@ -305,8 +311,8 @@ const ShabakaTahliliyaPrimaire = () => {
                                     <td className="border border-black p-1 bg-gray-50 font-bold">{String(studentIndex + 1).padStart(2, '0')}</td>
                                     <td className="border border-black p-1 text-right px-2 whitespace-nowrap font-medium">{student.name}</td>
                                     {mayayirList.map((m, maiyarIndex) => (
-                                        m.mouachirat.map((_, mouachirIndex) => (
-                                            <td key={`${maiyarIndex}-${mouachirIndex}`} className="border border-black p-0.5">
+                                        Array.from({ length: 3 }).map((_, mouachirIndex) => (
+                                            <td key={`${maiyarIndex}-${mouachirIndex}`} className="border border-black p-0.5 min-w-9">
                                                 <input
                                                     type="checkbox"
                                                     checked={student.checks[maiyarIndex]?.[mouachirIndex] || false}
@@ -327,6 +333,22 @@ const ShabakaTahliliyaPrimaire = () => {
                                     })}
                                 </tr>
                             ))}
+                            {Array.from({ length: blankRowsCount }).map((_, i) => (
+                                <tr key={`blank-${i}`} className="border-b border-black">
+                                    <td className="border border-black p-1 bg-gray-50 font-bold">
+                                        {String(students.length + i + 1).padStart(2, '0')}
+                                    </td>
+                                    <td className="border border-black p-3"></td>
+                                    {mayayirList.map((m, maiyarIndex) => (
+                                        Array.from({ length: 3 }).map((_, mouachirIndex) => (
+                                            <td key={`${maiyarIndex}-${mouachirIndex}`} className="border border-black p-0.5 min-w-9"></td>
+                                        ))
+                                    ))}
+                                    {mayayirList.map((_, maiyarIndex) => (
+                                        <td key={maiyarIndex} className="border border-black p-1"></td>
+                                    ))}
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 </div>
@@ -338,6 +360,20 @@ const ShabakaTahliliyaPrimaire = () => {
                     <span className="text-blue-800">ب = تملك مقبول (3/2)</span>
                     <span className="text-yellow-800">ج = تملك جزئي (3/1)</span>
                     <span className="text-red-800">د = تملك محدود (3/0)</span>
+                </div>
+                <div className="mt-3 border border-black">
+                    <div className="bg-gray-100 text-center font-black py-1 border-b border-black text-xs">دليل المعايير والمؤشرات</div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-black">
+                        {mayayirList.map((m, i) => (
+                            <div key={i} className="bg-white p-2 text-[14px]">
+                                <ul className="list-disc pr-5 space-y-0.5">
+                                    {m.mouachirat.map((mo, j) => (
+                                        <li key={j}>{mo}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
                 {/* جدول التطور: تشخيصي مقابل تحصيلي، لكل معيار */}
@@ -376,7 +412,9 @@ const ShabakaTahliliyaPrimaire = () => {
                                 </tr>
                             </tbody>
                         </table>
+
                     </div>
+
                 )}
             </div>
 
@@ -394,13 +432,14 @@ const ShabakaTahliliyaPrimaire = () => {
                     حفظ ✅
                 </button>
                 <ToastContainer />
+
             </div>
 
             <style jsx global>{`
                 @media print {
                     @page {
                         size: A4 landscape;
-                        margin: 4mm;
+                        margin: 2mm;
                     }
                     * {
                         -webkit-print-color-adjust: exact !important;

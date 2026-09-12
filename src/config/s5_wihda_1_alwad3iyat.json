@@ -62,15 +62,6 @@
     {
       "type": "learning",
       "unit_name": "الحصة 6",
-      "kafa_components": "- يلائم وضعيات جسمه حسب مختلف المواقف",
-      "knowledge_resources": "يتنقل بشكل مناسب لأسلوب الرمي من مسافة أقرب",
-      "learning_content": "الرمي لأبعد مسافة",
-      "execution_content": "لعبة دفع الئلة",
-      "guidelines": "التركيز على: الدفع المناسب"
-    },
-    {
-      "type": "learning",
-      "unit_name": "الحصة 7",
       "kafa_components": "- يتكيف بمختلف الوضعيات المناسبة حسب الموقف",
       "knowledge_resources": "يرتب تسلسل قوى الجري مع الوثب والرمي",
       "learning_content": "الجري - الوثب - الرمي",
@@ -79,7 +70,7 @@
     },
     {
       "type": "integration",
-      "unit_name": "الحصة 8 ادماجية",
+      "unit_name": "الحصة 7 ادماجية",
       "kafa_components": "- يتكيف بمختلف الوضعيات المناسبة حسب الموقف",
       "knowledge_resources": "ربط تدرج بين جملة من التعلمات السابقة",
       "learning_content": "دمج بين مختلف الوضعيات السابقة",
