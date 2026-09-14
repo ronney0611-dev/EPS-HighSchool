@@ -10,20 +10,23 @@ import { useEffect, useState } from 'react';
 const DocumentsPage = () => {
   const { data: session, status } = useSession();
   const { refresh } = useSessionRefresh();
-  const [isActivated, setIsActivated] = useState(false);
-  const [checking, setChecking] = useState(false);
+  const [isActivated, setIsActivated] = useState<boolean | null>(null);
 
   useEffect(() => {
     if (status !== 'authenticated') return;
-    refresh().then((data) => {
-      setIsActivated(Boolean(data?.isPaid));
-      setChecking(false);
-    })
+    refresh()
+      .then((data) => setIsActivated(Boolean(data?.isPaid)))
+      .catch((err) => {
+        console.error('refresh failed', err);
+        setIsActivated(false);
+      });
   }, [status]);
 
-  if (status === "loading" || checking) {
-    return <div className="text-center text-white my-20 font-medium">جاري تحميل البيانات...</div>;
-  }
+  const isChecking = status === 'authenticated' && isActivated === null;
+
+  if (status === 'loading' || isChecking) {
+  return <div className="text-center text-white my-20 font-medium">جاري تحميل البيانات...</div>;
+}
 
   const teacherLevel = session?.user?.level || 'lycee';
 
@@ -62,7 +65,7 @@ const DocumentsPage = () => {
                     youtubeVideoId={doc.youtubeVideoId}
                     documentHref={`/documents/${key}`}
                     activationHref="/payment"
-                    isActivated={isActivated}
+                    isActivated={Boolean(isActivated)}
                   />
                 </div>
               )
@@ -95,7 +98,7 @@ const DocumentsPage = () => {
                     youtubeVideoId={doc.youtubeVideoId}
                     documentHref={`/documents/${key}`}
                     activationHref="/payment"
-                    isActivated={isActivated}
+                    isActivated={Boolean(isActivated)}
                   />
                 </div>
               )

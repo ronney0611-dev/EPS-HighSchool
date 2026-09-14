@@ -28,6 +28,9 @@ export async function connectDB() {
       maxPoolSize: 10,
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
+    }).catch((err) => {
+      cached.promise = null   // ← reset so next call retries instead of replaying the same failure
+      throw err
     })
   }
 

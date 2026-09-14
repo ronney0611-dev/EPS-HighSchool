@@ -19,7 +19,15 @@ const getLevel = (name: string) => {
 
 const ProfilePage = () => {
     const { teacher } = useTeacher()
-    const { classes, studentsByClass, fetchStudents, importClasses, addClass, deleteClass, addStudent, deleteStudent, updateStudent } = useClasses();
+    const { classes, studentsByClass, fetchStudents, importClasses, addClass, deleteClass, addStudent, deleteStudent, updateStudent, error, clearError } = useClasses();
+
+    // Show any API error (e.g. "Un compte payant est requis") as a toast, then clear it.
+    useEffect(() => {
+        if (error) {
+            toast(error, { type: "error" });
+            clearError();
+        }
+    }, [error, clearError]);
 
     const allStudents = Object.values(studentsByClass).flat();
     const totalStudents = allStudents.length
@@ -85,7 +93,7 @@ const ProfilePage = () => {
         reader.readAsArrayBuffer(file)
     }
 
-    const handleImportConfirm = () => {
+    const handleImportConfirm = async () => {
         const toImport = parsedSheets.filter(s => selectedSheets.includes(s.name))
         const newClasses = toImport.map(sheet => ({
             name: customNames[sheet.name] || sheet.name,
@@ -96,11 +104,18 @@ const ProfilePage = () => {
         // merge with existing — avoid duplicates by name
         const existingNames = classes.map(c => c.name)
         const filtered = newClasses.filter(c => !existingNames.includes(c.name))
-        importClasses(filtered);
+
+        const success = await importClasses(filtered);
+
         setShowModal(false)
         setParsedSheets([])
         setSelectedSheets([])
 
+        // Only celebrate if it actually worked — the error toast (via the effect above)
+        // already covers the failure case, e.g. an unpaid account being blocked.
+        if (success) {
+            toast("تم استيراد الأقسام بنجاح !", { type: "success" });
+        }
     }
 
     useEffect(() => {
@@ -229,14 +244,7 @@ const ProfilePage = () => {
 
                             <div className='flex gap-3'>
                                 <button
-                                    onClick={
-                                        () => {
-                                            if (handleImportConfirm) {
-                                                handleImportConfirm();
-                                                toast("تم استيراد الأقسام بنجاح !", { type: "success" });
-                                            }
-                                        }
-                                    }
+                                    onClick={handleImportConfirm}
                                     className='bg-green-600 text-white px-6 py-2 rounded-xl flex-1 font-semibold cursor-pointer'>
                                     استيراد
                                 </button>

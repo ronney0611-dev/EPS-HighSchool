@@ -4,6 +4,7 @@ import { authOptions } from "../../auth/[...nextauth]/route";
 import Class from "@/app/models/Class";
 import type { Student as StudentType } from "@/hooks/useClasses";
 import Student from "@/app/models/Student"; // Mongoose model keeps the name
+import { requirePaidUser } from "@/app/lib/authHelpers";
 
 export async function POST(req: Request) {
     await connectDB();
@@ -12,10 +13,12 @@ export async function POST(req: Request) {
         const { classes } = body;
         const session = await getServerSession(authOptions);
         if (!session) return Response.json({ message: 'Unauthorized' }, { status: 401 });
+
+        const paidCheck = await requirePaidUser(session.user.id);
+        if (!paidCheck.ok) return paidCheck.response;
+
         for (const cls of classes) {
-
             const newClass = await Class.create({ name: cls.name, level: session.user.level, teacher: session.user.id });
-
             await Student.insertMany(cls.students.map((s: Omit<StudentType, '_id'>) => ({ ...s, classId: newClass._id })));
         }
         return Response.json({ success: true });

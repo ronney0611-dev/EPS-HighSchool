@@ -11,7 +11,7 @@ type LockedDocCardProps = {
     youtubeVideoId: string
     documentHref: string
     activationHref: string
-    isActivated: boolean
+    isActivated: boolean | null;
 }
 
 export default function LockedDocCard({
