@@ -51,6 +51,70 @@ function formatDate(date?: string) {
     });
 }
 
+function getPageRange(current: number, total: number): (number | "...")[] {
+    const delta = 1;
+    const range: (number | "...")[] = [];
+    const left = Math.max(2, current - delta);
+    const right = Math.min(total - 1, current + delta);
+
+    range.push(1);
+    if (left > 2) range.push("...");
+    for (let i = left; i <= right; i++) range.push(i);
+    if (right < total - 1) range.push("...");
+    if (total > 1) range.push(total);
+
+    return range;
+}
+
+function Pagination({
+    pagination,
+    onPageChange,
+}: {
+    pagination: Pagination;
+    onPageChange: (page: number) => void;
+}) {
+    if (pagination.pages <= 1) return null;
+
+    return (
+        <div className="flex justify-center items-center gap-2 mt-4">
+            <button
+                onClick={() => onPageChange(pagination.page - 1)}
+                disabled={pagination.page === 1}
+                className="w-8 h-8 rounded-lg text-sm bg-white/5 text-gray-400 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+                ‹
+            </button>
+
+            {getPageRange(pagination.page, pagination.pages).map((p, i) =>
+                p === "..." ? (
+                    <span key={`dots-${i}`} className="w-8 h-8 flex items-center justify-center text-sm text-gray-500">
+                        …
+                    </span>
+                ) : (
+                    <button
+                        key={p}
+                        onClick={() => onPageChange(p as number)}
+                        className={`w-8 h-8 rounded-lg text-sm transition shrink-0 ${pagination.page === p
+                            ? "bg-emerald-500 text-black font-bold"
+                            : "bg-white/5 text-gray-400 hover:bg-white/10"
+                            }`}
+                    >
+                        {p}
+                    </button>
+                )
+            )}
+
+            <button
+                onClick={() => onPageChange(pagination.page + 1)}
+                disabled={pagination.page === pagination.pages}
+                className="w-8 h-8 rounded-lg text-sm bg-white/5 text-gray-400 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+                ›
+            </button>
+        </div>
+    );
+}
+
 function StatusBadge({ status }: { status: PaymentStatus }) {
     const styles: Record<PaymentStatus, string> = {
         PENDING: "bg-yellow-500/10 text-yellow-400 border border-yellow-500/30",
@@ -279,22 +343,10 @@ function PaymentsTab() {
             )}
 
             {/* Pagination */}
-            {pagination.pages > 1 && (
-                <div className="flex justify-center gap-2 mt-4">
-                    {Array.from({ length: pagination.pages }, (_, i) => i + 1).map((p) => (
-                        <button
-                            key={p}
-                            onClick={() => fetchPayments(activeStatus, p)}
-                            className={`w-8 h-8 rounded-lg text-sm transition ${pagination.page === p
-                                ? "bg-emerald-500 text-black font-bold"
-                                : "bg-white/5 text-gray-400 hover:bg-white/10"
-                                }`}
-                        >
-                            {p}
-                        </button>
-                    ))}
-                </div>
-            )}
+            <Pagination
+                pagination={pagination}
+                onPageChange={(p) => fetchPayments(activeStatus, p)}
+            />
 
             {/* Modal */}
             {selectedPayment && (
@@ -426,22 +478,7 @@ function UsersTab() {
             )}
 
             {/* Pagination */}
-            {pagination.pages > 1 && (
-                <div className="flex justify-center gap-2 mt-4">
-                    {Array.from({ length: pagination.pages }, (_, i) => i + 1).map((p) => (
-                        <button
-                            key={p}
-                            onClick={() => fetchUsers(p)}
-                            className={`w-8 h-8 rounded-lg text-sm transition ${pagination.page === p
-                                ? "bg-emerald-500 text-black font-bold"
-                                : "bg-white/5 text-gray-400 hover:bg-white/10"
-                                }`}
-                        >
-                            {p}
-                        </button>
-                    ))}
-                </div>
-            )}
+            <Pagination pagination={pagination} onPageChange={(p) => fetchUsers(p)} />
         </div>
     );
 }
