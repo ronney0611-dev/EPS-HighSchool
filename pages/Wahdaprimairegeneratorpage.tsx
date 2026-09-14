@@ -185,8 +185,8 @@ export default function WahdaPrimaireGeneratorPage() {
 
                     <div className="grid grid-cols-3 text-sm font-bold text-gray-800 mb-6 border-b pb-4">
                         <div>
-                            <p>المؤسسة: {teacher?.school}</p>
-                            <p>الأستاذ(ة): {teacher?.name}</p>
+                            <p>المؤسسة: {teacher?.school || "اسم المؤسسة"}</p>
+                            <p>الأستاذ(ة): {teacher?.name || "اسم الاستاذ"}</p>
                         </div>
                         <div className="text-center my-6">
                             <h2 className="text-2xl font-extrabold border-2 border-black inline-block px-8 py-2 rounded-xl bg-gray-50">

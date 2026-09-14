@@ -170,12 +170,12 @@ const TaqwimMostamirPrimaire = () => {
         </div>
 
         <div className="grid grid-cols-2 border border-gray-400 text-sm">
-          <div className="border-l border-gray-400 p-2">المؤسسة : {teacher.school || '—'}</div>
+          <div className="border-l border-gray-400 p-2">المؤسسة : {teacher.school || 'اسم المؤسسة'}</div>
           <div className="p-2">
             المستوى : {!selectedClassData ? '—' : selectedClassData.level === 'lycee' ? 'ثانوي' : 'الابتدائي'}
           </div>
-          <div className="border-t border-l border-gray-400 p-2">الأستاذ : {teacher.name || '—'}</div>
-          <div className="border-t border-gray-400 p-2">القسم : {classSelect || '—'}</div>
+          <div className="border-t border-l border-gray-400 p-2">الأستاذ : {teacher.name || 'اسم الاستاذ'}</div>
+          <div className="border-t border-gray-400 p-2">القسم : {classSelect || '-'}</div>
         </div>
 
         <div className="overflow-x-auto">

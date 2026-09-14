@@ -261,8 +261,8 @@ const ShabakaTahliliyaPrimaire = () => {
 
                 <div className="text-center bg-white w-full">
                     <div className="grid grid-cols-2 text-xs md:text-sm border border-black">
-                        <div className="border-l border-black py-1 px-2 text-right">المؤسسة: {teacher.school || '—'}</div>
-                        <div className="py-1 px-2 text-right">الأستاذ: {teacher.name || '—'}</div>
+                        <div className="border-l border-black py-1 px-2 text-right">المؤسسة: {teacher.school || 'اسم المؤسسة'}</div>
+                        <div className="py-1 px-2 text-right">الأستاذ: {teacher.name || 'اسم الاستاذ'}</div>
                     </div>
                     <div className={`flex justify-center items-center border-x border-b border-black py-2 ${mode === 'tashkhisi' ? 'bg-yellow-200' : 'bg-green-200'}`}>
                         <h1 className="text-sm md:text-lg font-black text-center w-full px-2">

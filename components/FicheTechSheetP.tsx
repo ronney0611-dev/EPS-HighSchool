@@ -46,11 +46,11 @@ export default function FicheTechSheetP({
         <div className="meta-strip">
           <div className="meta-item">
             <span className="meta-label">الأستاذ(ة)</span>
-            <span className="meta-value" contentEditable suppressContentEditableWarning>{teacher.name}</span>
+            <span className="meta-value" >{teacher.name || "اسم الاستاذ"}</span>
           </div>
           <div className="meta-item">
             <span className="meta-label">المؤسسة</span>
-            <span className="meta-value" contentEditable suppressContentEditableWarning>{teacher.school}</span>
+            <span className="meta-value" contentEditable suppressContentEditableWarning>{teacher.school || "اسم المؤسسة"}</span>
           </div>
           <div className="meta-item">
             <span className="meta-label">المستوى الدراسي</span>

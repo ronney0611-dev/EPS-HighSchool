@@ -15,7 +15,7 @@ const Banner = ({ className = "" }: { className?: string }) => {
                             فعل الحساب الان
                         </a>
                     </strong>{" "}
-                    وانضم الى اكثر من <strong className="text-white font-bold px-1">250+</strong> مستفيد.
+                    وانضم الى اكثر من <strong className="text-white font-bold px-1">300+</strong> مستفيد.
                 </p>
             </div>
         </div>

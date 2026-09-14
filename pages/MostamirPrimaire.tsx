@@ -102,8 +102,8 @@ const MostamirPrimaire = () => {
                 key={t}
                 onClick={() => setTrimestre(t)}
                 className={`px-4 py-1 rounded text-sm font-bold border transition ${trimestre === t
-                    ? 'bg-blue-700 text-white border-blue-700'
-                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'
+                  ? 'bg-blue-700 text-white border-blue-700'
+                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'
                   }`}
               >
                 الفصل {t === 1 ? 'الأول' : t === 2 ? 'الثاني' : 'الثالث'}
@@ -129,12 +129,12 @@ const MostamirPrimaire = () => {
           <thead className='bg-blue-200 print:bg-blue-200'>
             <tr>
               <th className='border border-black py-2 font-bold text-sm' colSpan={3}>
-                بطاقة الحضور والمتابعة — الفصل {trimestre === 1 ? 'الأول' : trimestre === 2 ? 'الثاني' : 'الثالث'}
+                بطاقة الحضور والمتابعة 
               </th>
             </tr>
             <tr>
               <th className='border text-sm border-black px-1 py-1 font-semibold'>
-                المستوى: <span className='font-medium'>{selectedClassData?.level || '—'}</span>
+               
               </th>
               <th className='border text-sm border-black px-1 py-1 font-semibold' colSpan={2}>
                 القسم: <span className='font-medium'>{classSelect || '—'}</span>
@@ -144,13 +144,13 @@ const MostamirPrimaire = () => {
           <tbody>
             <tr>
               <td className='border border-black px-1 text-sm py-1 font-semibold'>
-                المؤسسة: <span className='font-medium'>{teacher.school || '—'}</span>
+                المؤسسة: <span className='font-medium'>{teacher.school || 'اسم المؤسسة'}</span>
               </td>
               <td className='border border-black px-1 py-1 font-semibold'>
-                الأستاذ: <span className='font-medium'>{teacher.name || '—'}</span>
+                الأستاذ: <span className='font-medium'>{teacher.name || 'اسم الاستاذ'}</span>
               </td>
               <td className='border border-black px-1 py-1 font-semibold'>
-                السنة الدراسية: 2025/2026
+                السنة الدراسية: 2027/2026
               </td>
             </tr>
           </tbody>
