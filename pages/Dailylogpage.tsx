@@ -20,7 +20,7 @@ export default function DailyLogPage() {
     const { entries, loading, error, addEntry, deleteEntry } = useDailyLog()
 
     const primaireClasses = useMemo(
-        () => (Array.isArray(classes) ? classes.filter(c => c.level === 'primaire') : []),
+        () => (Array.isArray(classes) ? classes : []),
         [classes]
     )
 

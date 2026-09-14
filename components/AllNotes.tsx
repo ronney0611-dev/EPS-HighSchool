@@ -75,8 +75,8 @@ const AllNotes = () => {
 
                 const tahsiliStudents: { name: string; final: number }[] =
                     (sprintRes?.data?.students?.length ?? 0) > 0 ? sprintRes!.data.students :
-                    (jumpRes?.data?.students?.length ?? 0) > 0 ? jumpRes!.data.students :
-                    throwRes?.data?.students ?? []
+                        (jumpRes?.data?.students?.length ?? 0) > 0 ? jumpRes!.data.students :
+                            throwRes?.data?.students ?? []
 
                 const mostamirStudents = mostamirRes?.data?.students || []
 
@@ -117,6 +117,9 @@ const AllNotes = () => {
             <p className='text-xl font-bold'>
                 ضع ملف Excel الخاص بك وسيتم ملؤه بالنقاط المحصل عليها تلقائيا من طرف التطبيق.
             </p>
+            <div className="bg-red-500/10 border border-red-500/20 text-red-400  rounded-xl p-3 text-center font-semibold mb-4">
+                ⚠️  قريبا...
+            </div>
             <label className='flex items-center justify-center gap-2 bg-green-700 hover:bg-green-800 text-white px-6 py-3 rounded-xl cursor-pointer font-semibold w-full'>
                 📤 رفع ملف Excel وتصدير النقاط
                 <input

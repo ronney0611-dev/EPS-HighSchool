@@ -2,8 +2,6 @@
 
 import { useState } from 'react'
 import type { Class, Student } from '@/hooks/useClasses'
-import { getSession, useSession } from "next-auth/react";
-import { Session } from 'inspector/promises';
 
 type ManageClassesProps = {
     classes: Class[]
@@ -14,6 +12,7 @@ type ManageClassesProps = {
     addStudent: (classId: string, studentData: Omit<Student, '_id'>) => void
     deleteStudent: (classId: string, studentId: string) => void
     updateStudent: (classId: string, studentId: string, studentData: Partial<Omit<Student, '_id'>>) => void
+    schoolLevel: 'primaire' | 'cem' | 'lycee'
 }
 
 const ManageClasses = ({
@@ -24,7 +23,8 @@ const ManageClasses = ({
     deleteClass = () => { },
     addStudent = () => { },
     deleteStudent = () => { },
-    updateStudent = () => { }
+    updateStudent = () => { },
+    schoolLevel
 }: ManageClassesProps) => {
     const [expandedClassId, setExpandedClassId] = useState<string | null>(null)
     const [classInput, setClassInput] = useState('');
@@ -32,21 +32,53 @@ const ManageClasses = ({
     const [gender, setGender] = useState<'male' | 'female'>('male')
     const [status, setStatus] = useState<'active' | 'malade' | 'special'>('active');
 
+    const primaireLevels: Record<string, string> = {
+        '1': 'أولى ابتدائي',
+        '2': 'ثانية ابتدائي',
+        '3': 'ثالثة ابتدائي',
+        '4': 'رابعة ابتدائي',
+        '5': 'خامسة ابتدائي',
+    }
+
     const getLevel = (name: string) => {
-        if (name.startsWith('1')) return 'أولى ثانوي'
-        if (name.startsWith('2')) return 'ثانية ثانوي'
-        if (name.startsWith('3')) return 'ثالثة ثانوي'
-        return ''
+        const trimmed = name.trim()
+
+        if (schoolLevel === 'lycee') {
+            if (trimmed.startsWith('1')) return 'أولى ثانوي'
+            if (trimmed.startsWith('2')) return 'ثانية ثانوي'
+            if (trimmed.startsWith('3')) return 'ثالثة ثانوي'
+            return ''
+        }
+
+        if (schoolLevel === 'primaire') {
+            const match = trimmed.match(/([1-5])\s*$/)
+            if (!match) return 'تحضيري' // no trailing digit = lowest level
+            return primaireLevels[match[1]] || ''
+        }
+
+        return '' // cem not handled here yet
     }
 
     const addClasses = () => {
         if (!classInput.trim()) return
-        const level = getLevel(classInput)
-        if (!level) {
-            alert('اسم القسم يجب أن يبدأ بـ 1 أو 2 أو 3')
+
+        const trimmedName = classInput.trim()
+        const isDuplicate = classes.some(c => c.name.trim() === trimmedName)
+        if (isDuplicate) {
+            alert('هذا القسم موجود مسبقاً')
             return
         }
-        addClass({ name: classInput, level })
+
+        const level = getLevel(trimmedName)
+        if (!level) {
+            alert(
+                schoolLevel === 'lycee'
+                    ? 'اسم القسم يجب أن يبدأ بـ 1 أو 2 أو 3'
+                    : 'تعذر تحديد المستوى من اسم القسم'
+            )
+            return
+        }
+        addClass({ name: trimmedName, level })
         setClassInput("")
     }
 

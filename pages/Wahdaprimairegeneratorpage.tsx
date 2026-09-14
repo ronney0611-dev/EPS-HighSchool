@@ -34,7 +34,7 @@ export default function WahdaPrimaireGeneratorPage() {
     const { setWahda: setSavedFlag, fetchWahda, saveWahda, error } = useWahdaPrimaire()
 
     const primaireClasses = useMemo(
-        () => (Array.isArray(classes) ? classes.filter(c => c.level === 'primaire') : []),
+        () => (Array.isArray(classes) ? classes : []),
         [classes]
     )
 

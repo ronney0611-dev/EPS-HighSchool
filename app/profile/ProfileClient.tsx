@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import * as XLSX from 'xlsx'
 import AllNotes from '@/components/AllNotes'
 import { ToastContainer, toast } from "react-toastify";
+import { useSession } from 'next-auth/react'
 
 const getLevel = (name: string) => {
     if (name.startsWith('1')) return 'أولى ثانوي'
@@ -18,7 +19,9 @@ const getLevel = (name: string) => {
 }
 
 const ProfilePage = () => {
-    const { teacher } = useTeacher()
+    const { teacher } = useTeacher();
+    const { data: session } = useSession();
+    const schoolLevel = session?.user?.level as 'primaire' | 'cem' | 'lycee'
     const { classes, studentsByClass, fetchStudents, importClasses, addClass, deleteClass, addStudent, deleteStudent, updateStudent, error, clearError } = useClasses();
 
     // Show any API error (e.g. "Un compte payant est requis") as a toast, then clear it.
@@ -38,6 +41,7 @@ const ProfilePage = () => {
     const [selectedSheets, setSelectedSheets] = useState<string[]>([]);
     const [customNames, setCustomNames] = useState<{ [key: string]: string }>({});
     const [showModal, setShowModal] = useState(false)
+    const [isImporting, setIsImporting] = useState(false)
 
     const handleExcelUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -94,27 +98,33 @@ const ProfilePage = () => {
     }
 
     const handleImportConfirm = async () => {
-        const toImport = parsedSheets.filter(s => selectedSheets.includes(s.name))
-        const newClasses = toImport.map(sheet => ({
-            name: customNames[sheet.name] || sheet.name,
-            level: getLevel(customNames[sheet.name] || sheet.name),
-            students: sheet.students
-        }))
+        if (isImporting) return
+        setIsImporting(true)
+        try {
+            const toImport = parsedSheets.filter(s => selectedSheets.includes(s.name))
+            const newClasses = toImport.map(sheet => {
+                const name = (customNames[sheet.name] || sheet.name).trim()
+                return {
+                    name,
+                    level: getLevel(name),
+                    students: sheet.students
+                }
+            })
 
-        // merge with existing — avoid duplicates by name
-        const existingNames = classes.map(c => c.name)
-        const filtered = newClasses.filter(c => !existingNames.includes(c.name))
+            const existingNames = classes.map(c => c.name.trim())
+            const filtered = newClasses.filter(c => !existingNames.includes(c.name))
 
-        const success = await importClasses(filtered);
+            const success = await importClasses(filtered);
 
-        setShowModal(false)
-        setParsedSheets([])
-        setSelectedSheets([])
+            setShowModal(false)
+            setParsedSheets([])
+            setSelectedSheets([])
 
-        // Only celebrate if it actually worked — the error toast (via the effect above)
-        // already covers the failure case, e.g. an unpaid account being blocked.
-        if (success) {
-            toast("تم استيراد الأقسام بنجاح !", { type: "success" });
+            if (success) {
+                toast("تم استيراد الأقسام بنجاح !", { type: "success" });
+            }
+        } finally {
+            setIsImporting(false)
         }
     }
 
@@ -175,7 +185,7 @@ const ProfilePage = () => {
             </div>
             <hr className='border border-white w-full my-4 mx-8' />
             <div className='flex w-full flex-col  justify-center items-center'>
-                
+
                 <div className='flex justify-center text-center w-full'>
                     <GradientText
                         colors={["#ffffff", "#ff0000", "#ffffff"]}
@@ -207,7 +217,9 @@ const ProfilePage = () => {
                     deleteClass={deleteClass}
                     addStudent={addStudent}
                     deleteStudent={deleteStudent}
-                    updateStudent={updateStudent} />
+                    updateStudent={updateStudent}
+                    schoolLevel={schoolLevel}
+                />
             </div>
 
             {/* Modal */}
@@ -245,8 +257,9 @@ const ProfilePage = () => {
                             <div className='flex gap-3'>
                                 <button
                                     onClick={handleImportConfirm}
-                                    className='bg-green-600 text-white px-6 py-2 rounded-xl flex-1 font-semibold cursor-pointer'>
-                                    استيراد
+                                    disabled={isImporting}
+                                    className='bg-green-600 text-white px-6 py-2 rounded-xl flex-1 font-semibold cursor-pointer disabled:opacity-50'>
+                                    {isImporting ? 'جاري الاستيراد...' : 'استيراد'}
                                 </button>
                                 <button
                                     onClick={() => setShowModal(false)}
