@@ -20,6 +20,7 @@ export default function FicheTechSheetP({
   const maidanData = levelData.maidans.find((m) => m.key === pick.maidan)!;
   const session = maidanData.curriculum.sessions.find((s) => s.unit_name === pick.unitName)!;
 
+
   const pool = getExercisePool(level, pick.maidan, pick.unitName);
   const exercises = (pick.chosenIds.filter(Boolean) as string[]).map((id) => pool.find((e) => e.id === id)!);
 
@@ -73,6 +74,11 @@ export default function FicheTechSheetP({
         </div>
 
         <div className="objective-box">
+          <strong style={{ fontSize: 12 }}>الكفاءة الختامية: </strong>
+          <span contentEditable suppressContentEditableWarning>{maidanData.curriculum.kafa_khitamya}</span>
+        </div>
+
+        <div className="objective-box">
           <strong style={{ fontSize: 12 }}>الكفاءة المستهدفة: </strong>
           <span contentEditable suppressContentEditableWarning>{session.kafa_components}</span>
         </div>
@@ -102,7 +108,7 @@ export default function FicheTechSheetP({
                   التشكيلة, المناداة, مراقبة اللباس, نزع الاشياء الخطيرة, مراقبة الحالة الصحية, شرح هدف الحصة, التحية
                   الاحماء. جري خفيف حول الميدان مع تمارين احماء الاطراف العلوية والسفلية.
                 </td>
-                <td contentEditable suppressContentEditableWarning>10د</td>
+                <td contentEditable suppressContentEditableWarning>15د</td>
                 <td contentEditable suppressContentEditableWarning></td>
                 <td contentEditable suppressContentEditableWarning>الانتشار الجيد في الميدان <br /> تفادي الكلام والتزام الهدوء <br /> التنفس المنتظم شهيق زفير
                 </td>

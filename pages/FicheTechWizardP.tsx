@@ -139,13 +139,13 @@ export default function FicheTechWizardP() {
 
             .objective-box { margin: 2mm 4mm !important; padding: 2mm 4mm !important; font-size: 9.5px !important; }
 
-            .table-wrap { margin-top: 3mm !important; overflow: visible !important; }
+            .table-wrap { margin-top: 2mm !important; overflow: visible !important; }
 
             table.phases {
               width: 100% !important;
               table-layout: fixed !important;
               border-collapse: collapse !important;
-              font-size: 13px !important;
+              font-size: 11px !important;
             }
 
             table.phases col:nth-child(1) { width: 8% !important; }
@@ -159,7 +159,7 @@ export default function FicheTechWizardP() {
             table.phases td { padding: 3mm !important; vertical-align: top !important; word-break: break-word !important; }
 
             /* fixed mm heights per row — fills the page regardless of content amount */
-            table.phases tbody tr:nth-child(1) td { height: 32mm !important; }
+            table.phases tbody tr:nth-child(1) td { height: 22mm !important; }
             table.phases tbody tr:nth-child(2) td { height: 80mm !important; }
             table.phases tbody tr:nth-child(3) td { height: 28mm !important; }
 
