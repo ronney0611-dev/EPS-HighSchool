@@ -179,6 +179,23 @@ export const documentsConfig =
                 },
             }
         },
+        games: {
+            id: 'first',
+            image: '/images/game.jpg',
+            name: '+99 لعبة شبه رياضية',
+            levels: ['lycee','primaire'],
+            youtubeVideoId: 'xx',
+            description: 'جاهز للتحدي؟ أكثر من 100 لعبة بانتظارك لكسر الروتين واختبار مهاراتك.',
+            files: {
+                ficheNote: {
+                    id: '100 لعبة شبه رياضية',
+                    name: '+99 لعبة شبه رياضية',
+                    description: "جاهز للتحدي؟ أكثر من 100 لعبة بانتظارك لكسر الروتين واختبار مهاراتك..",
+                    type: 'interactive',
+                    component: 'games',
+                },
+            }
+        },
     },
     teacherNote: {
         classPlan: {

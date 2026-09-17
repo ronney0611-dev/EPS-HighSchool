@@ -24,6 +24,7 @@ import DailyLogPage from "@/pages/Dailylogpage";
 import PlanOfYearLeecy from "@/pages/PlanOfYearLeecy";
 import FicheTechWizard from "@/pages/FicheTechWizard";
 import FicheTechWizardP from "@/pages/FicheTechWizardP";
+import GamesLibraryPage from "@/pages/Games";
 
 interface FileConfig {
   id: string;
@@ -97,6 +98,9 @@ const FilePage = ({ params }: { params: Promise<{ file: string; category: string
     { key: 'taqwimTahsili', component: <TakwinTahsili /> },
     { key: 'dispoCard', component: <DispoCard /> }, 
     { key: 'ficheNote', component: <DailyLogPage /> }, 
+
+
+    { key: 'games', component: <GamesLibraryPage /> }, 
   ];
 
   const matched = components.find(c => c.key === activeComponentKey);
