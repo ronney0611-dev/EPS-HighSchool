@@ -21,15 +21,16 @@ const cached = global.mongoose
 export async function connectDB() {
   if (cached.conn) return cached.conn
 
-  if (!cached.promise) {
+   if (!cached.promise) {
     cached.promise = mongoose.connect(MONGODB_URI, {
       dbName: process.env.DATABASE_NAME,
       bufferCommands: false,
-      maxPoolSize: 10,
+      maxPoolSize: 5,
+      maxIdleTimeMS: 10000,
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
     }).catch((err) => {
-      cached.promise = null   // ← reset so next call retries instead of replaying the same failure
+      cached.promise = null   
       throw err
     })
   }
