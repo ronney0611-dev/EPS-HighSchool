@@ -209,7 +209,7 @@ export default function WhatWeOffer() {
                     جاهز لتوديع المشاكل الورقية؟ <span className="text-red-500">ابدأ الآن</span>
                 </h3>
                 <p className="text-sm sm:text-base text-neutral-300 max-w-xl mx-auto leading-relaxed mb-8">
-                    مقابل <span className="font-extrabold text-red-500 text-xl mx-1">3000 دج فقط</span> للعام الدراسي كاملاً (حتى 01 جويلية 2027) — احصل على تفعيل فوري وشامل لجميع أوراقك ومذكراتك التربوية.
+                    مقابل <span className="font-extrabold text-red-500 text-xl mx-1">3000 دج فقط</span> للعام الدراسي كاملاً (حتى 01 جويلية 2027) — احصل على اكثر من <strong>+600</strong> تمرين رياضي وجميع أوراقك ودفاترك التربوية.
                 </p>
 
                 {status !== 'loading' && (
