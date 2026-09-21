@@ -13,6 +13,7 @@ import {
   type SportBank,
 } from "@/src/config/ficheTechData";
 
+
 function SportPanel({
   title,
   sportKeys,
@@ -120,6 +121,9 @@ function SportPanel({
   );
 }
 
+export const UNIT_DIAGNOSTIC = "تقويم تشخيصي" as const;
+export const UNIT_SUMMATIVE = "تقويم تحصيلي" as const;
+export type UnitChoice = number | typeof UNIT_DIAGNOSTIC | typeof UNIT_SUMMATIVE;
 export default function FicheTechConfig({
   level,
   setLevel,
@@ -133,8 +137,8 @@ export default function FicheTechConfig({
 }: {
   level: string;
   setLevel: (v: string) => void;
-  sessionNumber: number;
-  setSessionNumber: (v: number) => void;
+  sessionNumber: UnitChoice;
+  setSessionNumber: (v: UnitChoice) => void;
   individual: SportPickState;
   setIndividual: (v: SportPickState) => void;
   collective: SportPickState;
@@ -165,12 +169,21 @@ export default function FicheTechConfig({
 
         <label className="block text-xs font-medium text-black">
           <span> الوحدة التعلمية رقم</span>
-          <select value={sessionNumber} onChange={(e) => setSessionNumber(Number(e.target.value))} className={`${inputStyle} mt-1`}>
+          <select
+            value={sessionNumber}
+            onChange={(e) => {
+              const v = e.target.value;
+              setSessionNumber(v === UNIT_DIAGNOSTIC || v === UNIT_SUMMATIVE ? v : Number(v));
+            }}
+            className={`${inputStyle} mt-1`}
+          >
+            <option value={UNIT_DIAGNOSTIC}>{UNIT_DIAGNOSTIC}</option>
             {[1, 2, 3, 4, 5, 6].map((n) => (
               <option key={n} value={n}>
-                {n}
+                تعليمية {n}
               </option>
             ))}
+            <option value={UNIT_SUMMATIVE}>{UNIT_SUMMATIVE}</option>
           </select>
         </label>
       </div>
@@ -196,7 +209,7 @@ export default function FicheTechConfig({
 
       <div className="flex justify-end pt-2">
         <button
-          
+
           onClick={onNext}
           className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-red-500 disabled:bg-neutral-800 disabled:text-neutral-500"
         >

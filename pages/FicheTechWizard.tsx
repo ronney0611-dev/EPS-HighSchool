@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import FicheTechConfig from "@/components/FicheTechConfig";
+import FicheTechConfig, { type UnitChoice } from "@/components/FicheTechConfig";
 import FicheTechSheet from "@/components/FicheTechSheet";
 import { EMPTY_PICK, type SportPickState } from "@/src/config/ficheTechData";
 
 export default function FicheTechWizard() {
   const [page, setPage] = useState<1 | 2 | 3>(1);
   const [level, setLevel] = useState("level1");
-  const [sessionNumber, setSessionNumber] = useState(1);
+  const [sessionNumber, setSessionNumber] = useState<UnitChoice>(1);
   const [individual, setIndividual] = useState<SportPickState>(EMPTY_PICK);
   const [collective, setCollective] = useState<SportPickState>(EMPTY_PICK);
 

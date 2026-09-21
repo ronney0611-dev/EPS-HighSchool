@@ -140,8 +140,8 @@ export default function PlanOfYear() {
             </div>
 
             <div className="flex flex-col my-2 px-2">
-              <p className='text-sm font-bold text-blue-800'>الاستاذ: <span className='font-medium text-black mx-2'>{teacher.name || '—'}</span></p>
-              <p className='text-sm font-bold text-blue-800'>المؤسسة: <span className='font-medium text-black mx-2'>{teacher.school || '—'}</span></p>
+              <p className='text-sm font-bold text-blue-800'>الاستاذ: <span className='font-medium text-black mx-2'>{teacher.name || 'ادخل اسمك'}</span></p>
+              <p className='text-sm font-bold text-blue-800'>المؤسسة: <span className='font-medium text-black mx-2'>{teacher.school || 'ادخل اسم المؤسسة'}</span></p>
             </div>
 
             {/* الكفاءة الختامية */}

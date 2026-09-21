@@ -3,6 +3,7 @@
 import { Printer, ChevronRight } from "lucide-react";
 import { LEVEL_DATA, poolExercises, type SportPickState } from "@/src/config/ficheTechData";
 import { useTeacher } from "@/hooks/useTeacher";
+import { type UnitChoice } from "./FicheTechConfig";
 
 export default function FicheTechSheet({
   level,
@@ -13,7 +14,7 @@ export default function FicheTechSheet({
   onPrint,
 }: {
   level: string;
-  sessionNumber: number;
+  sessionNumber: UnitChoice;
   individual: SportPickState;
   collective: SportPickState;
   onBack: () => void;
@@ -51,11 +52,11 @@ export default function FicheTechSheet({
         <div className="meta-strip">
           <div className="meta-item">
             <span className="meta-label">الأستاذ(ة)</span>
-            <span className="meta-value" contentEditable suppressContentEditableWarning>{teacher.name}</span>
+            <span className="meta-value" suppressContentEditableWarning>{teacher.name || "ادخل اسمك"}</span>
           </div>
           <div className="meta-item">
             <span className="meta-label">المؤسسة</span>
-            <span className="meta-value" contentEditable suppressContentEditableWarning>{teacher.school}</span>
+            <span className="meta-value" suppressContentEditableWarning>{teacher.school || "ادخل اسم المؤسسة"}</span>
           </div>
           <div className="meta-item">
             <span className="meta-label">المستوى الدراسي</span>
@@ -64,15 +65,15 @@ export default function FicheTechSheet({
         </div>
         <div className="meta-strip">
           <div className="meta-item">
-            <span className="meta-label">النشاط الفردي</span>
+            <span className="meta-label">الوحدة التعلمية لنشاط</span>
             <span className="meta-value">{levelData.curriculum.sports[individual.sport]?.activity}</span>
           </div>
           <div className="meta-item border-b border-gray-300">
-            <span className="meta-label">النشاط الجماعي</span>
+            <span className="meta-label">الوحدة التعلمية لنشاط</span>
             <span className="meta-value">{levelData.curriculum.sports[collective.sport]?.activity}</span>
           </div>
           <div className="meta-item border-b border-gray-300">
-            <span className="meta-label ">رقم الحصة التعليمية</span>
+            <span className="meta-label ">طبيعة الحصة</span>
             <span className="meta-value">{sessionNumber}</span>
           </div>
           <div className="meta-item border-t flex gap-4 border-gray-300 w-full">
@@ -81,6 +82,10 @@ export default function FicheTechSheet({
           </div>
         </div>
 
+        <div className="objective-box">
+          <strong style={{ fontSize: 12 }}>الكفائة القاعدية: </strong>
+          <span contentEditable suppressContentEditableWarning></span>
+        </div>
         <div className="objective-box">
           <strong style={{ fontSize: 12 }}>الهدف (النشاط الفردي): </strong>
           <span contentEditable suppressContentEditableWarning></span>
