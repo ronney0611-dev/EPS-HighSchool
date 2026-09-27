@@ -351,11 +351,10 @@ export default function WahdaGeneratorPage() {
             {wahda && wahda.sessions && wahda.sessions.length > 0 ? (
                 <div id="wahdat" className="bg-white p-8 rounded-3xl shadow-xl border border-gray-200/80 print:shadow-none print:border-none print:p-0 transition-all">
 
-                    <div className="flex flex-col md:flex-row justify-between gap-6 mb-6 pb-6 text-sm font-bold text-gray-800 border-b-2 border-gray-100  items-center">
-                        <div className="space-y-1 flex flex-col items-start">
-                            <p className="text-gray-600">المؤسسة: <span className="text-gray-900">{teacher?.school}</span></p>
-                            <p className="text-gray-600">الأستاذ: <span className="text-gray-900">{teacher?.name}</span></p>
-                        </div>
+                    <div className="flex flex-col md:flex-row lg:flex-row justify-between gap-6 mb-6 pb-6 text-sm font-bold text-gray-800 border-b-2 border-gray-100 items-center print:flex-row print:flex-nowrap">                        <div className="space-y-1 flex flex-col items-start">
+                        <p className="text-gray-600">المؤسسة: <span className="text-gray-900">{teacher?.school}</span></p>
+                        <p className="text-gray-600">الأستاذ: <span className="text-gray-900">{teacher?.name}</span></p>
+                    </div>
                         <div className="text-center">
                             <h2 className="bg-linear-to-r from-slate-900 via-blue-900 to-slate-900 text-white text-center rounded-xl p-2.5 font-black text-lg tracking-wide shadow-inner">
                                 الوحدة التعلمية: {SPORTS.find(s => s.key === wahda.sport)?.name}
@@ -461,7 +460,7 @@ export default function WahdaGeneratorPage() {
                     <div className='text-black'>
                         <h1 className='text-lg font-bold my-6 text-gray-800'>نتائج التقويم التحصيلي:</h1>
                     </div>
-                    <div className="my-6 font-bold flex justify-between text-gray-700 mt-12 mx-10 text-center">
+                    <div className="my-6 font-bold flex justify-between text-gray-700  mx-10 text-center">
                         <div className="border-t border-gray-300 pt-2 w-32">الاستاذ</div>
                         <div className="border-t border-gray-300 pt-2 w-32">المدير</div>
                         <div className="border-t border-gray-300 pt-2 w-32">المفتش(ة)</div>
@@ -513,13 +512,13 @@ export default function WahdaGeneratorPage() {
                     }
 
                     #wahdat h2 {
-                        font-size: 18px !important;
-                        padding: 6px 20px !important;
+                        font-size: 16px !important;
+                        padding: 6px 18px !important;
                     }
 
                     #wahdat .grid {
-                        margin-bottom: 10px !important;
-                        padding-bottom: 8px !important;
+                        margin-bottom: 2px !important;
+                        padding-bottom: 2px !important;
                     }
 
                     #wahdat .grid p {
@@ -532,7 +531,7 @@ export default function WahdaGeneratorPage() {
                     }
 
                     #wahdat .space-y-2 {
-                        margin-bottom: 8px !important;
+                        margin-bottom: 2px !important;
                     }
 
                     #wahdat h1.text-xl {

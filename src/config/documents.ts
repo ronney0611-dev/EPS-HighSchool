@@ -164,18 +164,18 @@ export const documentsConfig =
         },
         ficheNote: {
             id: 'first',
-            image: '/images/dayly.jpg',
+            image: '/images/dayy.jpg',
             name: 'الدفتر اليومي',
-            levels: ['primaire'],
+            levels: ['primaire', 'lycee'],
             youtubeVideoId: 'xx',
-            description: 'أدخل معلوماتك الشخصية والمهنية مرة واحدة — الاسم، الثانوية، الولاية، المؤهلات — وستظهر تلقائياً في كل الوثائق التي تطبعها. لا حاجة لإعادة الكتابة في كل مرة.',
+            description: 'اختر القسم والتاريخ وسيتم ملئ الدفتر الخاص بك تلقائيا, قابل للتعديل وجاهز للطباعة مباشرة من هاتفك النقال.',
             files: {
                 ficheNote: {
                     id: 'الدفتر اليومي',
                     name: 'الدفتر اليومي',
                     description: "الدفتر اليومي الجاهزة للطباعة",
                     type: 'interactive',
-                    component: 'ficheNote',
+                    component: { primaire: 'ficheNote', lycee: 'fichenoteleecy' },
                 },
             }
         },
@@ -183,7 +183,7 @@ export const documentsConfig =
             id: 'first',
             image: '/images/game.jpg',
             name: '+99 لعبة شبه رياضية',
-            levels: ['lycee','primaire'],
+            levels: ['lycee', 'primaire'],
             youtubeVideoId: 'xx',
             description: 'جاهز للتحدي؟ أكثر من 100 لعبة بانتظارك لكسر الروتين واختبار مهاراتك.',
             files: {

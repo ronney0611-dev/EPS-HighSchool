@@ -25,6 +25,7 @@ import PlanOfYearLeecy from "@/pages/PlanOfYearLeecy";
 import FicheTechWizard from "@/pages/FicheTechWizard";
 import FicheTechWizardP from "@/pages/FicheTechWizardP";
 import GamesLibraryPage from "@/pages/Games";
+import FicheNoteLeecy from "@/pages/FicheNoteLeecy";
 
 interface FileConfig {
   id: string;
@@ -98,6 +99,7 @@ const FilePage = ({ params }: { params: Promise<{ file: string; category: string
     { key: 'taqwimTahsili', component: <TakwinTahsili /> },
     { key: 'dispoCard', component: <DispoCard /> }, 
     { key: 'ficheNote', component: <DailyLogPage /> }, 
+    { key: 'fichenoteleecy', component: <FicheNoteLeecy /> }, 
 
 
     { key: 'games', component: <GamesLibraryPage /> }, 

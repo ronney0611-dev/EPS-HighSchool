@@ -35,16 +35,12 @@ export default function DailyLogPage() {
     const [sessionsPool, setSessionsPool] = useState<{ unit_name: string; kafa_components: string; learning_content: string }[]>([])
     const [isAdding, setIsAdding] = useState(false)
 
-    // Derived, not synced via effect: falls back to the first primaire class
-    // until the teacher explicitly picks one.
     const effectiveClassId = classId || primaireClasses[0]?._id || ''
     const level: PrimaireLevelKey = useMemo(
         () => getPrimaireLevelFromClassName(primaireClasses.find(c => c._id === effectiveClassId)?.name),
         [primaireClasses, effectiveClassId]
     )
 
-    // Load the sessions pool for the selected level/maidan/trimester,
-    // preferring the teacher's saved (edited) Wahda over the raw template.
     useEffect(() => {
         if (!effectiveClassId || !level || !maidanId) return
         let cancelled = false
@@ -106,17 +102,21 @@ export default function DailyLogPage() {
     }
 
     return (
-        <div dir="rtl" className="p-6 max-w-7xl mx-auto space-y-6 text-right">
+        <div dir="rtl" className="min-h-screen bg-slate-950 text-slate-100 p-4 md:p-8 space-y-8 font-sans">
 
-            {/* Control Panel */}
-            <div className="print:hidden bg-white shadow-md rounded-2xl p-6 border border-gray-100 space-y-4">
-                <h1 className="text-2xl font-bold text-gray-800 border-b pb-2">📔 الدفتر اليومي</h1>
+            {/* Control Panel (Original) */}
+            <div className="print:hidden bg-slate-900 border border-slate-800 shadow-2xl rounded-2xl p-6 space-y-6">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+                    <h1 className="text-2xl font-black text-white flex items-center gap-2">
+                        <span>📔</span> الدفتر اليومي - الطور الابتدائي
+                    </h1>
+                </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
-                        <label className="block text-sm font-semibold mb-1 text-gray-600">القسم</label>
+                        <label className="block text-xs font-semibold mb-1 text-slate-400">القسم</label>
                         <select
-                            className="w-full border p-2 rounded-xl bg-gray-50 text-gray-700"
+                            className="w-full border border-slate-700 p-2.5 rounded-xl bg-slate-950 text-slate-100 focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none text-sm transition"
                             value={effectiveClassId}
                             onChange={(e) => handleClassChange(e.target.value)}
                         >
@@ -127,9 +127,9 @@ export default function DailyLogPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold mb-1 text-gray-600">الميدان</label>
+                        <label className="block text-xs font-semibold mb-1 text-slate-400">الميدان</label>
                         <select
-                            className="w-full border p-2 rounded-xl bg-gray-50 text-gray-700"
+                            className="w-full border border-slate-700 p-2.5 rounded-xl bg-slate-950 text-slate-100 focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none text-sm transition"
                             value={maidanId}
                             onChange={(e) => setMaidanId(Number(e.target.value))}
                         >
@@ -138,10 +138,11 @@ export default function DailyLogPage() {
                             ))}
                         </select>
                     </div>
+
                     <div>
-                        <label className="block text-sm font-semibold mb-1 text-gray-600">الحصة</label>
+                        <label className="block text-xs font-semibold mb-1 text-slate-400">الحصة</label>
                         <select
-                            className="w-full border p-2 rounded-xl bg-gray-50 text-gray-700"
+                            className="w-full border border-slate-700 p-2.5 rounded-xl bg-slate-950 text-slate-100 focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none text-sm transition"
                             value={sessionIndex}
                             onChange={(e) => {
                                 const i = Number(e.target.value)
@@ -156,32 +157,34 @@ export default function DailyLogPage() {
                             ))}
                         </select>
                     </div>
+
                     <div>
-                        <label className="block text-sm font-semibold mb-1 text-gray-600">التاريخ</label>
+                        <label className="block text-xs font-semibold mb-1 text-slate-400">التاريخ</label>
                         <input
                             type="date"
-                            className="w-full border p-2 rounded-xl bg-gray-50 text-gray-700"
+                            className="w-full border border-slate-700 p-2.5 rounded-xl bg-slate-950 text-slate-100 focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none text-sm transition"
                             value={date}
                             onChange={(e) => setDate(e.target.value)}
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold mb-1 text-gray-600">التوقيت</label>
+                        <label className="block text-xs font-semibold mb-1 text-slate-400">التوقيت</label>
                         <input
                             type="text"
                             placeholder="8:30 - 9:30"
-                            className="w-full border p-2 rounded-xl bg-gray-50 text-gray-700"
+                            className="w-full border border-slate-700 p-2.5 rounded-xl bg-slate-950 text-slate-100 placeholder-slate-600 focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none text-sm transition"
                             value={time}
                             onChange={(e) => setTime(e.target.value)}
                         />
                     </div>
 
-                    <div className="md:col-span-2">
-                        <label className="block text-sm font-semibold mb-1 text-gray-600">الملاحظات</label>
+                    <div className="md:col-span-3">
+                        <label className="block text-xs font-semibold mb-1 text-slate-400">الملاحظات</label>
                         <input
                             type="text"
-                            className="w-full border p-2 rounded-xl bg-gray-50 text-gray-700"
+                            placeholder="أدخل أي ملاحظات..."
+                            className="w-full border border-slate-700 p-2.5 rounded-xl bg-slate-950 text-slate-100 placeholder-slate-600 focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none text-sm transition"
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
                         />
@@ -192,57 +195,73 @@ export default function DailyLogPage() {
                     <button
                         onClick={handleAdd}
                         disabled={isAdding}
-                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2.5 rounded-xl transition"
+                        className="bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold px-6 py-2.5 rounded-xl transition shadow-lg shadow-red-600/20 text-sm cursor-pointer"
                     >
                         {isAdding ? '⏳ جاري الإضافة...' : '➕ إضافة إلى الدفتر'}
                     </button>
                     {entries.length > 0 && (
                         <button
                             onClick={() => window.print()}
-                            className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-6 py-2.5 rounded-xl transition"
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl transition shadow-lg shadow-emerald-600/20 text-sm cursor-pointer"
                         >
-                            🖨️ طباعة
+                            🖨️ طباعة الدفتر
                         </button>
                     )}
                 </div>
-                <ToastContainer />
+                <ToastContainer theme="dark" />
             </div>
 
-            {error && <div className="p-4 bg-red-50 text-red-700 border border-red-200 rounded-xl">{error}</div>}
-            {loading && <div className="text-center p-4 text-gray-500">⏳ جاري التحميل...</div>}
+            {error && <div className="p-4 bg-red-900/30 border border-red-800 text-red-300 rounded-xl text-sm">{error}</div>}
+            {loading && <div className="text-center p-4 text-slate-400 text-sm">⏳ جاري التحميل...</div>}
 
-            {/* Log Table */}
+            {/* Modern, Official Printable Document Area */}
             {entries.length > 0 ? (
-                <div id="a4-daily-log" className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 print:shadow-none print:border-none print:p-0">
-                    <table className="w-full border-collapse border-2 border-black text-center text-sm">
+                <div id="a4-daily-log" className="bg-white text-slate-900 p-8 rounded-2xl shadow-xl border border-slate-200 print:shadow-none print:border-none print:p-0">
+
+                    {/* Official Modern Header with Red Accent */}
+                    <div className="border-2 border-slate-900 rounded-xl p-4 mb-5 bg-gradient-to-l from-red-50/40 via-white to-white print:bg-none">
+                        <div className="flex justify-between items-center text-xs font-bold border-b-2 border-slate-900/10 pb-3 mb-3 text-slate-700">
+                            <div>المؤسسة: <span className="text-slate-900 font-extrabold">{teacher?.school || 'ادخل المؤسسة'}</span></div>
+                            <div>الأستاذ: <span className="text-slate-900 font-extrabold">{teacher?.name || 'ادخل اسم الاستاذ'}</span></div>
+                            <div>السنة الدراسية: <span className="text-slate-900 font-extrabold">2026/2027</span></div>
+                        </div>
+                        <div className="text-center">
+                            <h1 className="text-2xl font-black text-slate-900 tracking-tight">الدفتر اليومي</h1>
+                            <p className="text-xs font-bold text-red-600 mt-0.5 uppercase tracking-wider">مادة التربية البدنية والرياضية</p>
+                        </div>
+                    </div>
+
+                    {/* Clean Official Table */}
+                    <table className="w-full border-collapse border-2 border-slate-900 text-center text-xs">
                         <thead>
-                            <tr className="bg-gray-100 font-bold text-gray-900">
-                                <th className="border border-black p-2 w-[10%]">التاريخ</th>
-                                <th className="border border-black p-2 w-[10%]">التوقيت</th>
-                                <th className="border border-black p-2 w-[10%]">القسم</th>
-                                <th className="border border-black p-2 w-[13%]">المؤسسة</th>
-                                <th className="border border-black p-2 w-[20%]">التعلمات</th>
-                                <th className="border border-black p-2 w-[22%]">محتوى التعلم</th>
-                                <th className="border border-black p-2 w-[15%]">الملاحظات</th>
-                                <th className="border border-black p-2 w-[5%] print:hidden"></th>
+                            <tr className="bg-slate-900 text-white font-bold tracking-wide">
+                                <th className="border border-slate-900 p-3 w-[11%]">التاريخ</th>
+                                <th className="border border-slate-900 p-3 w-[10%]">التوقيت</th>
+                                <th className="border border-slate-900 p-3 w-[10%]">القسم</th>
+                                <th className="border border-slate-900 p-3 w-[14%]">المؤسسة</th>
+                                <th className="border border-slate-900 p-3 w-[22%]">التعلمات</th>
+                                <th className="border border-slate-900 p-3 w-[23%]">محتوى التعلم</th>
+                                <th className="border border-slate-900 p-3 w-[10%]">الملاحظات</th>
+                                <th className="border border-slate-900 p-3 w-[4%] print:hidden"></th>
                             </tr>
                         </thead>
                         <tbody>
-                            {entries.map((entry) => (
-                                <tr key={entry._id} className="border border-black text-black hover:bg-gray-50/50">
-                                    <td className="border border-black p-2 text-xs">{entry.date}</td>
-                                    <td className="border border-black p-2 text-xs">{entry.time}</td>
-                                    <td className="border border-black p-2 text-xs">{entry.className}</td>
-                                    <td className="border border-black p-2 text-xs">{entry.institution}</td>
-                                    <td className="border border-black p-2 text-xs">{entry.teachingContent}</td>
-                                    <td className="border border-black p-2 text-xs">{entry.learningContent}</td>
-                                    <td className="border border-black p-2 text-xs">{entry.notes}</td>
-                                    <td className="border border-black p-2 print:hidden">
+                            {entries.map((entry, index) => (
+                                <tr key={entry._id} className={`border border-slate-900 ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/70'}`}>
+                                    <td className="border border-slate-900 p-3 font-mono font-bold text-slate-800">{entry.date}</td>
+                                    <td className="border border-slate-900 p-3 text-slate-700">{entry.time || '—'}</td>
+                                    <td className="border border-slate-900 p-3 font-extrabold text-red-700">{entry.className}</td>
+                                    <td className="border border-slate-900 p-3 text-slate-700">{entry.institution || '—'}</td>
+                                    <td className="border border-slate-900 p-3 text-right leading-relaxed text-slate-900 font-medium">{entry.teachingContent}</td>
+                                    <td className="border border-slate-900 p-3 text-right leading-relaxed text-slate-900 font-medium">{entry.learningContent}</td>
+                                    <td className="border border-slate-900 p-3 text-right text-slate-700">{entry.notes || '—'}</td>
+                                    <td className="border border-slate-900 p-3 print:hidden text-center">
                                         <button
                                             onClick={() => handleDelete(entry._id)}
-                                            className="text-red-600 hover:text-red-800 text-xs font-bold"
+                                            className="text-red-600 hover:text-red-800 font-bold transition p-1"
+                                            title="حذف"
                                         >
-                                            حذف
+                                            ✕
                                         </button>
                                     </td>
                                 </tr>
@@ -252,70 +271,69 @@ export default function DailyLogPage() {
                 </div>
             ) : (
                 !loading && (
-                    <div className="text-center p-12 border-2 border-dashed rounded-2xl bg-gray-50 text-gray-500 font-medium">
+                    <div className="text-center p-12 border-2 border-dashed border-slate-800 rounded-2xl bg-slate-900/50 text-slate-400 font-medium text-sm">
                         📔 لا توجد حصص مسجلة بعد في الدفتر اليومي
                     </div>
                 )
             )}
 
             <style jsx global>{`
-    @media print {
-        @page {
-            size: A4 landscape;
-            margin: 5mm;
-        }
+                @media print {
+                    @page {
+                        size: A4 landscape;
+                        margin: 6mm;
+                    }
 
-        * {
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-            color-adjust: exact !important;
-        }
+                    * {
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                        color-adjust: exact !important;
+                    }
 
-        html, body {
-            margin: 0 !important;
-            padding: 0 !important;
-            height: auto !important;
-            background: white !important;
-        }
+                    html, body {
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        height: auto !important;
+                        background: white !important;
+                    }
 
-        body *:not(#a4-daily-log):not(#a4-daily-log *) {
-            visibility: hidden !important;
-        }
+                    body *:not(#a4-daily-log):not(#a4-daily-log *) {
+                        visibility: hidden !important;
+                    }
 
-        #a4-daily-log, #a4-daily-log * {
-            visibility: visible !important;
-        }
+                    #a4-daily-log, #a4-daily-log * {
+                        visibility: visible !important;
+                    }
 
-        #a4-daily-log {
-            position: static !important;
-            width: 100% !important;
-            margin: 0 !important;
-            padding: 4mm !important;
-            box-shadow: none !important;
-            font-size: 11px !important;
-        }
+                    #a4-daily-log {
+                        position: static !important;
+                        width: 100% !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        box-shadow: none !important;
+                        border: none !important;
+                    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 11px !important;
-        }
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
 
-        thead {
-            display: table-header-group;
-        }
+                    thead {
+                        display: table-header-group;
+                    }
 
-        th, td {
-            padding: 3px 5px !important;
-            line-height: 1.25 !important;
-        }
+                    th, td {
+                        padding: 6px 8px !important;
+                        line-height: 1.3 !important;
+                    }
 
-        tr {
-            break-inside: avoid;
-            page-break-inside: avoid;
-        }
-    }
-`}</style>
+                    tr {
+                        break-inside: avoid;
+                        page-break-inside: avoid;
+                    }
+                }
+            `}</style>
         </div>
     )
 }
