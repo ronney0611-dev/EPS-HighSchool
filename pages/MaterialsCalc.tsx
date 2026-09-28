@@ -1,6 +1,7 @@
 'use client'
 
 import { useTeacher } from "@/hooks/useTeacher"
+import { useSession } from "next-auth/react";
 import { useState } from "react"
 
 interface MaterialItem {
@@ -16,8 +17,6 @@ const DEFAULT_MATERIALS: MaterialItem[] = [
     { name: 'كرات اليد', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
     { name: 'كرات القدم', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
     { name: 'كرات طبية', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
-    { name: 'كرات طبية', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
-    { name: 'كرات حديدية', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
     { name: 'كرات حديدية', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
     { name: 'كرات بلاستيكية', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
     { name: 'بساط ارضي', quantity: '', condition: { bad: '', used: '', new: '' }, note: '' },
@@ -36,9 +35,11 @@ const DEFAULT_MATERIALS: MaterialItem[] = [
 ];
 
 const MaterialsCalc = () => {
+    const { data: session } = useSession();
     const { teacher } = useTeacher();
     const [newMaterial, setNewMaterial] = useState('');
     const [materials, setMaterials] = useState<MaterialItem[]>(DEFAULT_MATERIALS);
+    const teacherLevel = session?.user?.level === 'lycee';
 
     const addMaterial = () => {
         if (!newMaterial.trim()) return;
@@ -197,7 +198,13 @@ const MaterialsCalc = () => {
                 {/* Footer Signatures */}
                 <div className="mt-12 font-semibold flex justify-between text-sm px-4">
                     <div>توقيع الأستاذ:</div>
-                    <div>توقيع المقتصد:</div>
+                    {
+                        teacherLevel ? (
+                            <div>توقيع المقتصد:</div>
+                        ) : (
+                            <div></div>
+                        )
+                    }
                     <div>توقيع وختم المدير:</div>
                 </div>
             </div>

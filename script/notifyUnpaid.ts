@@ -6,13 +6,9 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const EMAIL_TEXT = () => `نتمنى لك دخولاً مدرسياً موفقاً وسنة دراسية مليئة بالنشاط والنجاح! 📚⚡
+const EMAIL_TEXT = () => `تحديث ! 📚⚡
 
-نعلم أن بداية السنة الدراسية كأستاذ للتربية البدنية والرياضية تكون مليئة بالضغط وتحضير الوثائق.. ولهذا السبب تحديداً قمنا بإطلاق أضخم تحديث على منصة EPS DZ!
-
-لقد قمنا بتطوير المنصة وإضافة أكثر من 700 تمرين رياضي جاهز، إلى جانب الأدوات الذكية التي تُعد لك المذكرات البيداغوجية، شبكات التقويم، 
-
-لماذا تضيع وقتك في التحضير اليدوي هذا العام بينما كل ما تحتاجه جاهز بين يديك؟
+تعلن منصة EPSDZ اساذة الطور الثانوي عن توفر الدفتر اليومي الالكتروني
 
 تواصل معنا للمزيد من المعلومات 0795972858
 
@@ -27,7 +23,7 @@ async function main() {
         dbName: process.env.DATABASE_NAME,
     });
 
-    const unpaidUsers = await User.find({ isPaid: false }, 'email');
+    const unpaidUsers = await User.find({ level: 'lycee' }, 'email');
 
     for (const user of unpaidUsers) {
         try {
