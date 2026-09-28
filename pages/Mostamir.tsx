@@ -21,6 +21,7 @@ const Mostamir = () => {
   const { teacher } = useTeacher();
   const selectedClassData = classes.find(c => c.name === classSelect);
   const classStudents = selectedClassData ? (studentsByClass[selectedClassData._id] || []) : [];
+  const { groupe, fetchGroupes } = useGroupe();
   const groupLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
   const activeTrimester = TRIMESTERS[trimesterIndex];
 
@@ -56,11 +57,10 @@ const Mostamir = () => {
     }
   }
 
-  const { groupe, fetchGroupes } = useGroupe();
   const getStudentGroup = (studentId: string) => {
     if (!groupe || groupe.length === 0) return '—';
     const groupIndex = groupe.findIndex(g =>
-      g.students.some(s => s.id === studentId)
+      g.students.some(s => s.id === studentId || s._id?.toString() === studentId)
     );
     return groupIndex !== -1 ? groupLabels[groupIndex] : '—';
   };
@@ -108,8 +108,8 @@ const Mostamir = () => {
               key={i}
               onClick={() => setTrimesterIndex(i)}
               className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${trimesterIndex === i
-                  ? 'bg-red-600 text-white shadow-lg shadow-red-950/40'
-                  : 'bg-neutral-950 text-neutral-400 border border-neutral-800 hover:text-white'
+                ? 'bg-red-600 text-white shadow-lg shadow-red-950/40'
+                : 'bg-neutral-950 text-neutral-400 border border-neutral-800 hover:text-white'
                 }`}
             >
               {t.label}
@@ -155,7 +155,7 @@ const Mostamir = () => {
 
         {/* attendance table — only this trimester's 12 columns */}
         <div className='overflow-x-auto'>
-           <table className='border border-black w-full mt-2 text-center' style={{ fontSize: '7px' }}>
+          <table className='border border-black w-full mt-2 text-center' style={{ fontSize: '7px' }}>
             <thead>
               <tr>
                 <th className='border px-2 border-black' rowSpan={3} style={{ width: '18px' }}>#</th>
