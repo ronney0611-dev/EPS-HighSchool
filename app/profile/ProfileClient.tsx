@@ -52,41 +52,94 @@ const ProfilePage = () => {
             const data = new Uint8Array(evt.target?.result as ArrayBuffer)
             const workbook = XLSX.read(data, { type: 'array' })
 
+            const NAME_KEYWORDS = {
+                lastName: ['اللقب', 'لقب', 'nom'],
+                firstName: ['الاسم', 'الإسم', 'اسم', 'إسم', 'prenom', 'prénom'],
+                gender: ['الجنس', 'جنس'],
+            }
+
+            const findColumn = (headerRow: (string | number | null)[], keywords: string[]): number =>
+                headerRow.findIndex(cell => typeof cell === 'string' && keywords.some(k => cell.trim().includes(k)))
+
+            const findHeaderRow = (rows: (string | number | Date | null)[][]): number => {
+                let bestIdx = -1
+                let bestScore = 0
+                rows.forEach((row, i) => {
+                    const score = Object.values(NAME_KEYWORDS).filter(keywords =>
+                        row.some(cell => typeof cell === 'string' && keywords.some(k => cell.trim().includes(k)))
+                    ).length
+                    if (score > bestScore) { bestScore = score; bestIdx = i }
+                })
+                return bestScore >= 2 ? bestIdx : -1
+            }
+
+            const guessClassName = (rows: (string | number | Date | null)[][], sheetName: string): string => {
+                const fromSheet = sheetName.replace(/^القسم\s*:\s*/, '').trim()
+                if (fromSheet && fromSheet !== 'Worksheet' && !/^Sheet\d*$/i.test(fromSheet)) return fromSheet
+
+                const infoRow = rows.find(row => row.join(' ').match(/الفوج التربوي|القسم\s*:|قائمة التلاميذ/))
+                if (infoRow) {
+                    const text = infoRow.join(' ')
+                    const sectionMatch = text.match(/القسم\s*:\s*(.+)/) || text.match(/الفوج التربوي\s*:\s*(.+)/)
+                    if (sectionMatch) return sectionMatch[1].trim()
+                }
+                return sheetName
+            }
+
             const sheets = workbook.SheetNames
                 .filter(name => name !== 'Worksheet')
                 .map(name => {
                     const sheet = workbook.Sheets[name]
-                    const rows: string[][] = XLSX.utils.sheet_to_json(sheet, { header: 1 })
-                    const headerRowIndex = rows.findIndex(row => row.includes('matricule'))
-                    if (headerRowIndex === -1) return null
+                    const rows: (string | number | Date | null)[][] = XLSX.utils.sheet_to_json(sheet, { header: 1 })
 
-                    const dataRows = rows.slice(headerRowIndex + 2)
-                    const students = dataRows
-                        .filter(row => row[0] && row[1])
-                        .map(row => ({
-                            id: crypto.randomUUID(),
-                            matricule: String(row[0]),
-                            name: `${row[1]} ${row[2]}`.trim(),
-                            gender: 'male' as const,
-                            status: String(row[4]) === 'اعفاء' ? 'malade' as const : 'active' as const
-                        }))
-
-                    // find class info row
-                    const infoRow = rows.find(row => row.join('').includes('الفوج التربوي'))
-                    let className = name // fallback to sheet code
-
-                    if (infoRow) {
-                        const text = infoRow.join(' ')
-                        const level = text.includes('أولى') ? '1' : text.includes('ثانية') ? '2' : text.includes('ثالثة') ? '3' : ''
-
-                        // extract section: everything after the level keyword
-                        const sectionMatch = text.match(/(?:أولى|ثانية|ثالثة)\s+ثانوي\s+(.+)/)
-                        const section = sectionMatch ? sectionMatch[1].replace(/مادة\s*:.*/, '').trim() : '';
-
-                        className = section ? `${level}${section}` : name
+                    // Official format ("وثيقة حجز النقاط") — unchanged from before
+                    const matriculeRowIndex = rows.findIndex(row => row.includes('matricule'))
+                    if (matriculeRowIndex !== -1) {
+                        const dataRows = rows.slice(matriculeRowIndex + 2)
+                        const students = dataRows
+                            .filter(row => row[0] && row[1])
+                            .map(row => ({
+                                id: crypto.randomUUID(),
+                                matricule: String(row[0]),
+                                name: `${row[1]} ${row[2]}`.trim(),
+                                gender: 'male' as const,
+                                status: String(row[4]) === 'اعفاء' ? 'malade' as const : 'active' as const,
+                            }))
+                        const infoRow = rows.find(row => row.join('').includes('الفوج التربوي'))
+                        let className = name
+                        if (infoRow) {
+                            const text = infoRow.join(' ')
+                            const level = text.includes('أولى') ? '1' : text.includes('ثانية') ? '2' : text.includes('ثالثة') ? '3' : ''
+                            const sectionMatch = text.match(/(?:أولى|ثانية|ثالثة)\s+ثانوي\s+(.+)/)
+                            const section = sectionMatch ? sectionMatch[1].replace(/مادة\s*:.*/, '').trim() : ''
+                            className = section ? `${level}${section}` : name
+                        }
+                        return { name: className, students }
                     }
 
-                    return { name: className, students }
+                    // Any other school format — keyword-based detection
+                    const headerRowIndex = findHeaderRow(rows)
+                    if (headerRowIndex === -1) return null
+
+                    const headerRow = rows[headerRowIndex]
+                    const lastNameCol = findColumn(headerRow, NAME_KEYWORDS.lastName)
+                    const firstNameCol = findColumn(headerRow, NAME_KEYWORDS.firstName)
+                    const genderCol = findColumn(headerRow, NAME_KEYWORDS.gender)
+                    if (lastNameCol === -1 || firstNameCol === -1) return null
+
+                    const dataRows = rows.slice(headerRowIndex + 1)
+                    const students = dataRows
+                        .filter(row => row[lastNameCol] && row[firstNameCol])
+                        .map((row, idx) => ({
+                            id: crypto.randomUUID(),
+                            matricule: `${name}-${idx + 1}`,
+                            name: `${row[lastNameCol]} ${row[firstNameCol]}`.toString().trim(),
+                            gender: genderCol !== -1 && row[genderCol] === 'أنثى' ? 'female' as const : 'male' as const,
+                            status: 'active' as const,
+                        }))
+                    if (students.length === 0) return null
+
+                    return { name: guessClassName(rows, name), students }
                 })
                 .filter(Boolean) as { name: string, students: { id: string, matricule: string, name: string, gender: 'male' | 'female', status: 'active' | 'malade' | 'special' }[] }[];
 
