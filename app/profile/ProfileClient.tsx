@@ -56,16 +56,17 @@ const ProfilePage = () => {
                 lastName: ['اللقب', 'لقب', 'nom'],
                 firstName: ['الاسم', 'الإسم', 'اسم', 'إسم', 'prenom', 'prénom'],
                 gender: ['الجنس', 'جنس'],
+                registration: ['رقم التسجيل', 'رقم التعريف', 'matricule'],
             }
 
-            const findColumn = (headerRow: (string | number | null)[], keywords: string[]): number =>
+            const findColumn = (headerRow: (string | number | Date | null)[], keywords: string[]): number =>
                 headerRow.findIndex(cell => typeof cell === 'string' && keywords.some(k => cell.trim().includes(k)))
 
             const findHeaderRow = (rows: (string | number | Date | null)[][]): number => {
                 let bestIdx = -1
                 let bestScore = 0
                 rows.forEach((row, i) => {
-                    const score = Object.values(NAME_KEYWORDS).filter(keywords =>
+                    const score = [NAME_KEYWORDS.lastName, NAME_KEYWORDS.firstName, NAME_KEYWORDS.gender].filter(keywords =>
                         row.some(cell => typeof cell === 'string' && keywords.some(k => cell.trim().includes(k)))
                     ).length
                     if (score > bestScore) { bestScore = score; bestIdx = i }
@@ -75,12 +76,16 @@ const ProfilePage = () => {
 
             const guessClassName = (rows: (string | number | Date | null)[][], sheetName: string): string => {
                 const fromSheet = sheetName.replace(/^القسم\s*:\s*/, '').trim()
-                if (fromSheet && fromSheet !== 'Worksheet' && !/^Sheet\d*$/i.test(fromSheet)) return fromSheet
+                const isDefaultSheetName = /^(sheet|feuil|ورقة|worksheet)\d*$/i.test(fromSheet)
+                if (fromSheet && !isDefaultSheetName) return fromSheet
 
-                const infoRow = rows.find(row => row.join(' ').match(/الفوج التربوي|القسم\s*:|قائمة التلاميذ/))
+                const infoRow = rows.find(row => row.join(' ').match(/الفوج التربوي|القسم\s*:|للسنة\s*:|قائمة التلاميذ/))
                 if (infoRow) {
                     const text = infoRow.join(' ')
-                    const sectionMatch = text.match(/القسم\s*:\s*(.+)/) || text.match(/الفوج التربوي\s*:\s*(.+)/)
+                    const sectionMatch =
+                        text.match(/القسم\s*:\s*(.+)/) ||
+                        text.match(/الفوج التربوي\s*:\s*(.+)/) ||
+                        text.match(/للسنة\s*:\s*(.+?)(?:\s+للسنة الدراسية|$)/)
                     if (sectionMatch) return sectionMatch[1].trim()
                 }
                 return sheetName
@@ -92,7 +97,7 @@ const ProfilePage = () => {
                     const sheet = workbook.Sheets[name]
                     const rows: (string | number | Date | null)[][] = XLSX.utils.sheet_to_json(sheet, { header: 1 })
 
-                    // Official format ("وثيقة حجز النقاط") — unchanged from before
+                    // Official format ("وثيقة حجز النقاط") — unchanged
                     const matriculeRowIndex = rows.findIndex(row => row.includes('matricule'))
                     if (matriculeRowIndex !== -1) {
                         const dataRows = rows.slice(matriculeRowIndex + 2)
@@ -125,6 +130,7 @@ const ProfilePage = () => {
                     const lastNameCol = findColumn(headerRow, NAME_KEYWORDS.lastName)
                     const firstNameCol = findColumn(headerRow, NAME_KEYWORDS.firstName)
                     const genderCol = findColumn(headerRow, NAME_KEYWORDS.gender)
+                    const regCol = findColumn(headerRow, NAME_KEYWORDS.registration)
                     if (lastNameCol === -1 || firstNameCol === -1) return null
 
                     const dataRows = rows.slice(headerRowIndex + 1)
@@ -132,7 +138,7 @@ const ProfilePage = () => {
                         .filter(row => row[lastNameCol] && row[firstNameCol])
                         .map((row, idx) => ({
                             id: crypto.randomUUID(),
-                            matricule: `${name}-${idx + 1}`,
+                            matricule: regCol !== -1 && row[regCol] ? String(row[regCol]) : `${name}-${idx + 1}`,
                             name: `${row[lastNameCol]} ${row[firstNameCol]}`.toString().trim(),
                             gender: genderCol !== -1 && row[genderCol] === 'أنثى' ? 'female' as const : 'male' as const,
                             status: 'active' as const,
@@ -149,7 +155,7 @@ const ProfilePage = () => {
         }
         reader.readAsArrayBuffer(file)
     }
-
+    
     const handleImportConfirm = async () => {
         if (isImporting) return
         setIsImporting(true)
