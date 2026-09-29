@@ -34,11 +34,15 @@ export type PooledExercise = Exercise & { step: number; sessionGoal: string; key
 export type SportPickState = {
   sport: string;
   indicatorId: number | null;
+  indicatorIds: number[];
+  batteryChosen: Record<number, string | null>; // indicatorId -> chosen exercise key
   count: number;
   chosenKeys: (string | null)[];
 };
 
-export const EMPTY_PICK: SportPickState = { sport: "", indicatorId: null, count: 3, chosenKeys: [] };
+export const EMPTY_PICK: SportPickState = {
+  sport: "", indicatorId: null, indicatorIds: [], batteryChosen: {}, count: 3, chosenKeys: [],
+};
 
 function normalizeCurriculum(raw: unknown): LevelCurriculum {
   const obj = raw as Record<string, unknown>;

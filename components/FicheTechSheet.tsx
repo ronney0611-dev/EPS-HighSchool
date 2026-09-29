@@ -1,9 +1,12 @@
 "use client";
 
 import { Printer, ChevronRight } from "lucide-react";
-import { LEVEL_DATA, poolExercises, type SportPickState } from "@/src/config/ficheTechData";
+import { LEVEL_DATA, poolExercises, getIndicatorOptions, type SportPickState } from "@/src/config/ficheTechData";
 import { useTeacher } from "@/hooks/useTeacher";
-import { type UnitChoice } from "./FicheTechConfig";
+import { type UnitChoice, UNIT_DIAGNOSTIC, UNIT_SUMMATIVE } from "./FicheTechConfig";
+import type { PooledExercise } from "@/src/config/ficheTechData";
+
+type BatteryExercise = PooledExercise & { indicatorLabel: string | undefined };
 
 export default function FicheTechSheet({
   level,
@@ -21,13 +24,30 @@ export default function FicheTechSheet({
   onPrint: () => void;
 }) {
   const levelData = LEVEL_DATA[level];
+  const isBattery = sessionNumber === UNIT_DIAGNOSTIC || sessionNumber === UNIT_SUMMATIVE;
 
-  const individualExercises = (individual.chosenKeys.filter(Boolean) as string[]).map(
+  const individualExercises = isBattery ? [] : (individual.chosenKeys.filter(Boolean) as string[]).map(
     (key) => poolExercises(levelData.banks[individual.sport], individual.indicatorId).find((e) => e.key === key)!
   );
-  const collectiveExercises = (collective.chosenKeys.filter(Boolean) as string[]).map(
+  const collectiveExercises = isBattery ? [] : (collective.chosenKeys.filter(Boolean) as string[]).map(
     (key) => poolExercises(levelData.banks[collective.sport], collective.indicatorId).find((e) => e.key === key)!
   );
+
+  const individualBattery = isBattery
+    ? individual.indicatorIds.map((id) => {
+      const ex = poolExercises(levelData.banks[individual.sport], id).find((e) => e.key === individual.batteryChosen[id]);
+      const label = getIndicatorOptions(levelData.curriculum.sports[individual.sport], levelData.banks[individual.sport]).find((o) => o.id === id)?.label;
+      return ex ? { ...ex, indicatorLabel: label } : null;
+    }).filter((x): x is BatteryExercise => x !== null)
+    : [];
+
+  const collectiveBattery = isBattery
+    ? collective.indicatorIds.map((id) => {
+      const ex = poolExercises(levelData.banks[collective.sport], id).find((e) => e.key === collective.batteryChosen[id]);
+      const label = getIndicatorOptions(levelData.curriculum.sports[collective.sport], levelData.banks[collective.sport]).find((o) => o.id === id)?.label;
+      return ex ? { ...ex, indicatorLabel: label } : null;
+    }).filter((x): x is BatteryExercise => x !== null)
+    : [];
 
   const { teacher } = useTeacher();
 
@@ -124,31 +144,39 @@ export default function FicheTechSheet({
               <tr>
                 <td className="phase-label">مرحلة التعلم — النشاط الفردي</td>
                 <td contentEditable suppressContentEditableWarning>
-                  <div className="multi">{individualExercises.map((ex, i) => <div key={i}>{ex.but}</div>)}</div>
+                  <div className="multi">
+                    {(isBattery ? individualBattery : individualExercises).map((ex, i) => (
+                      <div key={i}>{'indicatorLabel' in ex ? `${ex.indicatorLabel}: ${ex.but}` : ex.but}</div>))}
+                  </div>
                 </td>
                 <td contentEditable suppressContentEditableWarning>
-                  <div className="multi">{individualExercises.map((ex, i) => <div key={i}>{ex.description}</div>)}</div>
-                  <br />
+                  <div className="multi">{(isBattery ? individualBattery : individualExercises).map((ex, i) => <div key={i}>{ex.description}</div>)}</div>                  <br />
                   <div className=" border-t border-gray-300 border-dashed">تقويم تكويني: شبه منافسة</div>
                 </td>
                 <td contentEditable suppressContentEditableWarning>40د</td>
                 <td contentEditable suppressContentEditableWarning></td>
                 <td contentEditable suppressContentEditableWarning>
-                  <div className="multi">{individualExercises.map((ex, i) => <div key={i}>{ex.najah}</div>)}</div>
+                  <div className="multi">{(isBattery ? individualBattery : individualExercises).map((ex, i) => <div key={i}>{ex.najah}</div>)}</div>
                 </td>
               </tr>
               <tr>
                 <td className="phase-label">مرحلة التعلم — النشاط الجماعي</td>
-                <td contentEditable suppressContentEditableWarning><div className="multi">{collectiveExercises.map((ex, i) => <div key={i}>{ex.but}</div>)}</div></td>
+                <td contentEditable suppressContentEditableWarning>
+                  <div className="multi">
+                    {(isBattery ? collectiveBattery : collectiveExercises).map((ex, i) => (
+                      <div key={i}>{'indicatorLabel' in ex ? `${ex.indicatorLabel}: ${ex.but}` : ex.but}</div>))}
+                  </div>
+                </td>
                 <td contentEditable suppressContentEditableWarning>
                   <div className="border-b pb-2 border-gray-300 border-dashed">احماء خاص:</div><br />
-                  <div className="multi">{collectiveExercises.map((ex, i) => <div key={i}>{ex.description}</div>)}</div>
-                  <br />
+                  <div className="multi">{(isBattery ? collectiveBattery : collectiveExercises).map((ex, i) => <div key={i}>{ex.description}</div>)}</div>                  <br />
                   <div className=" border-t border-gray-300 border-dashed">تقويم تكويني: شبه منافسة</div>
                 </td>
                 <td contentEditable suppressContentEditableWarning>50د</td>
                 <td contentEditable suppressContentEditableWarning></td>
-                <td contentEditable suppressContentEditableWarning><div className="multi">{collectiveExercises.map((ex, i) => <div key={i}>{ex.najah}</div>)}</div></td>
+                <td contentEditable suppressContentEditableWarning>
+                  <div className="multi">{(isBattery ? collectiveBattery : collectiveExercises).map((ex, i) => <div key={i}>{ex.najah}</div>)}</div>
+                </td>
               </tr>
               <tr>
                 <td className="phase-label">مرحلة التقييم</td>

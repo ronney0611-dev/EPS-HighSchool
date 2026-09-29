@@ -13,7 +13,6 @@ import {
   type SportBank,
 } from "@/src/config/ficheTechData";
 
-
 function SportPanel({
   title,
   sportKeys,
@@ -21,6 +20,7 @@ function SportPanel({
   banks,
   value,
   onChange,
+  isBattery,
 }: {
   title: string;
   sportKeys: string[];
@@ -28,6 +28,7 @@ function SportPanel({
   banks: Record<string, SportBank>;
   value: SportPickState;
   onChange: (next: SportPickState) => void;
+  isBattery: boolean;
 }) {
   const bank = banks?.[value.sport];
   const curriculumSport = curriculum?.sports?.[value.sport];
@@ -35,7 +36,19 @@ function SportPanel({
   const pool = useMemo(() => poolExercises(bank, value.indicatorId), [bank, value.indicatorId]);
 
   const handleSportChange = (sport: string) => {
-    onChange({ sport, indicatorId: null, count: 3, chosenKeys: [] });
+    onChange({ sport, indicatorId: null, indicatorIds: [], batteryChosen: {}, count: 3, chosenKeys: [] });
+  };
+
+  const toggleIndicator = (id: number) => {
+    const has = value.indicatorIds.includes(id);
+    if (has) {
+      const indicatorIds = value.indicatorIds.filter((x) => x !== id);
+      const batteryChosen = { ...value.batteryChosen };
+      delete batteryChosen[id];
+      onChange({ ...value, indicatorIds, batteryChosen });
+    } else {
+      onChange({ ...value, indicatorIds: [...value.indicatorIds, id] });
+    }
   };
 
   const handleIndicatorChange = (indicatorId: number) => {
@@ -64,28 +77,88 @@ function SportPanel({
           <select value={value.sport} onChange={(e) => handleSportChange(e.target.value)} className={`${selectStyle} mt-1`}>
             <option value="">— اختر —</option>
             {sportKeys.map((k) => (
-              <option key={k} value={k}>
-                {curriculum?.sports?.[k]?.activity ?? k}
-              </option>
+              <option key={k} value={k}>{curriculum?.sports?.[k]?.activity ?? k}</option>
             ))}
           </select>
         </label>
 
-        {value.sport && (
+        {value.sport && isBattery && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
+              <span className="text-sm font-semibold text-white">
+                المؤشرات والتمارين المقترحة
+              </span>
+            </div>
+            <div className="max-h-72 overflow-y-auto space-y-1.5 rounded-xl bg-neutral-950/50 border border-neutral-800 p-2.5">
+              {indicatorOptions.map((opt) => {
+                const checked = value.indicatorIds.includes(opt.id);
+                const exOptions = poolExercises(bank, opt.id);
+
+                return (
+                  <div key={opt.id} className="space-y-2 p-1.5 rounded-lg hover:bg-neutral-900/40 transition">
+
+                    <label className="flex items-start gap-3 text-xs text-white cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggleIndicator(opt.id)}
+                        className="sr-only" // Hidden but accessible
+                      />
+
+                      <div className={`
+                        w-5 h-5 mt-0.5 rounded shrink-0 border-2 transition-colors flex items-center justify-center text-white text-[10px] font-bold
+                        ${checked
+                          ? 'bg-red-600 border-red-600 shadow-lg shadow-red-900/30'
+                          : 'bg-neutral-900 border-neutral-600 group-hover:border-neutral-400'
+                        }
+                      `}>
+                        {checked && "✓"}
+                      </div>
+
+                      <span className={`${checked ? 'font-semibold' : 'text-white'}`}>
+                        {opt.label}
+                      </span>
+                    </label>
+
+                    {checked && (
+                      <div className="mr-8">
+                        <select
+                          value={value.batteryChosen[opt.id] ?? ""}
+                          onChange={(e) => onChange({ ...value, batteryChosen: { ...value.batteryChosen, [opt.id]: e.target.value } })}
+                          className={`
+                            ${selectStyle} 
+                            w-full text-xs font-medium bg-neutral-950/80! border-red-900/60! p-2! rounded-lg!
+                            focus:border-red-500! focus:ring-red-500/20!
+                          `}
+                        >
+                          <option value="" className="text-slate-500">— اختر تمرينا خاصا بهذا المؤشر —</option>
+                          {exOptions.map((ex) => (
+                            <option key={ex.key} value={ex.key} className="text-white bg-slate-950">
+                              {ex.but}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+        {value.sport && !isBattery && (
           <label className="block text-xs font-medium text-black">
             <span>المؤشر</span>
             <select value={value.indicatorId ?? ""} onChange={(e) => handleIndicatorChange(Number(e.target.value))} className={`${selectStyle} mt-1`}>
               <option value="">— اختر —</option>
               {indicatorOptions.map((opt) => (
-                <option key={opt.id} value={opt.id}>
-                  {opt.label}
-                </option>
+                <option key={opt.id} value={opt.id}>{opt.label}</option>
               ))}
             </select>
           </label>
         )}
 
-        {value.indicatorId !== null && pool.length > 0 && (
+        {!isBattery && value.indicatorId !== null && pool.length > 0 && (
           <label className="block text-xs font-medium text-black">
             <span>عدد التمارين</span>
             <select value={value.count} onChange={(e) => handleCountChange(Number(e.target.value))} className={`${selectStyle} mt-1`}>
@@ -98,7 +171,7 @@ function SportPanel({
           </label>
         )}
 
-        {value.indicatorId !== null &&
+        {!isBattery && value.indicatorId !== null &&
           Array.from({ length: value.count }).map((_, slotIdx) => {
             const takenElsewhere = value.chosenKeys.filter((k, i) => i !== slotIdx);
             const options = pool.filter((ex) => !takenElsewhere.includes(ex.key) || ex.key === value.chosenKeys[slotIdx]);
@@ -148,6 +221,7 @@ export default function FicheTechConfig({
 }) {
   const levelData = LEVEL_DATA[level];
   const inputStyle = "w-full rounded-lg border border-neutral-800 bg-neutral-950 px-3 py-2 text-sm text-white focus:border-red-600 focus:outline-none";
+  const isBattery = sessionNumber === UNIT_DIAGNOSTIC || sessionNumber === UNIT_SUMMATIVE;
 
   return (
     <div className="space-y-6 text-right" dir="rtl">
@@ -196,7 +270,9 @@ export default function FicheTechConfig({
           banks={levelData.banks}
           value={individual}
           onChange={setIndividual}
+          isBattery={isBattery}
         />
+
         <SportPanel
           title="النشاط الجماعي"
           sportKeys={COLLECTIVE_SPORTS}
@@ -204,6 +280,7 @@ export default function FicheTechConfig({
           banks={levelData.banks}
           value={collective}
           onChange={setCollective}
+          isBattery={isBattery}
         />
       </div>
 

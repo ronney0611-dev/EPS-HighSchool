@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import FicheTechConfig, { type UnitChoice } from "@/components/FicheTechConfig";
+import FicheTechConfig, { type UnitChoice, UNIT_DIAGNOSTIC, UNIT_SUMMATIVE } from "@/components/FicheTechConfig";
 import FicheTechSheet from "@/components/FicheTechSheet";
 import { EMPTY_PICK, type SportPickState } from "@/src/config/ficheTechData";
 
@@ -11,11 +11,14 @@ export default function FicheTechWizard() {
   const [sessionNumber, setSessionNumber] = useState<UnitChoice>(1);
   const [individual, setIndividual] = useState<SportPickState>(EMPTY_PICK);
   const [collective, setCollective] = useState<SportPickState>(EMPTY_PICK);
+  const isBattery = sessionNumber === UNIT_DIAGNOSTIC || sessionNumber === UNIT_SUMMATIVE;
+  const batteryReady = (p: SportPickState) =>
+    !!p.sport && p.indicatorIds.length >= 4 && p.indicatorIds.every((id) => !!p.batteryChosen[id]);
 
-  const canProceed =
-    !!individual.sport && individual.indicatorId !== null && individual.chosenKeys.every(Boolean) && individual.chosenKeys.length > 0 &&
+  const canProceed = isBattery
+    ? batteryReady(individual) && batteryReady(collective)
+    : !!individual.sport && individual.indicatorId !== null && individual.chosenKeys.every(Boolean) && individual.chosenKeys.length > 0 &&
     !!collective.sport && collective.indicatorId !== null && collective.chosenKeys.every(Boolean) && collective.chosenKeys.length > 0;
-
   const handlePrint = useCallback(() => window.print(), []);
 
   return (
@@ -211,8 +214,8 @@ export default function FicheTechWizard() {
             <p>
               المسؤولية البيداغوجية الكاملة في اختيار وصياغة محتوى الحصة
               تقع على عاتق الأستاذ(ة).
-              التمارين هي مقترحات فقط.  <strong className="text-red-500">يجب على الأستاذ(ة) مراجعتها وتعديلها </strong> 
-               لتناسب مستوى وخصوصيات تلاميذه قبل الطباعة أو الاعتماد
+              التمارين هي مقترحات فقط.  <strong className="text-red-500">يجب على الأستاذ(ة) مراجعتها وتعديلها </strong>
+              لتناسب مستوى وخصوصيات تلاميذه قبل الطباعة أو الاعتماد
               عليها.
             </p>
             <div className="reminder-actions">
