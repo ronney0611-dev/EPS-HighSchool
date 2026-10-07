@@ -3,17 +3,17 @@
 import axios from "axios";
 import { useState } from "react";
 
-interface ICriteriaScore {
+export interface ICriteriaScore {
     t1: number;
     t2: number;
 }
 
-interface INumericalResult {
+export interface INumericalResult {
     t1: number;
     t2: number;
 }
 
-interface IStudentEvaluation {
+export interface IStudentEvaluation {
     name: string;
     score: ICriteriaScore[];
     result?: INumericalResult;
@@ -24,12 +24,12 @@ interface IStudentEvaluation {
     levelT2?: string;  // جماعي only
 }
 
-interface IMochirAverage {
+export interface IMochirAverage {
     t1: number;
     t2: number;
 }
 
-interface TachkhisiData {
+export interface TachkhisiData {
     classId: string;
     sportKey: string;
     sportType: 'fardi' | 'groupe';
@@ -48,7 +48,6 @@ export const useTachkhisi = () => {
         sportKey: string,
         sportType: 'fardi' | 'groupe'
     ): Promise<TachkhisiData | null> => {
-        console.log('FETCH CALLED:', sportKey, sportType);
         setLoading(true);
         try {
             const res = await axios.get(`/api/tachkhisi/${classId}`, {
@@ -65,6 +64,7 @@ export const useTachkhisi = () => {
         }
     };
 
+    // returns true when the server saved the data, false otherwise
     const saveTachkhisi = async (
         classId: string,
         sportKey: string,
@@ -73,7 +73,7 @@ export const useTachkhisi = () => {
         selectedIndicatorIds: number[],
         students: IStudentEvaluation[],
         mochirAverages: IMochirAverage[]
-    ) => {
+    ): Promise<boolean> => {
         setLoading(true);
         try {
             const res = await axios.post(`/api/tachkhisi/${classId}`, {
@@ -85,8 +85,10 @@ export const useTachkhisi = () => {
                 mochirAverages,
             });
             setTachkhisi(res.data);
+            return true;
         } catch (err) {
             console.error("saveTachkhisi error:", err);
+            return false;
         } finally {
             setLoading(false);
         }

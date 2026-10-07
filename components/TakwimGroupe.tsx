@@ -3,8 +3,8 @@
 import { useClasses } from "@/hooks/useClasses";
 import { useTachkhisi } from "@/hooks/useTachkhisi";
 import { useTeacher } from "@/hooks/useTeacher";
-import React, { useMemo, useState } from "react";
-import { ToastContainer, toast } from 'react-toastify'
+import React, { useMemo, useRef, useState } from "react";
+import { toast } from 'react-toastify'
 
 import level1Data from "@/src/config/level1Curriculum.json";
 import level2Data from "@/src/config/level2Curriculum.json";
@@ -73,21 +73,31 @@ const getDefaultIndicatorIds = (levelKey: string, sportKey: string, count: numbe
     return availableIds.slice(0, Math.min(count, availableIds.length));
 };
 
+interface GroupStudentState {
+    name: string;
+    result: { t1: number; t2: number };
+    score: { t1: number; t2: number }[];
+    levelT1: string;
+    levelT2: string;
+}
+
 const TakwimGroupe = () => {
     const { classes, studentsByClass, fetchStudents } = useClasses();
     const { teacher } = useTeacher();
-    const { fetchTachkhisi, saveTachkhisi, setTachkhisi } = useTachkhisi();
+    const { fetchTachkhisi, saveTachkhisi, setTachkhisi, loading } = useTachkhisi();
 
     const [classSelect, setClassSelect] = useState<string>('');
-    const [students, setStudents] = useState<{
-        name: string;
-        result: { t1: number; t2: number };
-        score: { t1: number; t2: number }[];
-        levelT1: string;
-        levelT2: string;
-    }[]>([]);
+
+    // what the table shows (roster + saved scores merged)
+    const [students, setStudents] = useState<GroupStudentState[]>([]);
+    // what the server returned (kept apart so the roster can never erase it)
+    const [savedStudents, setSavedStudents] = useState<GroupStudentState[]>([]);
+
     const [sportSelect, setSportSelect] = useState<string>('basketball');
     const [mochirCount, setMochirCount] = useState<number>(4); // العدد الذي يختاره الأستاذ
+
+    // lets us ignore answers of old requests (fast class / sport switching)
+    const requestRef = useRef(0);
 
     const selectedClassData = classes.find(c => c._id === classSelect || c.name === classSelect);
 
@@ -100,30 +110,38 @@ const TakwimGroupe = () => {
     const activeSportConfig = activeLevelConfig?.sports?.[sportSelect];
     const [selectedIndicatorIds, setSelectedIndicatorIds] = useState<number[]>([0, 1, 2, 3]);
 
-    const [studentsSourceKey, setStudentsSourceKey] = useState<string>('');
-
     const foundForStudents = classSelect
         ? classes.find(c => c._id === classSelect || c.name === classSelect)
         : undefined;
-    const hookStudentsForKey = foundForStudents ? (studentsByClass[foundForStudents._id] || []) : [];
-    const currentSourceKey = classSelect
-        ? `${classSelect}::${mochirCount}::${hookStudentsForKey.length}`
-        : '';
+    const roster = foundForStudents ? studentsByClass[foundForStudents._id] : undefined;
 
-    if (classSelect && currentSourceKey !== studentsSourceKey) {
-        setStudentsSourceKey(currentSourceKey);
+    // build the table = roster + saved scores (by name).
+    // Rebuilt ONLY when the roster or the saved data really change (compared by reference),
+    // so changing mochirCount keeps the scores (the block below pads / trims them).
+    const [prevRoster, setPrevRoster] = useState<typeof roster | null>(null);
+    const [prevSaved, setPrevSaved] = useState<GroupStudentState[] | null>(null);
 
-        setStudents(
-            hookStudentsForKey.length === 0
-                ? []
-                : hookStudentsForKey.map(s => ({
-                    name: s.name,
-                    score: Array.from({ length: mochirCount }, () => ({ t1: 0, t2: 0 })),
-                    result: { t1: 0, t2: 0 },
-                    levelT1: '',
-                    levelT2: '',
-                }))
-        );
+    if (prevRoster !== roster || prevSaved !== savedStudents) {
+        setPrevRoster(roster);
+        setPrevSaved(savedStudents);
+        setStudents((roster ?? []).map(s => {
+            const saved = savedStudents.find(x => x.name === s.name);
+            return {
+                name: s.name,
+                score: Array.from({ length: mochirCount }, (_, i) => saved?.score[i] ?? { t1: 0, t2: 0 }),
+                result: saved?.result ?? { t1: 0, t2: 0 },
+                levelT1: saved?.levelT1 ?? '',
+                levelT2: saved?.levelT2 ?? '',
+            };
+        }));
+    }
+
+    // when the number of indicators changes: pad / trim the scores, never reset them
+    if (students.length > 0 && students[0].score.length !== mochirCount) {
+        setStudents(prev => prev.map(s => ({
+            ...s,
+            score: Array.from({ length: mochirCount }, (_, idx) => s.score[idx] || { t1: 0, t2: 0 })
+        })));
     }
 
     const indicatorsKey = selectedClassData
@@ -154,7 +172,8 @@ const TakwimGroupe = () => {
 
         setMochirCount(Math.min(data.mochirCount ?? mochirCount, availableIds.length || 4));
         setSelectedIndicatorIds(nextIds);
-        setStudents(data.students.map((s) => ({
+        // saved data goes into savedStudents; the block above merges it with the roster
+        setSavedStudents(data.students.map((s) => ({
             name: s.name,
             score: s.score,
             result: s.result || { t1: 0, t2: 0 },
@@ -167,29 +186,37 @@ const TakwimGroupe = () => {
         const found = classes.find(c => c._id === className || c.name === className);
         if (!found) return;
 
+        const reqId = ++requestRef.current;
+
         setClassSelect(className);
         setTachkhisi(null);
-        if (found) {
-            fetchStudents(found._id);
-            const data = await fetchTachkhisi(found._id, sportSelect, 'groupe');
-            if (data && data.students && data.students.length > 0) {
-                hydrateFromData(data, getLevelKeyFromClass(found.name, found.level));
-            } else {
-                const newLevelKey = getLevelKeyFromClass(found.name, found.level);
-                const availableIds = getDefaultIndicatorIds(newLevelKey, sportSelect, 4);
-                const defaultCount = Math.min(4, availableIds.length);
-                setMochirCount(defaultCount);
-                setSelectedIndicatorIds(availableIds.slice(0, defaultCount));
-            }
+        setSavedStudents([]);
+        fetchStudents(found._id);
+        const data = await fetchTachkhisi(found._id, sportSelect, 'groupe');
+        if (reqId !== requestRef.current) return; // the teacher already chose something else
+
+        if (data && data.students && data.students.length > 0) {
+            hydrateFromData(data, getLevelKeyFromClass(found.name, found.level));
+        } else {
+            const newLevelKey = getLevelKeyFromClass(found.name, found.level);
+            const availableIds = getDefaultIndicatorIds(newLevelKey, sportSelect, 4);
+            const defaultCount = Math.min(4, availableIds.length);
+            setMochirCount(defaultCount);
+            setSelectedIndicatorIds(availableIds.slice(0, defaultCount));
         }
     };
 
     const handleSportSelect = async (newSport: string) => {
+        const reqId = ++requestRef.current;
+
         setSportSelect(newSport);
         setTachkhisi(null);
+        setSavedStudents([]);
         const found = classes.find(c => c._id === classSelect || c.name === classSelect);
         if (found) {
             const data = await fetchTachkhisi(found._id, newSport, 'groupe');
+            if (reqId !== requestRef.current) return;
+
             if (data && data.students && data.students.length > 0) {
                 hydrateFromData(data, getLevelKeyFromClass(found.name, found.level));
             } else {
@@ -198,16 +225,42 @@ const TakwimGroupe = () => {
                 const defaultCount = Math.min(4, availableIds.length);
                 setMochirCount(defaultCount);
                 setSelectedIndicatorIds(availableIds.slice(0, defaultCount));
-
-                const rosterStudents = studentsByClass[found._id] || [];
-                setStudents(rosterStudents.map(s => ({
-                    name: s.name,
-                    score: Array.from({ length: defaultCount }, () => ({ t1: 0, t2: 0 })),
-                    result: { t1: 0, t2: 0 },
-                    levelT1: '',
-                    levelT2: '',
-                })));
+                // nothing saved for this sport: the table is rebuilt blank from the roster
             }
+        }
+    };
+
+    const handleSave = async () => {
+        const found = classes.find(c => c._id === classSelect || c.name === classSelect);
+        if (!found) return;
+
+        const ok = await saveTachkhisi(
+            found._id,
+            sportSelect,
+            'groupe',
+            mochirCount,
+            selectedIndicatorIds,
+            students.map(s => ({
+                name: s.name,
+                score: s.score,
+                result: s.result,
+                percentaget1: (s.score.reduce((a, b) => a + b.t1, 0) / mochirCount) * 100,
+                percentaget2: (s.score.reduce((a, b) => a + b.t2, 0) / mochirCount) * 100,
+                tatawaor: s.result.t2 - s.result.t1,
+                levelT1: s.levelT1,
+                levelT2: s.levelT2,
+            })),
+            totalT2PerMochir.map((t2, i) => ({
+                t1: totalT1PerMochir[i],
+                t2: t2,
+            }))
+        );
+
+        if (ok) {
+            setSavedStudents(students); // keep the "saved" copy in sync with what was just saved
+            toast.success("تم حفظ المعلومات بنجاح !");
+        } else {
+            toast.error("فشل الحفظ، حاول مرة أخرى");
         }
     };
 
@@ -257,7 +310,7 @@ const TakwimGroupe = () => {
                             className='border border-gray-300 rounded-lg px-3 py-1.5 bg-white text-black text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none'
                             value={sportSelect}
                             onChange={e => handleSportSelect(e.target.value)}>
-                            <optgroup label="الألعاب الفردية">
+                            <optgroup label="الألعاب الجماعية">
                                 <option value="basketball">كرة السلة </option>
                                 <option value="volleyball">كرة الطائرة </option>
                                 <option value="handball">كرة اليد </option>
@@ -485,36 +538,12 @@ const TakwimGroupe = () => {
                     طباعة 🖨️
                 </button>
                 <button
-                    onClick={() => {
-                        const found = classes.find(c => c._id === classSelect || c.name === classSelect);
-                        if (!found) return;
-                        saveTachkhisi(
-                            found._id,
-                            sportSelect,
-                            'groupe',
-                            mochirCount,
-                            selectedIndicatorIds,
-                            students.map(s => ({
-                                name: s.name,
-                                score: s.score,
-                                result: s.result,
-                                percentaget1: (s.score.reduce((a, b) => a + b.t1, 0) / mochirCount) * 100,
-                                percentaget2: (s.score.reduce((a, b) => a + b.t2, 0) / mochirCount) * 100,
-                                tatawaor: s.result.t2 - s.result.t1,
-                                levelT1: s.levelT1,
-                                levelT2: s.levelT2,
-                            })),
-                            totalT2PerMochir.map((t2, i) => ({
-                                t1: totalT1PerMochir[i],
-                                t2: t2,
-                            }))
-                        );
-                        toast("تم حفظ المعلومات بنجاح !", { type: "success" });
-                    }}
-                    className='bg-green-600 cursor-pointer text-white px-6 py-2 rounded-xl font-bold text-sm w-full md:w-auto shadow-sm'>
-                    حفظ ✅
+                    onClick={handleSave}
+                    disabled={loading || students.length === 0}
+                    className='bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-white px-6 py-2 rounded-xl font-bold text-sm w-full md:w-auto shadow-sm'>
+                    {loading ? '⏳ ...' : 'حفظ ✅'}
                 </button>
-                
+
             </div>
             <style jsx global>{`
     @media print {

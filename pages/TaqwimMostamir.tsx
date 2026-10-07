@@ -98,7 +98,7 @@ const TaqwimMostamir = () => {
         <table style="margin-bottom:8px; border-collapse:collapse;">
           <tr>
             <td style="border:1px solid #9ca3af; padding:4px;">المؤسسة : ${teacher.school || '—'}</td>
-            <td style="border:1px solid #9ca3af; padding:4px;">المستوى : ${selectedClassData?.level || '—'}</td>
+            <td style="border:1px solid #9ca3af; padding:4px;"> السنة الدراسية : 2026/2027</td>
           </tr>
           <tr>
             <td style="border:1px solid #9ca3af; padding:4px;">الأستاذ : ${teacher.name || '—'}</td>
@@ -169,7 +169,7 @@ const TaqwimMostamir = () => {
         <div className="grid grid-cols-2 border border-gray-400 text-sm">
           <div className="border-l border-gray-400 p-2">المؤسسة : {teacher.school || '—'}</div>
           <div className="p-2">
-            المستوى : {!selectedClassData ? '—' : selectedClassData.level === 'lycee' ? 'ثانوي' : 'الابتدائي'}
+            السنة الدراسية : 2026/2027
           </div>
           <div className="border-t border-l border-gray-400 p-2">الأستاذ : {teacher.name || '—'}</div>
           <div className="border-t border-gray-400 p-2">القسم : {classSelect || '—'}</div>
