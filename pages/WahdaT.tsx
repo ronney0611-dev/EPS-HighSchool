@@ -196,6 +196,17 @@ export default function WahdaGeneratorPage() {
                 }
             }
 
+            if (total < TARGET) {
+                const order = plans.map((_, i) => i).sort((a, b) => plans[a].percentage - plans[b].percentage)
+                let k = 0
+                while (total < TARGET) {
+                    const p = plans[order[k % order.length]]
+                    p.sessions = p.sessions === 0.5 ? 2 : p.sessions + 1
+                    total++
+                    k++
+                }
+            }
+
             const sessionsAccumulator: ISession[] = []
             let sessionCounter = 1
 
