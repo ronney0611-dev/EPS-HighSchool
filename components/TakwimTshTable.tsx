@@ -298,7 +298,7 @@ const TakwimTshTable = () => {
                             <optgroup label="الألعاب الفردية">
                                 <option value="sprint">سباق السرعة </option>
                                 <option value="long_jump">الوثب الطويل </option>
-                                <option value="shot_put">رمي الجلة </option>
+                                <option value="shot_put">دفع الجلة </option>
                             </optgroup>
                         </select>
                     </div>

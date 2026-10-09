@@ -113,7 +113,7 @@ const TakwinTahsili = () => {
                         }>
                         <option value="sprint">عدو 60م</option>
                         <option value="longjump">الوثب الطويل</option>
-                        <option value="throw">رمي الجلة</option>
+                        <option value="throw">دفع الجلة</option>
                     </select>
                 </div>
                 <div className='flex gap-2 items-center'>

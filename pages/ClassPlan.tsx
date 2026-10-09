@@ -94,7 +94,7 @@ const ClassPlan = () => {
             <table style="margin-bottom: 20px; width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 12px;">
                 <tr>
                     <td style="border: 1px solid #9ca3af; padding: 6px;">المؤسسة : ${teacher.school || '—'}</td>
-                    <td style="border: 1px solid #9ca3af; padding: 6px;">المستوى : ${selectedClassData?.level || '—'}</td>
+                    <td style="border: 1px solid #9ca3af; padding: 6px;"> الموسم : 2026/2027</td>
                 </tr>
                 <tr>
                     <td style="border: 1px solid #9ca3af; padding: 6px;">الأستاذ : ${teacher.name || '—'}</td>
