@@ -127,6 +127,12 @@ export default function WahdaGeneratorPage() {
                 })
             }
 
+            console.log(JSON.stringify({
+                classes: classes?.map(c => [c.name, c.level, getLevelKeyFromClass(c.name)]),
+                levelClasses: levelClasses.map(c => c._id),
+                mapKeys: [...indicatorAveragesMap.keys()],
+            }))
+
             const sportIndicators = sportConfig.indicators.filter(ind => indicatorAveragesMap.has(ind.id));
 
             if (sportIndicators.length === 0) {

@@ -78,7 +78,7 @@ const ManageClasses = ({
             )
             return
         }
-        addClass({ name: trimmedName, level })
+        addClass({ name: trimmedName, level: schoolLevel === 'lycee' ? 'lycee' : level })
         setClassInput("")
     }
 
