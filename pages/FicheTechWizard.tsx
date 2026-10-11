@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import FicheTechConfig, { type UnitChoice, UNIT_DIAGNOSTIC, UNIT_SUMMATIVE } from "@/components/FicheTechConfig";
 import FicheTechSheet from "@/components/FicheTechSheet";
 import { EMPTY_PICK, type SportPickState } from "@/src/config/ficheTechData";
+import { useFicheTech } from "@/hooks/useFicheTech";
 
 export default function FicheTechWizard() {
   const [page, setPage] = useState<1 | 2 | 3>(1);
@@ -11,6 +12,17 @@ export default function FicheTechWizard() {
   const [sessionNumber, setSessionNumber] = useState<UnitChoice>(1);
   const [individual, setIndividual] = useState<SportPickState>(EMPTY_PICK);
   const [collective, setCollective] = useState<SportPickState>(EMPTY_PICK);
+
+  const { list, loading: listLoading, fetchList, fetchOne, save, remove } = useFicheTech();
+  const [ficheId, setFicheId] = useState<string | null>(null);
+  const [savedFields, setSavedFields] = useState<Record<string, string> | undefined>(undefined);
+  const [loadedConfigKey, setLoadedConfigKey] = useState<string | null>(null);
+  const [sheetKey, setSheetKey] = useState(0);
+
+  const configKey = JSON.stringify({ level, sessionNumber, individual, collective });
+
+  useEffect(() => { fetchList(); }, [fetchList]);
+
   const isBattery = sessionNumber === UNIT_DIAGNOSTIC || sessionNumber === UNIT_SUMMATIVE;
   const batteryReady = (p: SportPickState) =>
     !!p.sport && p.indicatorIds.length >= 4 && p.indicatorIds.every((id) => !!p.batteryChosen[id]);
@@ -20,6 +32,62 @@ export default function FicheTechWizard() {
     : !!individual.sport && individual.indicatorId !== null && individual.chosenKeys.every(Boolean) && individual.chosenKeys.length > 0 &&
     !!collective.sport && collective.indicatorId !== null && collective.chosenKeys.every(Boolean) && collective.chosenKeys.length > 0;
   const handlePrint = useCallback(() => window.print(), []);
+
+  const handleNext = () => {
+    if (loadedConfigKey !== null && loadedConfigKey !== configKey) {
+      setSavedFields(undefined);
+      setLoadedConfigKey(null);
+    }
+    setPage(2);
+  };
+
+  const handleNew = () => {
+    setFicheId(null);
+    setSavedFields(undefined);
+    setLoadedConfigKey(null);
+    setLevel("level1");
+    setSessionNumber(1);
+    setIndividual(EMPTY_PICK);
+    setCollective(EMPTY_PICK);
+    setPage(1);
+  };
+
+  const handleOpen = async (id: string) => {
+    const f = await fetchOne(id);
+    if (!f) return alert("تعذر فتح البطاقة، حاول مرة أخرى");
+    setLevel(f.level);
+    setSessionNumber(f.sessionNumber);
+    setIndividual(f.individual);
+    setCollective(f.collective);
+    setFicheId(f._id);
+    setSavedFields(f.fields);
+    setLoadedConfigKey(JSON.stringify({ level: f.level, sessionNumber: f.sessionNumber, individual: f.individual, collective: f.collective }));
+    setSheetKey(k => k + 1);
+    setPage(3);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("حذف هذه البطاقة نهائيا؟")) return;
+    const ok = await remove(id);
+    if (!ok) return alert("فشل الحذف، حاول مرة أخرى");
+    if (id === ficheId) handleNew();
+  };
+
+  const handleSave = async (fields: Record<string, string>, title: string) => {
+    const doc = await save({ _id: ficheId, title, level, sessionNumber, individual, collective, fields });
+    if (!doc) return false;
+    setFicheId(doc._id);
+    setSavedFields(fields);
+    setLoadedConfigKey(configKey);
+    fetchList();
+    return true;
+  };
+
+  const handleRegenerate = () => {
+    if (!confirm("سيتم استبدال تعديلاتك بالمحتوى الأصلي (لن يحذف المحفوظ حتى تضغط حفظ). متابعة؟")) return;
+    setSavedFields(undefined);
+    setSheetKey(k => k + 1);
+  };
 
   return (
     <div className="fiche-root" dir="rtl" lang="ar">
@@ -197,14 +265,57 @@ export default function FicheTechWizard() {
       `}</style>
 
       {page === 1 && (
-        <FicheTechConfig
-          level={level} setLevel={setLevel}
-          sessionNumber={sessionNumber} setSessionNumber={setSessionNumber}
-          individual={individual} setIndividual={setIndividual}
-          collective={collective} setCollective={setCollective}
-          canProceed={canProceed}
-          onNext={() => setPage(2)}
-        />
+        <>
+          <FicheTechConfig
+            level={level} setLevel={setLevel}
+            sessionNumber={sessionNumber} setSessionNumber={setSessionNumber}
+            individual={individual} setIndividual={setIndividual}
+            collective={collective} setCollective={setCollective}
+            canProceed={canProceed}
+            onNext={handleNext}
+          />
+
+          <div className="panel mt-4" style={{ marginBottom: 18 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+              <h3 className="panel-title" style={{ margin: 0 }}>📁 المذكرات المحفوظة</h3>
+              {ficheId && (
+                <button className="btn btn-ghost" onClick={handleNew}>+ بطاقة جديدة</button>
+              )}
+            </div>
+
+            {listLoading ? (
+              <p style={{ fontSize: 13, color: "#7A8471" }}>⏳ جاري التحميل...</p>
+            ) : list.length === 0 ? (
+              <p style={{ fontSize: 13, color: "#7A8471" }}>لا توجد مذكرات محفوظة بعد. أنشئ مذكرة واضغط «حفظ».</p>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 260, overflowY: "auto" }}>
+                {list.map(f => (
+                  <div
+                    key={f._id}
+                    style={{
+                      display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10,
+                      padding: "9px 12px", border: "1px solid var(--line)", borderRadius: 6,
+                      background: f._id === ficheId ? "var(--sage)" : "#fff",
+                    }}
+                  >
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontWeight: 700, fontSize: 13, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {f.title || "بطاقة بدون عنوان"}
+                      </div>
+                      <div style={{ fontSize: 11, color: "#7A8471" }}>
+                        آخر تعديل: {new Date(f.updatedAt).toLocaleDateString("ar-DZ")}
+                      </div>
+                    </div>
+                    <div className="btn-row">
+                      <button className="btn btn-primary" onClick={() => handleOpen(f._id)}>فتح</button>
+                      <button className="btn btn-ghost" onClick={() => handleDelete(f._id)}>حذف</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </>
       )}
 
       {page === 2 && (
@@ -232,10 +343,14 @@ export default function FicheTechWizard() {
 
       {page === 3 && (
         <FicheTechSheet
+          key={sheetKey}
           level={level} sessionNumber={sessionNumber}
           individual={individual} collective={collective}
+          savedFields={savedFields}
           onBack={() => setPage(1)}
           onPrint={handlePrint}
+          onSave={handleSave}
+          onRegenerate={handleRegenerate}
         />
       )}
     </div>

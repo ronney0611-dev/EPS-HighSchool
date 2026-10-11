@@ -1,5 +1,6 @@
 'use client'
 
+import RequireName from "@/components/RequireName";
 import ProfileDoc from "@/components/ProfileDoc";
 import ClassPlan from "@/pages/ClassPlan";
 import MaterialsCalc from "@/pages/MaterialsCalc";
@@ -42,9 +43,9 @@ const FilePage = ({ params }: { params: Promise<{ file: string; category: string
   const { category, file } = React.use(params);
   const { data: session, status } = useSession();
 
-  const allCategories = { 
-    ...documentsConfig.teacherclass, 
-    ...documentsConfig.teacherNote 
+  const allCategories = {
+    ...documentsConfig.teacherclass,
+    ...documentsConfig.teacherNote
   } as Record<string, CategoryConfig>;
 
   if (status === "loading") {
@@ -68,15 +69,15 @@ const FilePage = ({ params }: { params: Promise<{ file: string; category: string
 
   // 3. Match keys directly with your values inside your centralized documentsConfig fields
   const components = [
-    { key: 'informationCard', component: <ProfileDoc /> }, 
+    { key: 'informationCard', component: <ProfileDoc /> },
     { key: 'materialsCalc', component: <MaterialsCalc /> },
     { key: 'barmaja', component: <Barmaja /> },
     { key: 'classPlan', component: <ClassPlan /> },
     { key: 'baladiyat', component: <ClassPlan /> },
-    { key: 'mokhatat', component: <Mokhatat /> }, 
-    { key: 'tawzi3', component: <Tawzi3 /> }, 
-    { key: 'fich', component: <FicheTechWizard /> }, 
-    
+    { key: 'mokhatat', component: <Mokhatat /> },
+    { key: 'tawzi3', component: <Tawzi3 /> },
+    { key: 'fich', component: <FicheTechWizard /> },
+
     // Wahda variants
     { key: 'wahda', component: <WahdaT /> },
     { key: 'wahdaPrimaire', component: <WahdaPrimaireGeneratorPage /> },
@@ -97,19 +98,27 @@ const FilePage = ({ params }: { params: Promise<{ file: string; category: string
     { key: 'taqwimMostamirPrimaire', component: <TaqwimMostamirPrimaire /> },
     { key: 'taqwimTakwini', component: <TaqwimTakwini /> },
     { key: 'taqwimTahsili', component: <TakwinTahsili /> },
-    { key: 'dispoCard', component: <DispoCard /> }, 
-    { key: 'ficheNote', component: <DailyLogPage /> }, 
-    { key: 'fichenoteleecy', component: <FicheNoteLeecy /> }, 
+    { key: 'dispoCard', component: <DispoCard /> },
+    { key: 'ficheNote', component: <DailyLogPage /> },
+    { key: 'fichenoteleecy', component: <FicheNoteLeecy /> },
 
 
-    { key: 'games', component: <GamesLibraryPage /> }, 
+    { key: 'games', component: <GamesLibraryPage /> },
   ];
 
   const matched = components.find(c => c.key === activeComponentKey);
 
+  if (!matched) {
+    return <div className="text-center text-red-500 my-20">قريبا </div>;
+  }
+
+  const NO_NAME_NEEDED = ['games'];
+
   return (
     <div>
-      {matched ? matched.component : <div className="text-center text-red-500 my-20">قريبا </div>}
+      {NO_NAME_NEEDED.includes(matched.key)
+        ? matched.component
+        : <RequireName>{matched.component}</RequireName>}
     </div>
   );
 };

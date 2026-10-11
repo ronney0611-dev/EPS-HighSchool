@@ -6,7 +6,7 @@ export interface ITeacher extends Document {
     birthday: string, birthloc: string, statu: string,
     email: string, phone: string, univerLic: string,
     anneLic: string, univerMas: string, anneMas: string,
-    review: string,
+    review: string,nameLocked: boolean,
 }
 
 const TeacherSchema = new Schema<ITeacher>({
@@ -24,6 +24,7 @@ const TeacherSchema = new Schema<ITeacher>({
     univerMas: { type: String, required: false },
     anneMas: { type: String, required: false },
     review: { type: String, required: false },
+    nameLocked: { type: Boolean, default: false },
 });
 
 export default mongoose.models.Teacher || mongoose.model<ITeacher>('Teacher', TeacherSchema);

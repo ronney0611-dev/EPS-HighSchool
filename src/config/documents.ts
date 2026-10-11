@@ -251,7 +251,7 @@ export const documentsConfig =
         bita9ata9wim: {
             id: 'second',
             name: 'التقويم التشخيصي / التحصيلي',
-            image: '/images/ch.jpg',
+            image: '/images/new.jpg',
             levels: ['lycee', 'cem', 'primaire'],
             youtubeVideoId: 'R-TBJRDH0YM',
             description: 'سجّل أداء التلاميذ في الأنشطة الفردية والجماعية — المؤشرات، النسب، المستويات النوعية — والمنصة تحسب كل شيء تلقائياً. بطاقة جاهزة للطباعة فور الانتهاء.',

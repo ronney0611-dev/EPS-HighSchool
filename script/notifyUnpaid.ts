@@ -8,11 +8,11 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 const EMAIL_TEXT = () => `تحديث ! 📚⚡
 
-تم تحديث المخطط السنوي للمستوى الثانوي للسنة الدراسية 
+تم تحديث التوزيع السنوي للمستوى الابتدائي للسنة الدراسية 
 
 2026/2027 
 
-على موقعنا الإلكتروني. يمكنكم الآن الاطلاع على الجدول الجديد الذي يوضح جميع الوحدات التعلمية، الاختبارات، والعطلات المدرسية.
+على موقعنا الإلكتروني. يمكنكم الآن الاطلاع على الجدول الجديد الذي يوضح جميع الوحدات التعليمية، الاختبارات، والعطلات المدرسية.
 
 مع خالص التقدير，
 
@@ -23,7 +23,7 @@ async function main() {
         dbName: process.env.DATABASE_NAME,
     });
 
-    const unpaidUsers = await User.find({ isPaid: true, level: 'lycee' }, 'email');
+    const unpaidUsers = await User.find({ isPaid: true, level: 'primaire' }, 'email');
 
     for (const user of unpaidUsers) {
         try {

@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
 
+const LOCKED_KEYS = ['name']
+const WHATSAPP = 'https://wa.me/213795972858'
+
 const fields = [
     { label: 'الاسم واللقب', key: 'name', type: 'text', placeholder: 'الاسم واللقب' },
     { label: 'المؤسسة', key: 'school', type: 'text', placeholder: 'المؤسسة ...' },
@@ -25,8 +28,21 @@ const ManageTeacherProfile = () => {
     const { teacher, setTeacher, updateTeacher } = useTeacher();
     const [saving, setSaving] = useState(false);
     const router = useRouter();
+    const isLocked = Boolean(teacher.nameLocked);
 
     const handleSave = async () => {
+        const name = teacher.name?.trim() ?? '';
+        if (name.split(/\s+/).length < 2) {
+            toast("يجب إدخال الاسم واللقب كاملا", { type: "error" });
+            return;
+        }
+
+        const willLock = !isLocked && !!name;
+
+        if (willLock && !confirm(
+            `تأكد من صحة الاسم:\n\n${name}\n\nبعد الحفظ لا يمكن تغيير الاسم إلا بالتواصل معنا.`
+        )) return;
+
         setSaving(true);
         try {
             await updateTeacher(teacher);
@@ -38,7 +54,6 @@ const ManageTeacherProfile = () => {
             setSaving(false);
         }
     };
-
 
     return (
         <div dir="rtl" className="min-h-screen bg-[#0a0a0f] text-white p-6 flex justify-center">
@@ -80,21 +95,47 @@ const ManageTeacherProfile = () => {
                 <div className="bg-[#0f0f14] border border-white/8 rounded-2xl p-6 flex flex-col gap-4">
                     <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">المعلومات الشخصية والمهنية</h2>
 
+                    {!isLocked && (
+                        <div className="text-xs text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded-xl px-4 py-2.5">
+                            ⚠️ الاسم واللقب يظهر في جميع وثائقك، ولا يمكن تغييره بعد الحفظ.
+                        </div>
+                    )}
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {fields.map(({ label, key, type, placeholder }) => (
-                            <div key={key} className="flex flex-col gap-1.5">
-                                <label className="text-xs font-semibold text-gray-400">{label}</label>
-                                <input
-                                    type={type}
-                                    placeholder={placeholder}
-                                    value={(teacher as Record<string, string>)?.[key] ?? ''}
-                                    onChange={e => setTeacher({ ...teacher, [key]: e.target.value })}
-                                    className="h-11 bg-white/4 border border-white/8 hover:border-white/15 focus:border-emerald-500/40 focus:ring-2 focus:ring-emerald-500/10 rounded-xl px-4 text-white text-sm outline-none transition-all placeholder:text-gray-600"
-                                />
-                            </div>
-                        ))}
+                        {fields.map(({ label, key, type, placeholder }) => {
+                            const locked = isLocked && LOCKED_KEYS.includes(key);
+                            return (
+                                <div key={key} className="flex flex-col gap-1.5">
+                                    <label className="text-xs font-semibold text-gray-400">
+                                        {label} {locked && <span className="text-gray-500">🔒</span>}
+                                    </label>
+                                    <input
+                                        type={type}
+                                        placeholder={placeholder}
+                                        value={String(teacher[key as keyof typeof teacher] ?? '')}
+                                        onChange={e => !locked && setTeacher({ ...teacher, [key]: e.target.value })}
+                                        readOnly={locked}
+                                        className={`h-11 bg-white/4 border border-white/8 rounded-xl px-4 text-sm outline-none transition-all placeholder:text-gray-600 ${locked
+                                            ? 'text-gray-400 cursor-not-allowed'
+                                            : 'text-white hover:border-white/15 focus:border-emerald-500/40 focus:ring-2 focus:ring-emerald-500/10'
+                                            }`}
+                                    />
+                                </div>
+                            );
+                        })}
                     </div>
+
+                    {isLocked && (
+                        <p className="text-xs text-gray-500">
+                            🔒 🔒 لتغيير الاسم{' '}
+                            <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:underline px-2">
+                                تواصل معنا عبر واتساب
+                            </a>
+                            او عبر  0795972858
+                        </p>
+                    )}
                 </div>
+
                 {/* Save button */}
                 <button
                     onClick={handleSave}
