@@ -27,6 +27,7 @@ import FicheTechWizard from "@/pages/FicheTechWizard";
 import FicheTechWizardP from "@/pages/FicheTechWizardP";
 import GamesLibraryPage from "@/pages/Games";
 import FicheNoteLeecy from "@/pages/FicheNoteLeecy";
+import BarnamajUsbu3i from "@/pages/BarnamajUsbu3i";
 
 interface FileConfig {
   id: string;
@@ -70,6 +71,7 @@ const FilePage = ({ params }: { params: Promise<{ file: string; category: string
   // 3. Match keys directly with your values inside your centralized documentsConfig fields
   const components = [
     { key: 'informationCard', component: <ProfileDoc /> },
+    { key: 'taw9itprof', component: <BarnamajUsbu3i /> },
     { key: 'materialsCalc', component: <MaterialsCalc /> },
     { key: 'barmaja', component: <Barmaja /> },
     { key: 'classPlan', component: <ClassPlan /> },

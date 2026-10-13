@@ -43,6 +43,23 @@ export const documentsConfig =
                 },
             }
         },
+        taw9it: {
+            id: 'first',
+            name: 'استعمال الزمن',
+            image: '/images/time.jpg',
+            levels: ['lycee'],
+            youtubeVideoId: 'OfIeH32fPXI',
+            description: 'ادخل استعمال الزمن الاسبوعي واطبعها مباشرة. بطاقة استعمال الزمن منظمة وجاهزة للطباعة في أي وقت، بدون أوراق مبعثرة أو جداول يدوية',
+            files: {
+                taw9it: {
+                    id: 's1',
+                    name: 'استعمال الزمن',
+                    description: "ادخل استعمال الزمن الاسبوعي واطبعها مباشرة",
+                    type: 'interactive',
+                    component: 'taw9itprof',
+                },
+            }
+        },
         barmaja: {
             id: 'first',
             name: 'البرمجة السنوية',
