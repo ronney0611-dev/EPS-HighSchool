@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
 
     try {
         const body = await req.json()
-        const { classId, className, institution, date, time, sport, done, reason, nextTime } = body
+        const { classId, className, institution, date, time, sport, done, reason, nextTime, indicator, goal } = body
 
         if (!classId || !date || !sport) {
             return NextResponse.json({ error: 'بيانات ناقصة' }, { status: 400 })
@@ -41,6 +41,8 @@ export async function POST(req: NextRequest) {
         const entry = await DailylogdocLycee.create({
             teacherId, classId, className, institution, date, time,
             sport, done, reason, nextTime,
+            indicator: String(indicator ?? '').slice(0, 1000),
+            goal: String(goal ?? '').slice(0, 1000),
         })
 
         return NextResponse.json({ entry })

@@ -14,6 +14,8 @@ export type DailyLogEntryLycee = {
     done: boolean
     reason: string
     nextTime: string
+    indicator?: string
+    goal?: string
 }
 
 export const useDailyLogLycee = () => {

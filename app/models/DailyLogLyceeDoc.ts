@@ -13,6 +13,8 @@ export interface IDailyLogLyceeEntry extends Document {
     nextTime: string
     createdAt?: Date
     updatedAt?: Date
+    indicator?: string
+    goal?: string
 }
 
 const DailyLogLyceeSchema = new Schema<IDailyLogLyceeEntry>({
@@ -26,9 +28,13 @@ const DailyLogLyceeSchema = new Schema<IDailyLogLyceeEntry>({
     done: { type: Boolean, required: true },
     reason: { type: String, default: '' },
     nextTime: { type: String, default: '' },
+    indicator: { type: String, default: '' },
+    goal: { type: String, default: '' },
 }, { timestamps: true })
 
 DailyLogLyceeSchema.index({ teacherId: 1, date: 1 })
 
-export default (models.DailyLogLyceeDoc as mongoose.Model<IDailyLogLyceeEntry>) ||
-    model<IDailyLogLyceeEntry>('DailyLogLyceeDoc', DailyLogLyceeSchema)
+delete (mongoose.models as Record<string, mongoose.Model<IDailyLogLyceeEntry>>)['DailyLogLyceeDoc']
+
+const DailylogdocLycee = model<IDailyLogLyceeEntry>('DailyLogLyceeDoc', DailyLogLyceeSchema)
+export default DailylogdocLycee

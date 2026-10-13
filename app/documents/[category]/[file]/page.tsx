@@ -26,8 +26,8 @@ import PlanOfYearLeecy from "@/pages/PlanOfYearLeecy";
 import FicheTechWizard from "@/pages/FicheTechWizard";
 import FicheTechWizardP from "@/pages/FicheTechWizardP";
 import GamesLibraryPage from "@/pages/Games";
-import FicheNoteLeecy from "@/pages/FicheNoteLeecy";
 import BarnamajUsbu3i from "@/pages/BarnamajUsbu3i";
+import YawmiLycee from "@/pages/YawmiLycee";
 
 interface FileConfig {
   id: string;
@@ -79,6 +79,7 @@ const FilePage = ({ params }: { params: Promise<{ file: string; category: string
     { key: 'mokhatat', component: <Mokhatat /> },
     { key: 'tawzi3', component: <Tawzi3 /> },
     { key: 'fich', component: <FicheTechWizard /> },
+    { key: 'newfichenoteleecy', component: <YawmiLycee /> },
 
     // Wahda variants
     { key: 'wahda', component: <WahdaT /> },
@@ -102,8 +103,6 @@ const FilePage = ({ params }: { params: Promise<{ file: string; category: string
     { key: 'taqwimTahsili', component: <TakwinTahsili /> },
     { key: 'dispoCard', component: <DispoCard /> },
     { key: 'ficheNote', component: <DailyLogPage /> },
-    { key: 'fichenoteleecy', component: <FicheNoteLeecy /> },
-
 
     { key: 'games', component: <GamesLibraryPage /> },
   ];

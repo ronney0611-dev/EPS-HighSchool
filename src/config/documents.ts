@@ -1,3 +1,4 @@
+import GamesLibraryPage from '@/pages/Games';
 import logo from '../../public/images/logo.png';
 import xx from '../../public/images/xx.png';
 
@@ -179,20 +180,20 @@ export const documentsConfig =
                 },
             }
         },
-        ficheNote: {
+        newfichnote: {
             id: 'first',
             image: '/images/dayy.jpg',
             name: 'الدفتر اليومي',
-            levels: ['primaire', 'lycee'],
+            levels: ['lycee'],
             youtubeVideoId: 'xx',
             description: 'اختر القسم والتاريخ وسيتم ملئ الدفتر الخاص بك تلقائيا, قابل للتعديل وجاهز للطباعة مباشرة من هاتفك النقال.',
             files: {
-                ficheNote: {
+                newfichnote: {
                     id: 'الدفتر اليومي',
                     name: 'الدفتر اليومي',
                     description: "الدفتر اليومي الجاهزة للطباعة",
                     type: 'interactive',
-                    component: { primaire: 'ficheNote', lycee: 'fichenoteleecy' },
+                    component: { lycee: 'newfichenoteleecy' },
                 },
             }
         },
@@ -204,7 +205,7 @@ export const documentsConfig =
             youtubeVideoId: 'xx',
             description: 'جاهز للتحدي؟ أكثر من 100 لعبة بانتظارك لكسر الروتين واختبار مهاراتك.',
             files: {
-                ficheNote: {
+                GamesLibraryPage: {
                     id: '100 لعبة شبه رياضية',
                     name: '+99 لعبة شبه رياضية',
                     description: "جاهز للتحدي؟ أكثر من 100 لعبة بانتظارك لكسر الروتين واختبار مهاراتك..",
