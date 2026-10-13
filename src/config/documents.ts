@@ -184,7 +184,7 @@ export const documentsConfig =
             id: 'first',
             image: '/images/dayy.jpg',
             name: 'الدفتر اليومي',
-            levels: ['lycee'],
+            levels: ['primaire', 'lycee'],
             youtubeVideoId: 'xx',
             description: 'اختر القسم والتاريخ وسيتم ملئ الدفتر الخاص بك تلقائيا, قابل للتعديل وجاهز للطباعة مباشرة من هاتفك النقال.',
             files: {
@@ -193,7 +193,7 @@ export const documentsConfig =
                     name: 'الدفتر اليومي',
                     description: "الدفتر اليومي الجاهزة للطباعة",
                     type: 'interactive',
-                    component: { lycee: 'newfichenoteleecy' },
+                    component: { primaire: 'ficheNote', lycee: 'newfichenoteleecy' },
                 },
             }
         },
