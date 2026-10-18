@@ -62,6 +62,7 @@ export default function WahdaGeneratorPage() {
     const [sport, setSport] = useState<string>('sprint');
     const [isGenerating, setIsGenerating] = useState<boolean>(false);
     const [trimester, setTrimester] = useState<'1' | '2' | '3'>('1');
+    const [is12, setIs12] = useState<boolean>(false);
     const [kaidiIndex, setKaidiIndex] = useState<0 | 1 | 2>(0);
 
     useEffect(() => {
@@ -158,7 +159,7 @@ export default function WahdaGeneratorPage() {
                 return { indicator, percentage: finalPercentage, sessions: neededSessions }
             })
 
-            const TARGET = 6
+            const TARGET = is12 ? 9 : 6
             let total = plans.reduce((sum, p) => sum + (p.sessions === 0.5 ? 1 : p.sessions), 0)
 
             if (total > TARGET) {
@@ -234,6 +235,16 @@ export default function WahdaGeneratorPage() {
                         })
                     }
                 }
+            }
+            if (is12) {
+                sessionsAccumulator.splice(6, 0, {
+                    sessionNumber: 0,
+                    indicatorId: 0,
+                    indicatorText: 'قياس مدى تقدم التلاميذ في المؤشرات المستهدفة',
+                    goal: 'إجراء منافسة مرحلية وتسجيل النتائج',
+                    specialGoal: 'تقويم بيني',
+                    isReminder: false
+                })
             }
             setWahda({
                 level,
@@ -334,6 +345,21 @@ export default function WahdaGeneratorPage() {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3 pt-2">
+
+                    <button
+                        type="button"
+                        role="switch"
+                        aria-checked={is12}
+                        onClick={() => setIs12(v => !v)}
+                        className="flex items-center gap-3 px-5 py-3 rounded-2xl border border-gray-200 bg-gray-50/50 hover:bg-white transition-all active:scale-95"
+                    >
+                        <span className={`text-sm font-bold transition-colors ${!is12 ? 'text-blue-600' : 'text-gray-400'}`}>8 حصص</span>
+                        <span className={`relative w-12 h-7 rounded-full transition-colors duration-300 ${is12 ? 'bg-blue-600' : 'bg-gray-300'}`}>
+                            <span className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow-md transition-all duration-300 ${is12 ? 'left-1' : 'left-6'}`} />
+                        </span>
+                        <span className={`text-sm font-bold transition-colors ${is12 ? 'text-blue-600' : 'text-gray-400'}`}>12 حصة</span>
+                    </button>
+
                     <button
                         onClick={handleGenerate}
                         disabled={isGenerating}
@@ -429,7 +455,15 @@ export default function WahdaGeneratorPage() {
                                     <td className="border border-black p-2.5 text-gray-800 font-medium">تقويم تشخيصي</td>
                                     <td className="border border-black p-2.5 text-gray-800 font-medium">إجراء منافسة مصغرة وتسجيل النتائج</td>
                                 </tr>
-                                {wahda.sessions.map((session, index) => (
+                                {wahda.sessions.map((session, index) => session.indicatorId === 0 ? (
+                                    <tr key={index} className="border border-black">
+                                        <td className="border border-black p-2.5 text-gray-400 font-mono text-xs"> --/--/----</td>
+                                        <td className="border border-black p-2.5 font-bold text-rose-600 bg-rose-50/50">تقويم بيني</td>
+                                        <td className="border border-black text-gray-800 p-2.5 font-medium">{session.indicatorText}</td>
+                                        <td className="border border-black p-2.5 text-gray-800 font-medium">{session.specialGoal}</td>
+                                        <td className="border border-black p-2.5 text-gray-800 font-medium">{session.goal}</td>
+                                    </tr>
+                                ) : (
                                     <tr key={index} className="border border-black hover:bg-gray-50/80 transition-colors">
                                         <td className="border border-black p-2 text-gray-400 font-mono text-xs"> --/--/----</td>
                                         <td className="border border-black p-2.5 font-bold text-blue-700 bg-blue-50/40 hover:bg-blue-100/40 transition cursor-pointer">

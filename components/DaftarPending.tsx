@@ -36,6 +36,26 @@ type SessionInfo =
     | { status: 'finished'; n: number }
     | { status: 'ok'; n: number; session: ISession }
 
+const buildFullSessions = (sessions: ISession[]): ISession[] => [
+    {
+        sessionNumber: 0,
+        indicatorId: -1,
+        indicatorText: 'إجراء معاينة أولية للمكتسبات',
+        goal: 'تقويم تشخيصي: إجراء منافسة مصغرة وتسجيل النتائج',
+        specialGoal: 'تقويم تشخيصي',
+        isReminder: false,
+    },
+    ...sessions,
+    {
+        sessionNumber: 0,
+        indicatorId: -2,
+        indicatorText: 'قياس مدى تحقق الأهداف البيداغوجية والمؤشرات',
+        goal: 'تقويم تحصيلي: إجراء منافسة نهائية تطبيقية وتحصيل العلامات',
+        specialGoal: 'تقويم تحصيلي',
+        isReminder: false,
+    },
+]
+
 export default function DaftarPending({
     slots,
     entries,
@@ -61,6 +81,7 @@ export default function DaftarPending({
     const [reason, setReason] = useState('')
     const [suggestion, setSuggestion] = useState('')
     const [busy, setBusy] = useState<Record<string, boolean>>({})
+    const [sessionPick, setSessionPick] = useState<Record<string, number>>({})
 
     // manual add
     const [manualOpen, setManualOpen] = useState(false)
@@ -158,9 +179,25 @@ export default function DaftarPending({
             trimesterOf(e.date) === tri &&
             (e.date < card.date || (e.date === card.date && e.time < part.time))
         ).length
-        const n = done + 1 + offset
-        const session = sessions.find(s => s.sessionNumber === n)
+        const n = sessionPick[part.key] ?? done + 1 + offset
+        const session = buildFullSessions(sessions)[n - 1]
         return session ? { status: 'ok', n, session } : { status: 'finished', n }
+    }
+
+    const fullFor = (card: Card, part: Part): ISession[] | null => {
+        const sport = sportFor(card, part)
+        if (!sport) return null
+        const sessions = wahdas[`${card.level}|${sport}|${trimesterOf(card.date)}`]
+        if (!sessions || sessions.length === 0) return null
+        return buildFullSessions(sessions)
+    }
+
+    const sessionLabel = (s: ISession, i: number, total: number) => {
+        if (i === 0) return 'تقويم تشخيصي'
+        if (i === total - 1) return 'تقويم تحصيلي'
+        if (s.sessionNumber === 0) return 'تقويم بيني'
+        if (s.isReminder) return 'حصة تذكيرية'
+        return `تعليمية ${String(s.sessionNumber).padStart(2, '0')}`
     }
 
     const submitCard = async (card: Card, done: boolean, why = '', next = '', offsets: Record<string, number> = {}) => {
@@ -200,6 +237,13 @@ export default function DaftarPending({
             }
         } finally {
             setBusy(b => ({ ...b, [card.key]: false }))
+        }
+        if (ok) {
+            setSessionPick(p => {
+                const next = { ...p }
+                pending.forEach(x => delete next[x.key])
+                return next
+            })
         }
         return ok
     }
@@ -279,6 +323,24 @@ export default function DaftarPending({
                                             </button>
                                         ))}
                                     </div>
+                                    {card.key.startsWith('manual') && (() => {
+                                        const list = fullFor(card, part)
+                                        if (!list) return null
+                                        const current = info && (info.status === 'ok' || info.status === 'finished') ? info.n : 1
+                                        return (
+                                            <select
+                                                value={Math.min(current, list.length)}
+                                                onChange={e => setSessionPick(p => ({ ...p, [part.key]: Number(e.target.value) }))}
+                                                className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-black text-xs font-bold"
+                                            >
+                                                {list.map((s, i) => (
+                                                    <option key={i} value={i + 1}>
+                                                        الحصة {i + 1} · {sessionLabel(s, i, list.length)}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        )
+                                    })()}
                                     {info?.status === 'ok' && (
                                         <div className="rounded-lg bg-blue-50 border border-blue-200 p-2">
                                             <p className="text-[10px] font-black text-blue-700">الحصة {info.n}</p>
