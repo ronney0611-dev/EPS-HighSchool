@@ -14,7 +14,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ classId:
         const ownership = await requireOwnedClass(classId, session.user.id);
         if (!ownership.ok) return ownership.response;
 
-        const students = await Student.find({ classId: classId });
+        const students = await Student.find({ classId: classId }).lean();
         return Response.json({ success: true, students });
     } catch (error) {
         console.error(error);

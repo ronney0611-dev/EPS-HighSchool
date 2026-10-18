@@ -1,6 +1,6 @@
 'use client'
 
-import { useClasses } from '@/hooks/useClasses'
+import { useClasses, invalidateStudents } from '@/hooks/useClasses'
 import ExcelJS from 'exceljs'
 import axios from 'axios'
 import type { Student } from '@/hooks/useClasses'
@@ -72,7 +72,8 @@ const takwiniFinal = (doc: TakwiniDoc | undefined, studentId: string, groupIndex
     if (!doc) return 0
     const bestFardi = doc.students?.find(s => s.studentId === studentId)?.bestFardi ?? 0
     let jamai = 0
-    for (let gi = 0; gi < 6; gi++) {
+    // 9 = covers teachers on 6 AND on 9 sessions (missing keys are just skipped)
+    for (let gi = 0; gi < 9; gi++) {
         const key = groupIndex !== -1 ? `${groupIndex}-${gi}` : `nogroup-${studentId}-${gi}`
         const n = doc.groupNotes?.[key]
         if (n !== undefined && n > jamai) jamai = n
@@ -227,6 +228,8 @@ const AllNotes = () => {
                             .catch(() => { failedSaves.push(u.name) })
                     )
                 )
+                // matricules changed outside useClasses: other pages must reload this class
+                if (matriculeUpdates.length > 0) invalidateStudents(appClass._id)
             }
 
             const buffer = await workbook.xlsx.writeBuffer()

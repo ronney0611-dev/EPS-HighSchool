@@ -3,18 +3,15 @@
 import { images } from '@/src/config/documents'
 import Image from 'next/image'
 import Link from 'next/link'
-import {  useState } from 'react'
+import { useState } from 'react'
 import { House, CircleUserRound, BookText, LogOut } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
-import Banner from './Banner'
 
 const Navbare = () => {
     const pathname = usePathname();
     const [open, setOpen] = useState(false);
     const { data: session, status } = useSession();
-
-    const isPaid = session?.user.isPaid;
 
     const navItems = [
         { href: '/', label: 'الواجهة', Icon: House },
@@ -26,14 +23,6 @@ const Navbare = () => {
 
     return (
         <>
-            {
-                isPaid ? (
-                    <></>
-                ) : (
-                    <Banner className="text-white bg-linear-to-r from-[#de5454] via-[#500303] to-black my-6" />
-                )
-            }
-
             <nav dir='ltr' className="print:hidden w-full fixed z-100 bg-zinc-950/80 backdrop-blur-md text-white top-0 h-20 flex items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 border-b border-zinc-800/80 shadow-lg shadow-black/40 transition-all">
 
                 <Link href="/" className="transition-transform hover:scale-105">
