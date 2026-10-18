@@ -14,11 +14,19 @@ const TaqwimTakwini = () => {
         groupLevels, setGroupLevels,
         groupNotes, setGroupNotes, } = useTakwini();
     const [activity, setActivity] = useState<'sprint' | 'longjump' | 'throw'>('sprint');
+    const [is9, setIs9] = useState(false);
 
     const selectedClassData = classes.find(c => c.name === classSelect);
     const isThirdYear = selectedClassData?.name.startsWith('3') ?? false;
     const classStudents = selectedClassData ? (studentsByClass[selectedClassData._id] || []) : [];
     const groupLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+    // 6 sessions per sport (الوحدة de 8) or 9 (الوحدة de 12).
+    // If saved data already has sessions 7-9, always show 9 so nothing is hidden.
+    const hasExtraSessions =
+        Object.keys(performances).some(k => /-(6|7|8)$/.test(k)) ||
+        Object.keys(groupLevels).some(k => /-(6|7|8)$/.test(k));
+    const SESSIONS = is9 || hasExtraSessions ? 9 : 6;
 
     const getStudentGroupIndex = (studentId: string): number => {
         if (!groupe || groupe.length === 0) return -1;
@@ -49,7 +57,7 @@ const TaqwimTakwini = () => {
     };
 
     const getBestFardi = (studentId: string, gender: Gender): number => {
-        const scores = Array.from({ length: 6 }, (_, j) => {
+        const scores = Array.from({ length: SESSIONS }, (_, j) => {
             const perf = performances[`${studentId}-${j}`] ?? '';
             return calcScore(studentId, gender, perf);
         });
@@ -61,7 +69,7 @@ const TaqwimTakwini = () => {
 
     const getJamaiNote = (studentId: string, groupIndex: number): number => {
         let best = 0;
-        for (let gi = 0; gi < 6; gi++) {
+        for (let gi = 0; gi < SESSIONS; gi++) {
             const key = getGroupSessionKey(studentId, groupIndex, gi);
             if (groupNotes[key] !== undefined && groupNotes[key] > best) {
                 best = groupNotes[key];
@@ -78,44 +86,66 @@ const TaqwimTakwini = () => {
         <div dir="rtl" className='m-2 md:m-4 flex flex-col items-center'>
 
             {/* Controls */}
-            <div className="print:hidden flex flex-col md:flex-row flex-wrap gap-3 items-center border rounded-xl p-4 w-full mb-6">
-                <div className='flex gap-2 items-center'>
-                    <label className='font-semibold text-sm'>اختر القسم</label>
-                    <select
-                        className='border border-gray-300 rounded px-3 py-1 bg-white text-black text-sm'
-                        value={classSelect}
-                        onChange={e => {
-                            setClassSelect(e.target.value);
-                            setPerformances({});
-                            setGroupLevels({});
-                            setGroupNotes({});
-                            const found = classes.find(c => c.name === e.target.value);
-                            if (found) {
-                                fetchStudents(found._id);
-                                fetchGroupes(found._id);
-                                fetchTakwini(found._id, activity);
-                            }
-                        }}>
-                        <option value="">— اختر —</option>
-                        {classes.map((c, i) => (
-                            <option key={i} value={c.name}>{c.name}</option>
-                        ))}
-                    </select>
-                </div>
-                <div className='flex gap-2 items-center'>
-                    <label className='font-semibold text-sm'>النشاط</label>
-                    <select
-                        className='border border-gray-300 rounded px-3 py-1 bg-white text-black text-sm'
-                        value={activity}
-                        onChange={e => {
-                            const newActivity = e.target.value as 'sprint' | 'longjump' | 'throw';
-                            setActivity(newActivity);
-                            if (classSelect) fetchTakwini(selectedClassData?._id ?? '', newActivity);
-                        }}>
-                        <option value="sprint">عدو 60م</option>
-                        <option value="longjump">الوثب الطويل</option>
-                        <option value="throw">دفع الجلة</option>
-                    </select>
+            <div className="print:hidden w-full mb-6 bg-white border border-gray-200 rounded-2xl shadow-sm p-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+
+                    <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-bold text-gray-500">القسم</label>
+                        <select
+                            className="w-full h-11 border border-gray-200 rounded-xl px-3 bg-gray-50 text-gray-800 text-sm font-semibold focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition"
+                            value={classSelect}
+                            onChange={e => {
+                                setClassSelect(e.target.value);
+                                setPerformances({});
+                                setGroupLevels({});
+                                setGroupNotes({});
+                                const found = classes.find(c => c.name === e.target.value);
+                                if (found) {
+                                    fetchStudents(found._id);
+                                    fetchGroupes(found._id);
+                                    fetchTakwini(found._id, activity);
+                                }
+                            }}>
+                            <option value="">— اختر القسم —</option>
+                            {classes.map((c, i) => (
+                                <option key={i} value={c.name}>{c.name}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-bold text-gray-500">النشاط</label>
+                        <select
+                            className="w-full h-11 border border-gray-200 rounded-xl px-3 bg-gray-50 text-gray-800 text-sm font-semibold focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition"
+                            value={activity}
+                            onChange={e => {
+                                const newActivity = e.target.value as 'sprint' | 'longjump' | 'throw';
+                                setActivity(newActivity);
+                                if (classSelect) fetchTakwini(selectedClassData?._id ?? '', newActivity);
+                            }}>
+                            <option value="sprint">عدو 60م</option>
+                            <option value="longjump">الوثب الطويل</option>
+                            <option value="throw">دفع الجلة</option>
+                        </select>
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-bold text-gray-500">عدد الحصص</label>
+                        <button
+                            type="button"
+                            role="switch"
+                            aria-checked={SESSIONS === 9}
+                            onClick={() => setIs9(v => !v)}
+                            className="w-full h-11 flex items-center justify-center gap-3 rounded-xl border border-gray-200 bg-gray-50 hover:bg-white transition active:scale-[0.98]"
+                        >
+                            <span className={`text-sm font-bold transition-colors ${SESSIONS === 6 ? 'text-blue-600' : 'text-gray-400'}`}>6 حصص</span>
+                            <span className={`relative w-11 h-6 rounded-full transition-colors duration-300 ${SESSIONS === 9 ? 'bg-blue-600' : 'bg-gray-300'}`}>
+                                <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-300 ${SESSIONS === 9 ? 'left-0.5' : 'left-5.5'}`} />
+                            </span>
+                            <span className={`text-sm font-bold transition-colors ${SESSIONS === 9 ? 'text-blue-600' : 'text-gray-400'}`}>9 حصص</span>
+                        </button>
+                    </div>
+
                 </div>
             </div>
 
@@ -127,19 +157,19 @@ const TaqwimTakwini = () => {
                             <tr>
                                 <th></th>
                                 <th></th>
-                                <th className="border border-black bg-blue-200 print:bg-blue-200" colSpan={14}>التقويم التكويني للنشاط الفردي</th>
-                                <th className="border border-black bg-blue-200 print:bg-blue-200" colSpan={7}>التقويم التكويني للنشاط الجماعي</th>
+                                <th className="border border-black bg-blue-200 print:bg-blue-200" colSpan={SESSIONS * 2 + 2}>التقويم التكويني للنشاط الفردي</th>
+                                <th className="border border-black bg-blue-200 print:bg-blue-200" colSpan={SESSIONS + 1}>التقويم التكويني للنشاط الجماعي</th>
                                 <th></th>
                             </tr>
                             <tr>
                                 <th></th>
                                 <th></th>
                                 <th className="border border-black bg-blue-200 print:bg-blue-200">الفوج</th>
-                                {['1', '2', '3', '4', '5', '6'].map((n, i) => (
-                                    <th colSpan={2} className="border border-black bg-blue-200 print:bg-blue-200" key={i}>ح{n}</th>
+                                {Array.from({ length: SESSIONS }).map((_, i) => (
+                                    <th colSpan={2} className="border border-black bg-blue-200 print:bg-blue-200" key={i}>ح{i + 1}</th>
                                 ))}
                                 <th className="border border-black bg-blue-200 print:bg-blue-200">علامة النشاط الفردي</th>
-                                <th colSpan={6} className="border border-black bg-blue-200 print:bg-blue-200 p-1 text-xs">
+                                <th colSpan={SESSIONS} className="border border-black bg-blue-200 print:bg-blue-200 p-1 text-xs">
                                     A / B / C / D / E
                                 </th>
                                 <th className="border border-black bg-blue-200 print:bg-blue-200">علامة النشاط الجماعي</th>
@@ -149,14 +179,14 @@ const TaqwimTakwini = () => {
                                 <th className="border border-black">رقم</th>
                                 <th className="border border-black">أسماء التلاميذ</th>
                                 <th className="border border-black"></th>
-                                {Array(6).fill(0).map((_, i) => (
+                                {Array(SESSIONS).fill(0).map((_, i) => (
                                     <React.Fragment key={i}>
                                         <th className="border border-black w-10">الأداء</th>
                                         <th className="border border-black w-10">النتيجة</th>
                                     </React.Fragment>
                                 ))}
                                 <th className="border border-black w-10">20/20</th>
-                                {Array(6).fill(0).map((_, i) => (
+                                {Array(SESSIONS).fill(0).map((_, i) => (
                                     <th key={i} className="border border-black w-10">ح{i + 1}</th>
                                 ))}
                                 <th className="border border-black w-10">20/20</th>
@@ -174,7 +204,7 @@ const TaqwimTakwini = () => {
                                 let currentGroupLevel = '';
                                 let latestGroupSessionKey = '';
                                 let bestNote = 0;
-                                for (let gi = 0; gi < 6; gi++) {
+                                for (let gi = 0; gi < SESSIONS; gi++) {
                                     const key = getGroupSessionKey(s._id, groupIndex, gi);
                                     if (groupLevels[key] && groupNotes[key] !== undefined && groupNotes[key] >= bestNote) {
                                         bestNote = groupNotes[key];
@@ -196,7 +226,7 @@ const TaqwimTakwini = () => {
                                         </td>
                                         {isMalade ? (
                                             <>
-                                                {Array.from({ length: 22 }).map((_, k) => (
+                                                {Array.from({ length: SESSIONS * 3 + 4 }).map((_, k) => (
                                                     <td key={k} className={`${cell} text-red-500 `}>اعفاء</td>
                                                 ))}
                                             </>
@@ -205,7 +235,7 @@ const TaqwimTakwini = () => {
                                                 <td className='border border-black font-semibold'>{groupLabel}</td>
 
                                                 {/* INDIVIDUAL PERFORMANCE SESSIONS INPUTS */}
-                                                {Array.from({ length: 6 }).map((_, gi) => {
+                                                {Array.from({ length: SESSIONS }).map((_, gi) => {
                                                     const perfKey = `${s._id}-${gi}`;
                                                     const rawPerf = performances[perfKey] ?? '';
                                                     const currentScore = calcScore(s._id, gender, rawPerf);
@@ -235,8 +265,8 @@ const TaqwimTakwini = () => {
                                                     {bestFardi > 0 ? bestFardi.toFixed(2) : ''}
                                                 </td>
 
-                                                {/* SHARED GROUP ACTIONS LOOP FOR ALL 6 COHORTS */}
-                                                {Array.from({ length: 6 }).map((_, gi) => {
+                                                {/* SHARED GROUP ACTIONS LOOP FOR ALL SESSIONS */}
+                                                {Array.from({ length: SESSIONS }).map((_, gi) => {
                                                     const groupSessionKey = groupIndex !== -1
                                                         ? `${groupIndex}-${gi}`
                                                         : `nogroup-${s._id}-${gi}`;

@@ -401,10 +401,11 @@ export default function WahdaGeneratorPage() {
             {wahda && wahda.sessions && wahda.sessions.length > 0 ? (
                 <div id="wahdat" className="bg-white p-8 rounded-3xl shadow-xl border border-gray-200/80 print:shadow-none print:border-none print:p-0 transition-all">
 
-                    <div className="flex flex-col md:flex-row lg:flex-row justify-between gap-6 mb-6 pb-6 text-sm font-bold text-gray-800 border-b-2 border-gray-100 items-center print:flex-row print:flex-nowrap">                        <div className="space-y-1 flex flex-col items-start">
-                        <p className="text-gray-600">المؤسسة: <span className="text-gray-900">{teacher?.school}</span></p>
-                        <p className="text-gray-600">الأستاذ: <span className="text-gray-900">{teacher?.name}</span></p>
-                    </div>
+                    <div className="flex flex-col md:flex-row lg:flex-row justify-between gap-6 mb-4 pb-6 text-sm font-bold text-gray-800 border-b-2 border-gray-100 items-center print:flex-row print:flex-nowrap">
+                        <div className="space-y-1 flex flex-col items-start">
+                            <p className="text-gray-600">المؤسسة: <span className="text-gray-900">{teacher?.school}</span></p>
+                            <p className="text-gray-600">الأستاذ: <span className="text-gray-900">{teacher?.name}</span></p>
+                        </div>
                         <div className="text-center">
                             <h2 className="bg-linear-to-r from-slate-900 via-blue-900 to-slate-900 text-white text-center rounded-xl p-2.5 font-black text-lg tracking-wide shadow-inner">
                                 الوحدة التعلمية: {SPORTS.find(s => s.key === wahda.sport)?.name}
@@ -416,7 +417,7 @@ export default function WahdaGeneratorPage() {
                         </div>
                     </div>
 
-                    <div className='text-black mb-6 space-y-3 bg-gray-50/50 p-4 rounded-2xl border border-gray-100 print:bg-transparent print:p-0 print:border-none'>
+                    <div className='text-black mb-2 space-y-3 bg-gray-50/50 p-2 rounded-2xl border border-gray-100 print:bg-transparent print:p-0 print:border-none'>
                         <div className='flex items-center w-full gap-2'>
                             <h1 className='text-lg font-bold whitespace-nowrap shrink-0 text-gray-800'>الكفاءة القاعدية:</h1>
                             <div className="flex-1 min-w-0 w-full text-gray-900 font-bold text-base p-2">
@@ -571,7 +572,7 @@ export default function WahdaGeneratorPage() {
 
                     #wahdat h2 {
                         font-size: 16px !important;
-                        padding: 6px 18px !important;
+                        padding: 8px 16px !important;
                     }
 
                     #wahdat .grid {

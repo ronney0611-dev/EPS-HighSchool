@@ -28,8 +28,10 @@ export const useTakwini = () => {
         activity: 'sprint' | 'longjump' | 'throw',
         isThirdYear: boolean
     ) => {
+        // 9 sessions only if the teacher used sessions 7-9, otherwise 6 as before
+        const count = Object.keys(performances).some(k => /-(6|7|8)$/.test(k)) ? 9 : 6;
         return studentIds.map(id => {
-            const perfs = Array.from({ length: 6 }, (_, i) => performances[`${id}-${i}`] ?? '');
+            const perfs = Array.from({ length: count }, (_, i) => performances[`${id}-${i}`] ?? '');
             const scores = perfs.map(p => {
                 const val = parseFloat(p);
                 if (isNaN(val) || val <= 0) return 0;
