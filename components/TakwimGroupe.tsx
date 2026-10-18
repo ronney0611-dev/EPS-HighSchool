@@ -67,10 +67,19 @@ const getLevelKeyFromClass = (
     return '1';
 };
 
-const getDefaultIndicatorIds = (levelKey: string, sportKey: string, count: number) => {
-    const sportCfg = curriculumRegistry[levelKey]?.sports?.[sportKey];
-    const availableIds = sportCfg?.indicators.map(ind => ind.id) ?? [];
-    return availableIds.slice(0, Math.min(count, availableIds.length));
+// ALL indicator ids of a sport (used to validate a selection)
+const getAllIndicatorIds = (levelKey: string, sportKey: string): number[] =>
+    curriculumRegistry[levelKey]?.sports?.[sportKey]?.indicators.map(ind => ind.id) ?? [];
+
+// keeps the teacher's choice (in his order), drops unknown ids,
+// trims to `count`, and fills the missing slots with unused ids
+const normalizeIds = (ids: number[], allIds: number[], count: number): number[] => {
+    const out = ids.filter(id => allIds.includes(id)).slice(0, count);
+    for (const id of allIds) {
+        if (out.length >= count) break;
+        if (!out.includes(id)) out.push(id);
+    }
+    return out;
 };
 
 interface GroupStudentState {
@@ -79,6 +88,7 @@ interface GroupStudentState {
     score: { t1: number; t2: number }[];
     levelT1: string;
     levelT2: string;
+    exempt?: boolean;
 }
 
 const TakwimGroupe = () => {
@@ -132,6 +142,7 @@ const TakwimGroupe = () => {
                 result: saved?.result ?? { t1: 0, t2: 0 },
                 levelT1: saved?.levelT1 ?? '',
                 levelT2: saved?.levelT2 ?? '',
+                exempt: s.status === 'malade',
             };
         }));
     }
@@ -153,25 +164,27 @@ const TakwimGroupe = () => {
         setLastIndicatorsKey(indicatorsKey);
 
         const levelKey = getLevelKeyFromClass(selectedClassData?.name, selectedClassData?.level);
-        const availableIds = getDefaultIndicatorIds(levelKey, sportSelect, mochirCount);
+        const allIds = getAllIndicatorIds(levelKey, sportSelect);
 
-        if (availableIds.length === 0) {
+        if (allIds.length === 0) {
             setSelectedIndicatorIds([]);
         } else {
-            setSelectedIndicatorIds(prev => {
-                const filtered = prev.filter(id => availableIds.includes(id));
-                return filtered.length > 0 ? filtered.slice(0, availableIds.length) : availableIds;
-            });
+            // validate against ALL the sport's indicators (not only the first N),
+            // so a saved choice like indicator 6 is never wiped
+            setSelectedIndicatorIds(prev => normalizeIds(prev, allIds, Math.min(mochirCount, allIds.length)));
         }
     }
 
-    const hydrateFromData = (data: NonNullable<Awaited<ReturnType<typeof fetchTachkhisi>>>, levelKey: string) => {
-        const availableIds = getDefaultIndicatorIds(levelKey, sportSelect, data.mochirCount ?? mochirCount);
-        const validIds = (data.selectedIndicatorIds || []).filter(id => availableIds.includes(id));
-        const nextIds = validIds.length > 0 ? validIds.slice(0, availableIds.length) : availableIds;
+    const hydrateFromData = (
+        data: NonNullable<Awaited<ReturnType<typeof fetchTachkhisi>>>,
+        levelKey: string,
+        sportKey: string
+    ) => {
+        const allIds = getAllIndicatorIds(levelKey, sportKey);
+        const count = Math.min(data.mochirCount ?? mochirCount, allIds.length || 4);
 
-        setMochirCount(Math.min(data.mochirCount ?? mochirCount, availableIds.length || 4));
-        setSelectedIndicatorIds(nextIds);
+        setMochirCount(count);
+        setSelectedIndicatorIds(normalizeIds(data.selectedIndicatorIds || [], allIds, count));
         // saved data goes into savedStudents; the block above merges it with the roster
         setSavedStudents(data.students.map((s) => ({
             name: s.name,
@@ -180,6 +193,13 @@ const TakwimGroupe = () => {
             levelT1: s.levelT1 || '',
             levelT2: s.levelT2 || '',
         })));
+    };
+
+    const resetToDefaults = (levelKey: string, sportKey: string) => {
+        const allIds = getAllIndicatorIds(levelKey, sportKey);
+        const defaultCount = Math.min(4, allIds.length);
+        setMochirCount(defaultCount);
+        setSelectedIndicatorIds(allIds.slice(0, defaultCount));
     };
 
     const handleClassSelect = async (className: string) => {
@@ -195,14 +215,11 @@ const TakwimGroupe = () => {
         const data = await fetchTachkhisi(found._id, sportSelect, 'groupe');
         if (reqId !== requestRef.current) return; // the teacher already chose something else
 
+        const levelKey = getLevelKeyFromClass(found.name, found.level);
         if (data && data.students && data.students.length > 0) {
-            hydrateFromData(data, getLevelKeyFromClass(found.name, found.level));
+            hydrateFromData(data, levelKey, sportSelect);
         } else {
-            const newLevelKey = getLevelKeyFromClass(found.name, found.level);
-            const availableIds = getDefaultIndicatorIds(newLevelKey, sportSelect, 4);
-            const defaultCount = Math.min(4, availableIds.length);
-            setMochirCount(defaultCount);
-            setSelectedIndicatorIds(availableIds.slice(0, defaultCount));
+            resetToDefaults(levelKey, sportSelect);
         }
     };
 
@@ -217,14 +234,11 @@ const TakwimGroupe = () => {
             const data = await fetchTachkhisi(found._id, newSport, 'groupe');
             if (reqId !== requestRef.current) return;
 
+            const levelKey = getLevelKeyFromClass(found.name, found.level);
             if (data && data.students && data.students.length > 0) {
-                hydrateFromData(data, getLevelKeyFromClass(found.name, found.level));
+                hydrateFromData(data, levelKey, newSport);
             } else {
-                const newLevelKey = getLevelKeyFromClass(found.name, found.level);
-                const availableIds = getDefaultIndicatorIds(newLevelKey, newSport, 4);
-                const defaultCount = Math.min(4, availableIds.length);
-                setMochirCount(defaultCount);
-                setSelectedIndicatorIds(availableIds.slice(0, defaultCount));
+                resetToDefaults(levelKey, newSport);
                 // nothing saved for this sport: the table is rebuilt blank from the roster
             }
         }
@@ -239,7 +253,7 @@ const TakwimGroupe = () => {
             sportSelect,
             'groupe',
             mochirCount,
-            selectedIndicatorIds,
+            selectedIndicatorIds.slice(0, mochirCount),
             students.map(s => ({
                 name: s.name,
                 score: s.score,
@@ -280,14 +294,17 @@ const TakwimGroupe = () => {
         });
     };
 
+    // malade students stay in the table but are excluded from the class averages
+    const activeStudents = students.filter(s => !s.exempt);
+
     const totalT1PerMochir = Array.from({ length: mochirCount }, (_, i) => {
-        const total = students.reduce((acc, s) => acc + (s.score[i]?.t1 ?? 0), 0);
-        return students.length === 0 ? 0 : total / students.length;
+        const total = activeStudents.reduce((acc, s) => acc + (s.score[i]?.t1 ?? 0), 0);
+        return activeStudents.length === 0 ? 0 : total / activeStudents.length;
     });
 
     const totalT2PerMochir = Array.from({ length: mochirCount }, (_, i) => {
-        const total = students.reduce((acc, s) => acc + (s.score[i]?.t2 ?? 0), 0);
-        return students.length === 0 ? 0 : total / students.length;
+        const total = activeStudents.reduce((acc, s) => acc + (s.score[i]?.t2 ?? 0), 0);
+        return activeStudents.length === 0 ? 0 : total / activeStudents.length;
     });
 
     const handleIndicatorChange = (indexToUpdate: number, newId: number) => {
@@ -428,6 +445,21 @@ const TakwimGroupe = () => {
                                 const percentaget1 = (student.score.reduce((a, b) => a + b.t1, 0) / mochirCount) * 100;
                                 const percentaget2 = (student.score.reduce((a, b) => a + b.t2, 0) / mochirCount) * 100;
                                 const t2_t1 = percentaget2 - percentaget1;
+                                const exempt = !!student.exempt;
+
+                                if (exempt) {
+                                    return (
+                                        <tr className="border-b border-black bg-red-100 text-red-700 print:bg-red-100" key={studentIndex}>
+                                            <td className="border-l border-black p-1 bg-red-200 font-bold">{studentIndex + 1}</td>
+                                            <td className="border-l border-black p-1 text-right font-medium px-2 whitespace-nowrap">
+                                                {student.name}
+                                            </td>
+                                            <td className="border-l border-black p-1 font-black" colSpan={mochirCount * 2 + 5}>
+                                                تلميذ معفى
+                                            </td>
+                                        </tr>
+                                    );
+                                }
 
                                 return (
                                     <tr className="border-b border-black hover:bg-gray-50" key={studentIndex}>

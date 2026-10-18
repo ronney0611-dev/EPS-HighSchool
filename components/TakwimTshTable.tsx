@@ -66,16 +66,26 @@ const getLevelKeyFromClass = (className: string | number | undefined, fallbackLe
     return '1';
 };
 
-const getDefaultIndicatorIds = (levelKey: string, sportKey: string, count: number) => {
-    const sportCfg = curriculumRegistry[levelKey]?.sports?.[sportKey];
-    const availableIds = sportCfg?.indicators.map(ind => ind.id) ?? [];
-    return availableIds.slice(0, Math.min(count, availableIds.length));
+// ALL indicator ids of a sport (used to validate a selection)
+const getAllIndicatorIds = (levelKey: string, sportKey: string): number[] =>
+    curriculumRegistry[levelKey]?.sports?.[sportKey]?.indicators.map(ind => ind.id) ?? [];
+
+// keeps the teacher's choice (in his order), drops unknown ids,
+// trims to `count`, and fills the missing slots with unused ids
+const normalizeIds = (ids: number[], allIds: number[], count: number): number[] => {
+    const out = ids.filter(id => allIds.includes(id)).slice(0, count);
+    for (const id of allIds) {
+        if (out.length >= count) break;
+        if (!out.includes(id)) out.push(id);
+    }
+    return out;
 };
 
 interface StudentState {
     name: string;
     result: { t1: number; t2: number };
     score: { t1: number; t2: number }[];
+    exempt?: boolean;
 }
 
 const TakwimTshTable = () => {
@@ -134,6 +144,7 @@ const TakwimTshTable = () => {
                 name: s.name,
                 score: Array.from({ length: mochirCount }, (_, i) => saved?.score[i] ?? { t1: 0, t2: 0 }),
                 result: saved?.result ?? { t1: 0, t2: 0 },
+                exempt: s.status === 'malade',
             };
         }));
     }
@@ -144,15 +155,14 @@ const TakwimTshTable = () => {
     if (indicatorsKey !== lastIndicatorsKey) {
         setLastIndicatorsKey(indicatorsKey);
 
-        const availableIds = getDefaultIndicatorIds(dynamicLevelKey, sportSelect, mochirCount);
+        const allIds = getAllIndicatorIds(dynamicLevelKey, sportSelect);
 
-        if (availableIds.length === 0) {
+        if (allIds.length === 0) {
             setSelectedIndicatorIds([]);
         } else {
-            setSelectedIndicatorIds(prev => {
-                const filtered = prev.filter(id => availableIds.includes(id));
-                return filtered.length > 0 ? filtered.slice(0, availableIds.length) : availableIds;
-            });
+            // validate against ALL the sport's indicators (not only the first N),
+            // so a saved choice like indicator 6 is never wiped
+            setSelectedIndicatorIds(prev => normalizeIds(prev, allIds, Math.min(mochirCount, allIds.length)));
         }
     }
 
@@ -163,19 +173,29 @@ const TakwimTshTable = () => {
         })));
     }
 
-    const hydrateFromData = (data: NonNullable<Awaited<ReturnType<typeof fetchTachkhisi>>>, levelKey: string) => {
-        const availableIds = getDefaultIndicatorIds(levelKey, sportSelect, data.mochirCount ?? mochirCount);
-        const validIds = (data.selectedIndicatorIds || []).filter((id: number) => availableIds.includes(id));
-        const nextIds = validIds.length > 0 ? validIds.slice(0, availableIds.length) : availableIds;
+    const hydrateFromData = (
+        data: NonNullable<Awaited<ReturnType<typeof fetchTachkhisi>>>,
+        levelKey: string,
+        sportKey: string
+    ) => {
+        const allIds = getAllIndicatorIds(levelKey, sportKey);
+        const count = Math.min(data.mochirCount ?? mochirCount, allIds.length || 4);
 
-        setMochirCount(Math.min(data.mochirCount ?? mochirCount, availableIds.length || 4));
-        setSelectedIndicatorIds(nextIds);
+        setMochirCount(count);
+        setSelectedIndicatorIds(normalizeIds(data.selectedIndicatorIds || [], allIds, count));
         // saved data goes into savedStudents; the effect above merges it with the roster
         setSavedStudents(data.students.map((s: { name: string; score: { t1: number; t2: number }[]; result?: { t1: number; t2: number } }) => ({
             name: s.name,
             score: s.score,
             result: s.result || { t1: 0, t2: 0 },
         })));
+    };
+
+    const resetToDefaults = (levelKey: string, sportKey: string) => {
+        const allIds = getAllIndicatorIds(levelKey, sportKey);
+        const defaultCount = Math.min(4, allIds.length);
+        setMochirCount(defaultCount);
+        setSelectedIndicatorIds(allIds.slice(0, defaultCount));
     };
 
     const handleClassSelect = async (className: string) => {
@@ -191,14 +211,11 @@ const TakwimTshTable = () => {
         const data = await fetchTachkhisi(found._id, sportSelect, 'fardi');
         if (reqId !== requestRef.current) return; // the teacher already chose something else
 
+        const levelKey = getLevelKeyFromClass(found.name, found.level);
         if (data && data.students && data.students.length > 0) {
-            hydrateFromData(data, getLevelKeyFromClass(found.name, found.level));
+            hydrateFromData(data, levelKey, sportSelect);
         } else {
-            const newLevelKey = getLevelKeyFromClass(found.name, found.level);
-            const availableIds = getDefaultIndicatorIds(newLevelKey, sportSelect, 4);
-            const defaultCount = Math.min(4, availableIds.length);
-            setMochirCount(defaultCount);
-            setSelectedIndicatorIds(availableIds.slice(0, defaultCount));
+            resetToDefaults(levelKey, sportSelect);
         }
     };
 
@@ -213,18 +230,28 @@ const TakwimTshTable = () => {
             const data = await fetchTachkhisi(found._id, newSport, 'fardi');
             if (reqId !== requestRef.current) return;
 
+            const levelKey = getLevelKeyFromClass(found.name, found.level);
             if (data && data.students && data.students.length > 0) {
-                hydrateFromData(data, getLevelKeyFromClass(found.name, found.level));
+                hydrateFromData(data, levelKey, newSport);
             } else {
-                const newLevelKey = getLevelKeyFromClass(found.name, found.level);
-                const availableIds = getDefaultIndicatorIds(newLevelKey, newSport, 4);
-                const defaultCount = Math.min(4, availableIds.length);
-                setMochirCount(defaultCount);
-                setSelectedIndicatorIds(availableIds.slice(0, defaultCount));
+                resetToDefaults(levelKey, newSport);
                 // nothing saved for this sport: the effect rebuilds a blank table from the roster
             }
         }
     };
+
+    // exempt (sick) students are kept in the table but excluded from the class averages
+    const activeStudents = students.filter(s => !s.exempt);
+
+    const totalT1PerMochir = Array.from({ length: mochirCount }, (_, i) => {
+        const total = activeStudents.reduce((acc, s) => acc + (s.score[i]?.t1 ?? 0), 0);
+        return activeStudents.length === 0 ? 0 : total / activeStudents.length;
+    });
+
+    const totalT2PerMochir = Array.from({ length: mochirCount }, (_, i) => {
+        const total = activeStudents.reduce((acc, s) => acc + (s.score[i]?.t2 ?? 0), 0);
+        return activeStudents.length === 0 ? 0 : total / activeStudents.length;
+    });
 
     const handleSave = async () => {
         const found = classes.find(c => c._id === classSelect || c.name === classSelect);
@@ -235,7 +262,7 @@ const TakwimTshTable = () => {
             sportSelect,
             'fardi',
             mochirCount,
-            selectedIndicatorIds,
+            selectedIndicatorIds.slice(0, mochirCount),
             students.map(s => ({
                 name: s.name,
                 score: s.score,
@@ -273,16 +300,6 @@ const TakwimTshTable = () => {
             return copy;
         });
     }
-
-    const totalT1PerMochir = Array.from({ length: mochirCount }, (_, i) => {
-        const total = students.reduce((acc, s) => acc + (s.score[i]?.t1 ?? 0), 0);
-        return students.length === 0 ? 0 : total / students.length;
-    });
-
-    const totalT2PerMochir = Array.from({ length: mochirCount }, (_, i) => {
-        const total = students.reduce((acc, s) => acc + (s.score[i]?.t2 ?? 0), 0);
-        return students.length === 0 ? 0 : total / students.length;
-    });
 
     return (
         <div dir="rtl" className='m-2 md:m-4 flex flex-col items-center bg-white text-black font-sans'>
@@ -409,50 +426,63 @@ const TakwimTshTable = () => {
                         </thead>
                         <tbody>
                             {students.map((student, studentIndex) => {
+                                const exempt = !!student.exempt;
                                 const percentaget1 = (student.score.reduce((a, b) => a + b.t1, 0) / mochirCount) * 100;
                                 const percentaget2 = (student.score.reduce((a, b) => a + b.t2, 0) / mochirCount) * 100;
                                 const t2_t1 = percentaget2 - percentaget1;
                                 return (
-                                    <tr className="border-b border-black hover:bg-gray-50" key={studentIndex}>
-                                        <td className="border-l border-black p-1 bg-gray-100 font-bold">{studentIndex + 1}</td>
-                                        <td className="border-l border-black text-black p-1 text-right text-xs font-medium px-2 whitespace-nowrap">{student.name}</td>
-                                        {Array.from({ length: mochirCount }).map((_, scoreIndex) => {
-                                            const sc = student.score[scoreIndex] || { t1: 0, t2: 0 };
-                                            return (
-                                                <React.Fragment key={scoreIndex}>
-                                                    <td className="border-l border-black p-0">
-                                                        <select value={sc.t1} className="w-full text-center bg-transparent border-none outline-none font-bold text-red-600 cursor-pointer"
-                                                            onChange={e => updateScore(studentIndex, scoreIndex, 't1', Number(e.target.value))}>
-                                                            <option value="0">0</option>
-                                                            <option value="1">1</option>
-                                                        </select>
-                                                    </td>
-                                                    <td className="border-l border-black p-0">
-                                                        <select value={sc.t2} className="w-full text-center bg-transparent border-none outline-none font-bold text-green-700 cursor-pointer"
-                                                            onChange={e => updateScore(studentIndex, scoreIndex, 't2', Number(e.target.value))}>
-                                                            <option value="0">0</option>
-                                                            <option value="1">1</option>
-                                                        </select>
-                                                    </td>
-                                                </React.Fragment>
-                                            );
-                                        })}
-                                        <td className="border-l border-black p-1 font-mono">{percentaget1.toFixed(1)}%</td>
-                                        <td className="border-l border-black p-1 font-mono">{percentaget2.toFixed(1)}%</td>
-                                        <td className={`border-l border-black p-1 font-mono font-bold ${t2_t1 >= 0 ? 'text-green-700' : 'text-red-600'}`}>
-                                            {t2_t1 >= 0 ? `+${t2_t1.toFixed(1)}%` : `${t2_t1.toFixed(1)}%`}
+                                    <tr
+                                        className={`border-b border-black ${exempt ? 'bg-red-100 text-red-700 print:bg-red-100' : 'hover:bg-gray-50'}`}
+                                        key={studentIndex}>
+                                        <td className={`border-l border-black p-1 font-bold ${exempt ? 'bg-red-200' : 'bg-gray-100'}`}>{studentIndex + 1}</td>
+                                        <td className={`border-l border-black p-1 text-right text-xs font-medium px-2 whitespace-nowrap ${exempt ? 'text-red-700' : 'text-black'}`}>
+                                            {student.name}
                                         </td>
-                                        <td className="border-l border-black p-0">
-                                            <input type="number" value={student.result.t1 === 0 ? '' : student.result.t1} className="w-11 text-center bg-transparent border-none outline-none font-mono"
-                                                onChange={e => updateResult(studentIndex, 't1', Number(e.target.value))} />
-                                        </td>
-                                        <td className="border-l border-black p-0">
-                                            <input type="number" value={student.result.t2 === 0 ? '' : student.result.t2} className="w-11 text-center bg-transparent border-none outline-none font-mono"
-                                                onChange={e => updateResult(studentIndex, 't2', Number(e.target.value))} />
-                                        </td>
-                                        <td className="p-1 font-mono font-bold">
-                                            {(student.result.t2 - student.result.t1).toFixed(2)}
-                                        </td>
+                                        {exempt ? (
+                                            <td className="border-l border-black p-1 font-black" colSpan={mochirCount * 2 + 6}>
+                                                تلميذ معفى
+                                            </td>
+                                        ) : (
+                                            <>
+                                                {Array.from({ length: mochirCount }).map((_, scoreIndex) => {
+                                                    const sc = student.score[scoreIndex] || { t1: 0, t2: 0 };
+                                                    return (
+                                                        <React.Fragment key={scoreIndex}>
+                                                            <td className="border-l border-black p-0">
+                                                                <select value={sc.t1} className="w-full text-center bg-transparent border-none outline-none font-bold text-red-600 cursor-pointer"
+                                                                    onChange={e => updateScore(studentIndex, scoreIndex, 't1', Number(e.target.value))}>
+                                                                    <option value="0">0</option>
+                                                                    <option value="1">1</option>
+                                                                </select>
+                                                            </td>
+                                                            <td className="border-l border-black p-0">
+                                                                <select value={sc.t2} className="w-full text-center bg-transparent border-none outline-none font-bold text-green-700 cursor-pointer"
+                                                                    onChange={e => updateScore(studentIndex, scoreIndex, 't2', Number(e.target.value))}>
+                                                                    <option value="0">0</option>
+                                                                    <option value="1">1</option>
+                                                                </select>
+                                                            </td>
+                                                        </React.Fragment>
+                                                    );
+                                                })}
+                                                <td className="border-l border-black p-1 font-mono">{percentaget1.toFixed(1)}%</td>
+                                                <td className="border-l border-black p-1 font-mono">{percentaget2.toFixed(1)}%</td>
+                                                <td className={`border-l border-black p-1 font-mono font-bold ${t2_t1 >= 0 ? 'text-green-700' : 'text-red-600'}`}>
+                                                    {t2_t1 >= 0 ? `+${t2_t1.toFixed(1)}%` : `${t2_t1.toFixed(1)}%`}
+                                                </td>
+                                                <td className="border-l border-black p-0">
+                                                    <input type="number" value={student.result.t1 === 0 ? '' : student.result.t1} className="w-11 text-center bg-transparent border-none outline-none font-mono"
+                                                        onChange={e => updateResult(studentIndex, 't1', Number(e.target.value))} />
+                                                </td>
+                                                <td className="border-l border-black p-0">
+                                                    <input type="number" value={student.result.t2 === 0 ? '' : student.result.t2} className="w-11 text-center bg-transparent border-none outline-none font-mono"
+                                                        onChange={e => updateResult(studentIndex, 't2', Number(e.target.value))} />
+                                                </td>
+                                                <td className="p-1 font-mono font-bold">
+                                                    {(student.result.t2 - student.result.t1).toFixed(2)}
+                                                </td>
+                                            </>
+                                        )}
                                     </tr>
                                 )
                             })}
@@ -557,7 +587,7 @@ const TakwimTshTable = () => {
         #a4-card-tch h1 {
             font-size: 8px !important;
             padding: 2px 4px !important;
-            
+
         }
 
         #a4-card-tch .grid > div {

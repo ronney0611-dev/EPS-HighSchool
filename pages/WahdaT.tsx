@@ -101,6 +101,8 @@ export default function WahdaGeneratorPage() {
             }
 
             const indicatorAveragesMap = new Map<number, { sum: number; count: number }>();
+            // order in which the teacher selected the indicators in the تشخيصي
+            const selectionOrder: number[] = []
 
             const levelClasses = Array.isArray(classes)
                 ? classes.filter(c => c.level === 'lycee' && getLevelKeyFromClass(c.name) === level)
@@ -120,7 +122,10 @@ export default function WahdaGeneratorPage() {
                     if (data && Array.isArray(data.selectedIndicatorIds) && Array.isArray(data.mochirAverages)) {
                         data.selectedIndicatorIds.forEach((id: number, index: number) => {
                             const avgObj = data.mochirAverages[index]
-                            const percentage = avgObj ? (avgObj.t1 || 0) * 100 : 0
+                            // an id without an average was not measured (old saves sent extra ids)
+                            if (!avgObj) return
+                            if (!selectionOrder.includes(id)) selectionOrder.push(id)
+                            const percentage = (avgObj.t1 || 0) * 100
                             const current = indicatorAveragesMap.get(id) || { sum: 0, count: 0 }
                             indicatorAveragesMap.set(id, { sum: current.sum + percentage, count: current.count + 1 })
                         })
@@ -134,7 +139,10 @@ export default function WahdaGeneratorPage() {
                 mapKeys: [...indicatorAveragesMap.keys()],
             }))
 
-            const sportIndicators = sportConfig.indicators.filter(ind => indicatorAveragesMap.has(ind.id));
+            // keep the teacher's selection order, not the JSON order
+            const sportIndicators = selectionOrder
+                .map(id => sportConfig.indicators.find(ind => ind.id === id))
+                .filter((ind): ind is NonNullable<typeof ind> => !!ind);
 
             if (sportIndicators.length === 0) {
                 throw new Error(`يرجى القيام بالتقويم التشخيصي الخاص بالمستوى ${level} أولاً`);
@@ -239,7 +247,7 @@ export default function WahdaGeneratorPage() {
             if (is12) {
                 sessionsAccumulator.splice(6, 0, {
                     sessionNumber: 0,
-                    indicatorId: 0,
+                    indicatorId: -3,
                     indicatorText: 'قياس مدى تقدم التلاميذ في المؤشرات المستهدفة',
                     goal: 'إجراء منافسة مرحلية وتسجيل النتائج',
                     specialGoal: 'تقويم بيني',
@@ -345,6 +353,13 @@ export default function WahdaGeneratorPage() {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3 pt-2">
+                    <button
+                        onClick={handleGenerate}
+                        disabled={isGenerating}
+                        className="bg-blue-600 hover:bg-blue-700 active:scale-95 disabled:opacity-50 text-white font-bold px-7 py-3 rounded-2xl shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2"
+                    >
+                        {isGenerating ? "⏳ جاري التوليد..." : "🔄 توليد جدول جديد"}
+                    </button>
 
                     <button
                         type="button"
@@ -358,14 +373,6 @@ export default function WahdaGeneratorPage() {
                             <span className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow-md transition-all duration-300 ${is12 ? 'left-1' : 'left-6'}`} />
                         </span>
                         <span className={`text-sm font-bold transition-colors ${is12 ? 'text-blue-600' : 'text-gray-400'}`}>12 حصة</span>
-                    </button>
-
-                    <button
-                        onClick={handleGenerate}
-                        disabled={isGenerating}
-                        className="bg-blue-600 hover:bg-blue-700 active:scale-95 disabled:opacity-50 text-white font-bold px-7 py-3 rounded-2xl shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2"
-                    >
-                        {isGenerating ? "⏳ جاري التوليد..." : "🔄 توليد جدول جديد"}
                     </button>
 
                     {wahda && wahda.sessions && wahda.sessions.length > 0 && (
@@ -455,7 +462,7 @@ export default function WahdaGeneratorPage() {
                                     <td className="border border-black p-2.5 text-gray-800 font-medium">تقويم تشخيصي</td>
                                     <td className="border border-black p-2.5 text-gray-800 font-medium">إجراء منافسة مصغرة وتسجيل النتائج</td>
                                 </tr>
-                                {wahda.sessions.map((session, index) => session.indicatorId === 0 ? (
+                                {wahda.sessions.map((session, index) => session.sessionNumber === 0 ? (
                                     <tr key={index} className="border border-black">
                                         <td className="border border-black p-2.5 text-gray-400 font-mono text-xs"> --/--/----</td>
                                         <td className="border border-black p-2.5 font-bold text-rose-600 bg-rose-50/50">تقويم بيني</td>
