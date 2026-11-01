@@ -1,5 +1,6 @@
+
 import mongoose from "mongoose";
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtml from "sanitize-html";
 import Teacher from "@/app/models/Teacher";
 import SharedBan from "@/app/models/Sharedban";
 
@@ -30,12 +31,15 @@ export async function isBanned(userId: string): Promise<boolean> {
 }
 
 // text typed in the fiche (contentEditable HTML): nothing that can run in the browser of another teacher.
-// DOMPurify = the real cleaner (scripts, on* events, javascript: links...). Forms and ids are removed too.
-export const SANITIZE_OPTIONS = {
-  FORBID_TAGS: ["style", "form", "input", "button", "textarea", "select", "option", "iframe", "object", "embed"],
-  FORBID_ATTR: ["id", "name", "contenteditable"],
+// sanitize-html = pure JS cleaner (works on Vercel, no jsdom): only simple text formatting is kept,
+// scripts, on* events, javascript: links, forms, iframes and ids are removed.
+const SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
+  allowedTags: ["div", "span", "p", "br", "b", "strong", "i", "em", "u", "ul", "ol", "li", "font", "sub", "sup", "small"],
+  allowedAttributes: { "*": ["style", "class", "dir"], font: ["color", "size", "face"] },
+  allowedSchemes: [],
+  disallowedTagsMode: "discard",
 };
 export const cleanHtml = (html: unknown): string =>
-  DOMPurify.sanitize(String(html ?? "").slice(0, 20000), SANITIZE_OPTIONS);
+  sanitizeHtml(String(html ?? "").slice(0, 20000), SANITIZE_OPTIONS);
 
 export const PUBLISH_PER_DAY = 20;

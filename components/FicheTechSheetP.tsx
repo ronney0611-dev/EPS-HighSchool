@@ -2,7 +2,7 @@
 
 import { Printer, Plus, Save, Share2 } from "lucide-react";
 import { createContext, useContext, useState } from "react";
-import DOMPurify from "isomorphic-dompurify";
+import DOMPurify from "dompurify";
 import { LEVEL_DATA_P, getExercisePool, type SessionPickState, type SessionExercise } from "@/src/config/fichePrimaireData";
 import { useTeacher } from "@/hooks/useTeacher";
 import PrimaireDiagram, { type PrimaireDiagramSpec } from "@/components/PrimaireDiagram";
@@ -22,8 +22,9 @@ function Drawings({ items, width = 170 }: { items: React.ReactNode[]; width?: nu
 }
 
 // text the teacher typed (saved as HTML): cleaned before it is shown again
+// browser only (dompurify needs a page); the saved text is never rendered on the server
 const clean = (html: string) =>
-  DOMPurify.sanitize(html, {
+  typeof window === "undefined" ? "" : DOMPurify.sanitize(html, {
     FORBID_TAGS: ["style", "form", "input", "button", "textarea", "select", "option", "iframe", "object", "embed"],
     FORBID_ATTR: ["id", "name", "contenteditable"],
   });

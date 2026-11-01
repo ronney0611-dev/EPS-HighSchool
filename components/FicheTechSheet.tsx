@@ -6,7 +6,7 @@ import { LEVEL_DATA, poolExercises, getIndicatorOptions, type SportPickState } f
 import { useTeacher } from "@/hooks/useTeacher";
 import { type UnitChoice, UNIT_DIAGNOSTIC, UNIT_SUMMATIVE } from "./FicheTechConfig";
 import type { PooledExercise } from "@/src/config/ficheTechData";
-import DOMPurify from "isomorphic-dompurify";
+import DOMPurify from "dompurify";
 import { planOfYearConfig } from "@/src/config/highPlan";
 import { isoLocal, trimesterOf } from "@/src/lib/daftarUtils";
 import ExerciseDiagram, { type DiagramSpec } from "@/components/Exercisediagram";
@@ -180,8 +180,9 @@ const PhaseDiagram = ({ kind }: { kind: "prep" | "eval" }) => (
 );
 
 // same cleaner as the server (a shared fiche comes from another teacher)
+// browser only (dompurify needs a page); the saved text is never rendered on the server
 const clean = (html: string) =>
-  DOMPurify.sanitize(html, {
+  typeof window === "undefined" ? "" : DOMPurify.sanitize(html, {
     FORBID_TAGS: ["style", "form", "input", "button", "textarea", "select", "option", "iframe", "object", "embed"],
     FORBID_ATTR: ["id", "name", "contenteditable"],
   });
