@@ -1,7 +1,7 @@
 'use client'
 
 import { useTeacher } from "@/hooks/useTeacher"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 interface MaterialItem {
     name: string;
@@ -37,9 +37,45 @@ const MaterialsCalc = () => {
     const { teacher } = useTeacher();
     const [newMaterial, setNewMaterial] = useState('');
     const [materials, setMaterials] = useState<MaterialItem[]>(DEFAULT_MATERIALS);
+    const [loaded, setLoaded] = useState(false);
+    const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+    const [saveError, setSaveError] = useState('');
+
+    // the saved list of the teacher (first time: the default list)
+    useEffect(() => {
+        let ignore = false;
+        fetch('/api/materials')
+            .then(r => r.json())
+            .then(d => {
+                if (ignore) return;
+                if (Array.isArray(d?.items)) setMaterials(d.items);
+                setLoaded(true);
+            })
+            .catch(() => { if (!ignore) setLoaded(true); });
+        return () => { ignore = true; };
+    }, []);
+
+    const handleSave = async () => {
+        setSaveState('saving');
+        setSaveError('');
+        try {
+            const r = await fetch('/api/materials', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ items: materials }),
+            });
+            const d = await r.json().catch(() => ({}));
+            if (!r.ok) throw new Error(d?.error || 'فشل حفظ قائمة الجرد، حاول مرة أخرى');
+            setSaveState('saved');
+        } catch (e) {
+            setSaveError(e instanceof Error ? e.message : 'فشل حفظ قائمة الجرد، حاول مرة أخرى');
+            setSaveState('error');
+        }
+    };
 
     const addMaterial = () => {
         if (!newMaterial.trim()) return;
+        setSaveState('idle');
         setMaterials([
             ...materials,
             {
@@ -53,16 +89,19 @@ const MaterialsCalc = () => {
     };
 
     const removeMaterial = (index: number) => {
+        setSaveState('idle');
         setMaterials(materials.filter((_, i) => i !== index));
     };
 
     const updateMaterial = (index: number, field: keyof MaterialItem, value: string) => {
+        setSaveState('idle');
         const updated = [...materials];
         updated[index] = { ...updated[index], [field]: value };
         setMaterials(updated);
     };
 
     const updateCondition = (index: number, field: keyof MaterialItem['condition'], value: string) => {
+        setSaveState('idle');
         const updated = [...materials];
         updated[index] = {
             ...updated[index],
@@ -94,13 +133,25 @@ const MaterialsCalc = () => {
                 </div>
             </div>
 
-            {/* Print Button */}
-            <button
-                onClick={() => window.print()}
-                className="print:hidden bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-2.5 rounded-xl mb-6 w-fit mx-auto shadow-md cursor-pointer transition-all"
-            >
-                طباعة الوثيقة
-            </button>
+            {/* Save + Print Buttons */}
+            <div className="print:hidden flex flex-wrap justify-center gap-3 mb-6">
+                <button
+                    onClick={handleSave}
+                    disabled={!loaded || saveState === 'saving'}
+                    className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-8 py-2.5 rounded-xl w-fit shadow-md cursor-pointer transition-all"
+                >
+                    {saveState === 'saving' ? 'جاري الحفظ...' : saveState === 'saved' ? 'تم الحفظ ✓' : 'حفظ'}
+                </button>
+                <button
+                    onClick={() => window.print()}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-2.5 rounded-xl w-fit shadow-md cursor-pointer transition-all"
+                >
+                    طباعة الوثيقة
+                </button>
+            </div>
+            {saveState === 'error' && (
+                <p className="print:hidden text-center text-red-600 font-semibold -mt-3 mb-4">{saveError}</p>
+            )}
 
             {/* A4 Document Container */}
             <div id="matcal" className="w-full max-w-[210mm] mx-auto bg-white text-black p-4 md:p-8 shadow-lg print:shadow-none print:p-0 print:m-0">

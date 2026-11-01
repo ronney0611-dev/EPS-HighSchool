@@ -4,7 +4,7 @@ import { images } from '@/src/config/documents'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
-import { House, CircleUserRound, BookText, LogOut } from 'lucide-react';
+import { House, CircleUserRound, BookText, LogOut, Users } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
 
@@ -17,7 +17,11 @@ const Navbare = () => {
         { href: '/', label: 'الواجهة', Icon: House },
         { href: '/profile', label: 'الحساب', Icon: CircleUserRound },
         { href: '/documents', label: 'الوثائق', Icon: BookText },
+        { href: '/library', label: 'المكتبة', Icon: Users },
     ]
+
+    // the library has sub pages (/library/[id], /library/mine): keep its link active on them
+    const activeFor = (href: string) => href === '/library' ? (pathname ?? '').startsWith('/library') : pathname === href
 
     const handleLogout = () => signOut({ callbackUrl: "/login" });
 
@@ -32,7 +36,7 @@ const Navbare = () => {
                 {/* Desktop Menu */}
                 <div className="hidden sm:flex items-center gap-8">
                     {navItems.map(({ href, label, Icon }) => {
-                        const isActive = pathname === href
+                        const isActive = activeFor(href)
                         return (
                             <Link
                                 key={href}
@@ -78,7 +82,7 @@ const Navbare = () => {
                 {/* Mobile Menu */}
                 <div className={`${open ? 'hidden' : 'flex flex-row pt-3 justify-between items-center'} absolute h-20 top-0 left-0 w-full bg-zinc-950/95 backdrop-blur-md border-b border-zinc-800 text-white z-10 shadow-xl px-6 text-sm md:hidden`} >
                     {navItems.map(({ href, Icon, label }) => {
-                        const isActive = pathname === href
+                        const isActive = activeFor(href)
                         return (
                             <Link
                                 key={href}

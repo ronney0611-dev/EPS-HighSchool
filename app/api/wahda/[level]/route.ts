@@ -52,10 +52,31 @@ export async function POST(
 
         const { level } = await params;
         const body = await request.json() as Partial<IWahdaDoc>;
-        const { sport, trimester, sessions } = body;
+        const { sport, trimester, sessions, kaidiIndex, ahdafIndex, dates } = body;
 
         if (!sport || !trimester || !Array.isArray(sessions)) {
             return NextResponse.json({ error: "Invalid payload layout" }, { status: 400 });
+        }
+
+        // new fields: only written when sent (an old client never erases them)
+        const extra: Partial<Pick<IWahdaDoc, "kaidiIndex" | "ahdafIndex" | "dates">> = {};
+        if (kaidiIndex !== undefined) {
+            if (![0, 1, 2].includes(Number(kaidiIndex))) {
+                return NextResponse.json({ error: "الكفاءة القاعدية غير صالحة" }, { status: 400 });
+            }
+            extra.kaidiIndex = Number(kaidiIndex);
+        }
+        if (ahdafIndex !== undefined) {
+            if (![0, 1].includes(Number(ahdafIndex))) {
+                return NextResponse.json({ error: "الهدف التعلمي غير صالح" }, { status: 400 });
+            }
+            extra.ahdafIndex = Number(ahdafIndex);
+        }
+        if (dates !== undefined) {
+            if (!Array.isArray(dates) || dates.length > 40) {
+                return NextResponse.json({ error: "التواريخ غير صالحة" }, { status: 400 });
+            }
+            extra.dates = dates.map((d) => String(d ?? "").slice(0, 20));
         }
 
         const updatedDoc = await WahdaDoc.findOneAndUpdate(
@@ -71,6 +92,7 @@ export async function POST(
                 sport,
                 trimester: trimester as '1' | '2' | '3',
                 sessions,
+                ...extra,
             },
             {
                 upsert: true,

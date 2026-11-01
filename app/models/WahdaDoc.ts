@@ -17,6 +17,9 @@ export interface IWahda {
   sport: string;
   trimester: '1' | '2' | '3';
   sessions: ISession[];
+  kaidiIndex?: number;   // الكفاءة القاعدية chosen (0 | 1 | 2)
+  ahdafIndex?: number;   // الهدف التعلمي chosen (0 | 1)
+  dates?: string[];      // dates typed by the teacher, one per row (0 = تشخيصي ... last = تحصيلي)
   createdAt?: string | Date;
   updatedAt?: string | Date;
 }
@@ -58,6 +61,9 @@ const WahdaDocSchema: Schema<IWahdaDoc> = new Schema(
       required: true,
     },
     sessions: [SessionSchema],
+    kaidiIndex: { type: Number, min: 0, max: 2, default: 0 },
+    ahdafIndex: { type: Number, min: 0, max: 1, default: 0 },
+    dates: { type: [String], default: [] },
   },
   { timestamps: true }
 );

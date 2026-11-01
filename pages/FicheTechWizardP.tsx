@@ -1,16 +1,120 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import FicheTechConfigP from "@/components/FicheTechConfigP";
 import FicheTechSheetP from "@/components/FicheTechSheetP";
 import { EMPTY_PICK_P, type SessionPickState } from "@/src/config/fichePrimaireData";
+import { useFicheTechP } from "@/hooks/useFicheTechP";
+import { useShared } from "@/hooks/useShared";
 
-export default function FicheTechWizardP() {
-  const [page, setPage] = useState<1 | 2>(1);
-  const [level, setLevel] = useState("level1");
-  const [pick, setPick] = useState<SessionPickState>(EMPTY_PICK_P);
+// preview = a shared fiche shown read-only in the library (same sheet, same styles)
+export type FichePPreview = { level: string; pick: SessionPickState; fields: Record<string, string> };
+
+export default function FicheTechWizardP({ preview }: { preview?: FichePPreview } = {}) {
+  const [page, setPage] = useState<1 | 2>(preview ? 2 : 1);
+  const [level, setLevel] = useState(preview?.level ?? "level1");
+  const [pick, setPick] = useState<SessionPickState>(preview?.pick ?? EMPTY_PICK_P);
+
+  // saved fiches
+  const { list, loading: listLoading, fetchList, fetchOne, save, remove } = useFicheTechP();
+  const [ficheId, setFicheId] = useState<string | null>(null);
+  const [savedFields, setSavedFields] = useState<Record<string, string> | undefined>(preview?.fields);
+  const [loadedKey, setLoadedKey] = useState<string | null>(null);
+  const [sheetKey, setSheetKey] = useState(0);
+  const configKey = JSON.stringify({ level, pick });
+
+  useEffect(() => { if (!preview) fetchList(); }, [fetchList, preview]);
+
+  const { publish } = useShared();
+  // a snapshot of what is on the screen; the saved fiche (if any) is the source -> publishing again updates it
+  const handleShare = (fields: Record<string, string>, title: string) =>
+    publish("ficheP", { level, pick, fields }, ficheId, title);
+
+  // the choice changed after opening a saved fiche -> its text no longer matches: start from the defaults
+  const handleNext = () => {
+    if (loadedKey !== null && loadedKey !== configKey) {
+      setSavedFields(undefined);
+      setLoadedKey(null);
+      setFicheId(null);
+    }
+    setSheetKey((k) => k + 1);
+    setPage(2);
+  };
+
+  const handleNew = () => {
+    setFicheId(null);
+    setSavedFields(undefined);
+    setLoadedKey(null);
+    setLevel("level1");
+    setPick(EMPTY_PICK_P);
+    setPage(1);
+  };
+
+  const handleOpen = async (id: string) => {
+    const f = await fetchOne(id);
+    if (!f) return alert("تعذر فتح البطاقة، حاول مرة أخرى");
+    setLevel(f.level);
+    setPick(f.pick);
+    setFicheId(f._id);
+    setSavedFields(f.fields);
+    setLoadedKey(JSON.stringify({ level: f.level, pick: f.pick }));
+    setSheetKey((k) => k + 1);
+    setPage(2);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("حذف هذه البطاقة نهائيا؟")) return;
+    if (!(await remove(id))) return alert("فشل الحذف، حاول مرة أخرى");
+    if (id === ficheId) handleNew();
+    fetchList();
+  };
+
+  const handleSave = async (fields: Record<string, string>, title: string) => {
+    const doc = await save({ _id: ficheId, title, level, pick, fields });
+    if (!doc) return false;
+    setFicheId(doc._id);
+    setSavedFields(fields);
+    setLoadedKey(configKey);
+    fetchList();
+    return true;
+  };
 
   const handlePrint = useCallback(() => window.print(), []);
+
+  // Print = ALWAYS one A4 landscape page (button AND Ctrl+P): the sheet gets the print styles,
+  // then it is zoomed down until it fits.
+  useEffect(() => {
+    const PAGE_W = 1075; // px: 297mm - 2x6mm margins
+    const PAGE_H = 740;  // px: 210mm - 2x6mm margins, minus a small safety
+    const MIN_ZOOM = 0.55;
+
+    const fit = () => {
+      const root = document.querySelector<HTMLElement>(".fiche-root");
+      const sheet = document.getElementById("print-fiche-sheet-p");
+      if (!root || !sheet) return;
+      root.classList.add("print-mode");
+      sheet.style.zoom = "";
+      let z = 1;
+      while (true) {
+        sheet.style.width = `${PAGE_W / z}px`;
+        if (sheet.getBoundingClientRect().height * z <= PAGE_H || z <= MIN_ZOOM) break;
+        z = Math.max(MIN_ZOOM, Math.round((z - 0.02) * 100) / 100);
+      }
+      sheet.style.zoom = String(z);
+    };
+    const reset = () => {
+      document.querySelector(".fiche-root")?.classList.remove("print-mode");
+      const sheet = document.getElementById("print-fiche-sheet-p");
+      if (sheet) { sheet.style.width = ""; sheet.style.zoom = ""; }
+    };
+
+    window.addEventListener("beforeprint", fit);
+    window.addEventListener("afterprint", reset);
+    return () => {
+      window.removeEventListener("beforeprint", fit);
+      window.removeEventListener("afterprint", reset);
+    };
+  }, []);
 
   return (
     <div className="fiche-root" dir="rtl" lang="ar">
@@ -92,87 +196,98 @@ export default function FicheTechWizardP() {
               justify-content: center;
             }
 
-          @media print {
-            @page {
-              size: A4 landscape;
-              margin: 0;
-            }
+          /* drawings */
+          .p-draw svg { display:block; width:100%; height:auto; }
 
+          /* print look (applied just before printing, measured, then zoomed to one page) */
+          .fiche-root.print-mode { background:#fff !important; padding:0 !important; max-width:none !important; margin:0 !important; }
+          .print-mode #print-fiche-sheet-p { box-shadow:none !important; border:none !important; margin:0 !important; }
+          .print-mode .letterhead { padding:2mm 4mm !important; border-bottom:1.5pt solid var(--green) !important; }
+          .print-mode .letterhead h1 { font-size:16px !important; margin:0 !important; }
+          .print-mode .meta-strip { break-inside:avoid; }
+          .print-mode .meta-item { padding:1.5mm 4mm !important; }
+          .print-mode .meta-label { font-size:10px !important; }
+          .print-mode .meta-value { font-size:13px !important; }
+          .print-mode .objective-box { margin:1.5mm 4mm !important; padding:1.5mm 3mm !important; font-size:11px !important; }
+          .print-mode .table-wrap { margin-top:1.5mm !important; overflow:visible !important; }
+          .print-mode table.phases { width:100% !important; table-layout:fixed !important; font-size:11px !important; }
+          .print-mode table.phases col:nth-child(1) { width:8% !important; }
+          .print-mode table.phases col:nth-child(2) { width:20% !important; }
+          .print-mode table.phases col:nth-child(3) { width:47% !important; }
+          .print-mode table.phases col:nth-child(4) { width:5% !important; }
+          .print-mode table.phases col:nth-child(5) { width:20% !important; }
+          .print-mode table.phases th { padding:1.5mm 2mm !important; font-size:10.5px !important; }
+          .print-mode table.phases td { padding:2mm !important; vertical-align:top !important; word-break:break-word !important; }
+          .print-mode table.phases tr { break-inside:avoid !important; page-break-inside:avoid !important; }
+          .print-mode .phase-label { white-space:normal !important; font-size:12px !important; }
+          .print-mode .multi div + div { margin-top:3px; padding-top:3px; }
+
+          @media print {
+            @page { size: A4 landscape; margin: 6mm; }
             * {
               -webkit-print-color-adjust: exact !important;
               print-color-adjust: exact !important;
               color-adjust: exact !important;
             }
-
-            html, body {
-              margin: 0 !important;
-              padding: 0 !important;
-              background: white !important;
-            }
-
+            html, body { margin: 0 !important; padding: 0 !important; background: white !important; }
             .toolbar { display: none !important; }
-
-            .fiche-root {
-              background: #fff !important;
-              padding: 0 !important;
-              max-width: 100% !important;
-              margin: 0 !important;
-            }
-
-            #print-fiche-sheet {
-              width: 100% !important;
-              max-width: 100% !important;
-              margin: 0 !important;
-              box-shadow: none !important;
-              border: none !important;
-              font-size: 14px !important;
-              page-break-after: avoid !important;
-            }
-
-            .letterhead { padding: 3mm 4mm !important; border-bottom: 1.5pt solid var(--green) !important; }
-            .letterhead h1 { font-size: 13px !important; margin: 0 !important; }
-
-            .meta-strip { break-inside: avoid; }
-            .meta-item { padding: 2mm 4mm !important; }
-            .meta-label { font-size: 11px !important; }
-            .meta-value { font-size: 14px !important; }
-
-            .objective-box { margin: 2mm 4mm !important; padding: 2mm 4mm !important; font-size: 9.5px !important; }
-
-            .table-wrap { margin-top: 2mm !important; overflow: visible !important; }
-
-            table.phases {
-              width: 100% !important;
-              table-layout: fixed !important;
-              border-collapse: collapse !important;
-              font-size: 11px !important;
-            }
-
-            table.phases col:nth-child(1) { width: 8% !important; }
-            table.phases col:nth-child(2) { width: 19% !important; }
-            table.phases col:nth-child(3) { width: 32% !important; }
-            table.phases col:nth-child(4) { width: 6% !important; }
-            table.phases col:nth-child(5) { width: 17% !important; }
-            table.phases col:nth-child(6) { width: 18% !important; }
-
-            table.phases th { padding: 2mm 3mm !important; font-size: 9px !important; }
-            table.phases td { padding: 3mm !important; vertical-align: top !important; word-break: break-word !important; }
-
-            /* fixed mm heights per row — fills the page regardless of content amount */
-            table.phases tbody tr:nth-child(1) td { height: 22mm !important; }
-            table.phases tbody tr:nth-child(2) td { height: 80mm !important; }
-            table.phases tbody tr:nth-child(3) td { height: 28mm !important; }
-
-            table.phases tr { break-inside: avoid !important; page-break-inside: avoid !important; }
           }
       `}</style>
 
       {page === 1 && (
-        <FicheTechConfigP level={level} setLevel={setLevel} pick={pick} setPick={setPick} onNext={() => setPage(2)} />
+        <>
+          <FicheTechConfigP level={level} setLevel={setLevel} pick={pick} setPick={setPick} onNext={handleNext} />
+
+          <div className="panel" style={{ marginTop: 18 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+              <h3 className="panel-title" style={{ margin: 0 }}>📁 البطاقات المحفوظة</h3>
+              {ficheId && <button className="btn btn-ghost" onClick={handleNew}>+ بطاقة جديدة</button>}
+            </div>
+            {listLoading ? (
+              <p style={{ fontSize: 13, color: "#7A8471" }}>⏳ جاري التحميل...</p>
+            ) : list.length === 0 ? (
+              <p style={{ fontSize: 13, color: "#7A8471" }}>لا توجد بطاقات محفوظة بعد. أنشئ بطاقة واضغط «حفظ».</p>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 260, overflowY: "auto" }}>
+                {list.map((f) => (
+                  <div
+                    key={f._id}
+                    style={{
+                      display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10,
+                      padding: "9px 12px", border: "1px solid var(--line)", borderRadius: 6,
+                      background: f._id === ficheId ? "var(--sage)" : "#fff",
+                    }}
+                  >
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontWeight: 700, fontSize: 13, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {f.title || "بطاقة بدون عنوان"}
+                      </div>
+                      <div style={{ fontSize: 11, color: "#7A8471" }}>آخر تعديل: {new Date(f.updatedAt).toLocaleDateString("ar-DZ")}</div>
+                    </div>
+                    <div className="btn-row">
+                      <button className="btn btn-primary" onClick={() => handleOpen(f._id)}>فتح</button>
+                      <button className="btn btn-ghost" onClick={() => handleDelete(f._id)}>حذف</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </>
       )}
 
       {page === 2 && (
-        <FicheTechSheetP level={level} pick={pick} onBack={() => setPage(1)} onPrint={handlePrint} />
+        <FicheTechSheetP
+          key={sheetKey}
+          level={level}
+          pick={pick}
+          onBack={handleNew}
+          onPrint={handlePrint}
+          savedFields={savedFields}
+          onSave={preview ? undefined : handleSave}
+          onShare={preview ? undefined : handleShare}
+          readOnly={!!preview}
+        />
       )}
     </div>
   );

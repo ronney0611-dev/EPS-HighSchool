@@ -10,6 +10,9 @@ import level1Curriculum from '@/src/config/level1Curriculum.json'
 import level2Curriculum from '@/src/config/level2Curriculum.json'
 import level3Curriculum from '@/src/config/level3Curriculum.json'
 import { useTeacher } from '@/hooks/useTeacher'
+import { useShared } from '@/hooks/useShared'
+import { useDailyLogLycee } from '@/hooks/useDailyLogLycee'
+import { trimesterOf } from '@/src/lib/daftarUtils'
 
 const SPORTS = [
     { key: 'sprint', name: 'سباق السرعة' },
@@ -33,6 +36,12 @@ const LEVEL_TO_CONFIG_KEY: Record<'1' | '2' | '3', 's1' | 's2' | 's3'> = {
 const FARDI_SPORTS = ['sprint', 'long_jump', 'shot_put'];
 const getSportType = (sportKey: string): 'fardi' | 'groupe' =>
     FARDI_SPORTS.includes(sportKey) ? 'fardi' : 'groupe';
+
+// '2026-10-31' -> '31/10/2026'
+const toDZ = (iso: string) => {
+    const [y, m, d] = iso.split('-')
+    return y && m && d ? `${d}/${m}/${y}` : ''
+}
 
 const getLevelKeyFromClass = (
     className: string | number | undefined,
@@ -64,6 +73,8 @@ export default function WahdaGeneratorPage() {
     const [trimester, setTrimester] = useState<'1' | '2' | '3'>('1');
     const [is12, setIs12] = useState<boolean>(false);
     const [kaidiIndex, setKaidiIndex] = useState<0 | 1 | 2>(0);
+    const { entries } = useDailyLogLycee();
+    const [dateEdits, setDateEdits] = useState<Record<string, string>>({});
 
     useEffect(() => {
         if (level && sport && trimester) {
@@ -275,12 +286,32 @@ export default function WahdaGeneratorPage() {
         setWahda({ ...wahda, sessions: updatedSessions })
     }
 
+    const { publish, publishing } = useShared();
+    const handleShare = async () => {
+        if (!wahda) return
+        if (!confirm('نشر هذه الوحدة في مكتبة الأساتذة؟ سيظهر اسمك عليها ويمكن للأساتذة نسخها.')) return
+        const res = await publish('wahda', {
+            level,
+            sport: wahda.sport,
+            trimester: wahda.trimester,
+            sessions: wahda.sessions,
+            kaidiIndex,
+            ahdafIndex,
+        }, wahda._id ?? null)
+        if (res.ok) toast(res.updated ? 'تم تحديث الوحدة في مكتبة الأساتذة' : 'تم نشر الوحدة في مكتبة الأساتذة', { type: 'success' })
+        else toast(res.error, { type: 'error' })
+    }
+
     const handleSave = async () => {
         if (!wahda) return
+        const rows = wahda.sessions.length + 2 // تشخيصي + sessions + تحصيلي
         const success = await saveWahda(level, {
             sport: wahda.sport,
             trimester: wahda.trimester,
-            sessions: wahda.sessions
+            sessions: wahda.sessions,
+            kaidiIndex,
+            ahdafIndex,
+            dates: Array.from({ length: rows }, (_, row) => dateEdits[`${level}|${sport}|${trimester}|${row}`] ?? ''),
         })
         if (success) {
             toast("تم حفظ الوحدة التعلمية بنجاح !", { type: "success" });
@@ -301,6 +332,60 @@ export default function WahdaGeneratorPage() {
     }
 
     const ahdafText = kaidi?.ahdafTaalamuiya[ahdafIndex] || '';
+
+    // a saved وحدة brings back its الكفاءة القاعدية, الهدف التعلمي and typed dates
+    const syncKey = wahda?._id ? `${wahda._id}|${String(wahda.updatedAt ?? '')}` : null
+    const [prevSync, setPrevSync] = useState<string | null>(null)
+    if (syncKey && syncKey !== prevSync && wahda) {
+        setPrevSync(syncKey)
+        const k = ([0, 1, 2].includes(Number(wahda.kaidiIndex)) ? Number(wahda.kaidiIndex) : 0) as 0 | 1 | 2
+        const a = (Number(wahda.ahdafIndex) === 1 ? 1 : 0) as 0 | 1
+        setKaidiIndex(k)
+        setPrevKaidi(planOfYearConfig[LEVEL_TO_CONFIG_KEY[level]]?.kafaatQaaidiya[k])
+        setAhdafIndex(a)
+        const prefix = `${wahda.level}|${wahda.sport}|${wahda.trimester}|`
+        setDateEdits(d => {
+            const next: Record<string, string> = {}
+            Object.entries(d).forEach(([key, v]) => { if (!key.startsWith(prefix)) next[key] = v })
+                ; (wahda.dates ?? []).forEach((v, row) => { if (v) next[prefix + row] = v })
+            return next
+        })
+    }
+
+    // date of each row = first date a class of this level did this session (الدفتر اليومي, done only)
+    // row 0 = تشخيصي, 1..n = sessions of the وحدة, n+1 = تحصيلي (same order as the الدفتر)
+    const autoDates = useMemo(() => {
+        const out: string[] = []
+        const ids = new Set(
+            (Array.isArray(classes) ? classes : [])
+                .filter(c => c.level === 'lycee' && getLevelKeyFromClass(c.name) === level)
+                .map(c => String(c._id))
+        )
+        const byClass = new Map<string, string[]>()
+            ;[...(entries ?? [])]
+                .filter(e => ids.has(String(e.classId)) && e.sport === sport && e.done && String(trimesterOf(e.date)) === trimester)
+                .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time))
+                .forEach(e => {
+                    const id = String(e.classId)
+                    byClass.set(id, [...(byClass.get(id) ?? []), e.date])
+                })
+        byClass.forEach(dates => dates.forEach((d, k) => {
+            if (!out[k] || d < out[k]) out[k] = d
+        }))
+        return out
+    }, [entries, classes, level, sport, trimester])
+
+    const dateCell = (row: number) => {
+        const key = `${level}|${sport}|${trimester}|${row}`
+        return (
+            <input
+                value={dateEdits[key] ?? (autoDates[row] ? toDZ(autoDates[row]) : '')}
+                onChange={(e) => setDateEdits(d => ({ ...d, [key]: e.target.value }))}
+                placeholder="--/--/----"
+                className="w-full bg-transparent border-none text-center text-gray-800 font-mono text-xs p-0 focus:ring-1 focus:ring-blue-300 rounded"
+            />
+        )
+    }
 
     return (
         <div dir="rtl" className="p-4 sm:p-8 max-w-7xl mx-auto space-y-8 text-right font-sans bg-black min-h-screen">
@@ -389,6 +474,13 @@ export default function WahdaGeneratorPage() {
                             >
                                 🖨️ طباعة
                             </button>
+                            <button
+                                onClick={handleShare}
+                                disabled={publishing}
+                                className="bg-sky-600 hover:bg-sky-700 active:scale-95 disabled:opacity-50 text-white font-bold px-7 py-3 rounded-2xl shadow-lg shadow-sky-500/20 transition-all flex items-center gap-2"
+                            >
+                                {publishing ? '⏳ جاري النشر...' : '📤 مشاركة مع الأساتذة'}
+                            </button>
                         </>
                     )}
                 </div>
@@ -454,7 +546,7 @@ export default function WahdaGeneratorPage() {
                             </thead>
                             <tbody className="divide-y divide-black">
                                 <tr className="border border-black">
-                                    <td className="border border-black p-2.5 text-gray-400 font-mono text-xs"> --/--/----</td>
+                                    <td className="border border-black p-2.5 text-gray-400 font-mono text-xs">{dateCell(0)}</td>
                                     <td
                                         className="border border-black p-2.5 font-bold text-rose-600 bg-rose-50/50 hover:bg-rose-100/50 transition cursor-pointer">
                                         منافسة اولية
@@ -465,7 +557,7 @@ export default function WahdaGeneratorPage() {
                                 </tr>
                                 {wahda.sessions.map((session, index) => session.sessionNumber === 0 ? (
                                     <tr key={index} className="border border-black">
-                                        <td className="border border-black p-2.5 text-gray-400 font-mono text-xs"> --/--/----</td>
+                                        <td className="border border-black p-2.5 text-gray-400 font-mono text-xs">{dateCell(index + 1)}</td>
                                         <td className="border border-black p-2.5 font-bold text-rose-600 bg-rose-50/50">تقويم بيني</td>
                                         <td className="border border-black text-gray-800 p-2.5 font-medium">{session.indicatorText}</td>
                                         <td className="border border-black p-2.5 text-gray-800 font-medium">{session.specialGoal}</td>
@@ -473,7 +565,7 @@ export default function WahdaGeneratorPage() {
                                     </tr>
                                 ) : (
                                     <tr key={index} className="border border-black hover:bg-gray-50/80 transition-colors">
-                                        <td className="border border-black p-2 text-gray-400 font-mono text-xs"> --/--/----</td>
+                                        <td className="border border-black p-2 text-gray-400 font-mono text-xs">{dateCell(index + 1)}</td>
                                         <td className="border border-black p-2.5 font-bold text-blue-700 bg-blue-50/40 hover:bg-blue-100/40 transition cursor-pointer">
                                             {session.isReminder ? "حصة تذكيرية" : `تعليمية ${String(session.sessionNumber).padStart(2, '0')}`}
                                         </td>
@@ -504,7 +596,7 @@ export default function WahdaGeneratorPage() {
                                     </tr>
                                 ))}
                                 <tr className="border border-black">
-                                    <td className="border border-black p-2.5 text-gray-400 font-mono text-xs"> --/--/----</td>
+                                    <td className="border border-black p-2.5 text-gray-400 font-mono text-xs">{dateCell(wahda.sessions.length + 1)}</td>
                                     <td
                                         className="border border-black p-2.5 font-bold text-rose-600 bg-rose-50/50 hover:bg-rose-100/50 transition cursor-pointer">
                                         منافسة نهائية

@@ -3,25 +3,37 @@
 import { useState, useCallback, useEffect } from "react";
 import FicheTechConfig, { type UnitChoice, UNIT_DIAGNOSTIC, UNIT_SUMMATIVE } from "@/components/FicheTechConfig";
 import FicheTechSheet from "@/components/FicheTechSheet";
+import FicheReady, { type ReadyConfig } from "@/components/FichReady";
 import { EMPTY_PICK, type SportPickState } from "@/src/config/ficheTechData";
 import { useFicheTech } from "@/hooks/useFicheTech";
+import { useShared } from "@/hooks/useShared";
 
-export default function FicheTechWizard() {
-  const [page, setPage] = useState<1 | 2 | 3>(1);
-  const [level, setLevel] = useState("level1");
-  const [sessionNumber, setSessionNumber] = useState<UnitChoice>(1);
-  const [individual, setIndividual] = useState<SportPickState>(EMPTY_PICK);
-  const [collective, setCollective] = useState<SportPickState>(EMPTY_PICK);
+// preview = a shared fiche shown read-only in the library (same sheet, same styles)
+export type FichePreview = {
+  level: string;
+  sessionNumber: UnitChoice;
+  individual: SportPickState;
+  collective: SportPickState;
+  fields: Record<string, string>;
+};
+
+export default function FicheTechWizard({ preview }: { preview?: FichePreview } = {}) {
+  const [page, setPage] = useState<1 | 2 | 3>(preview ? 3 : 1);
+  const [mode, setMode] = useState<"choose" | "manual" | "ready">("choose");
+  const [level, setLevel] = useState(preview?.level ?? "level1");
+  const [sessionNumber, setSessionNumber] = useState<UnitChoice>(preview?.sessionNumber ?? 1);
+  const [individual, setIndividual] = useState<SportPickState>(preview?.individual ?? EMPTY_PICK);
+  const [collective, setCollective] = useState<SportPickState>(preview?.collective ?? EMPTY_PICK);
 
   const { list, loading: listLoading, fetchList, fetchOne, save, remove } = useFicheTech();
   const [ficheId, setFicheId] = useState<string | null>(null);
-  const [savedFields, setSavedFields] = useState<Record<string, string> | undefined>(undefined);
+  const [savedFields, setSavedFields] = useState<Record<string, string> | undefined>(preview?.fields);
   const [loadedConfigKey, setLoadedConfigKey] = useState<string | null>(null);
   const [sheetKey, setSheetKey] = useState(0);
 
   const configKey = JSON.stringify({ level, sessionNumber, individual, collective });
 
-  useEffect(() => { fetchList(); }, [fetchList]);
+  useEffect(() => { if (!preview) fetchList(); }, [fetchList, preview]);
 
   const isBattery = sessionNumber === UNIT_DIAGNOSTIC || sessionNumber === UNIT_SUMMATIVE;
   const batteryReady = (p: SportPickState) =>
@@ -32,6 +44,42 @@ export default function FicheTechWizard() {
     : !!individual.sport && individual.indicatorId !== null && individual.chosenKeys.every(Boolean) && individual.chosenKeys.length > 0 &&
     !!collective.sport && collective.indicatorId !== null && collective.chosenKeys.every(Boolean) && collective.chosenKeys.length > 0;
   const handlePrint = useCallback(() => window.print(), []);
+
+  // Print = ALWAYS one A4 landscape page, whatever the mode (text / drawing / both),
+  // the number of exercises or what the teacher typed. Works with the button AND Ctrl+P.
+  useEffect(() => {
+    const PAGE_W = 1088; // px: 297mm - 8mm margins
+    const PAGE_H = 752;  // px: 210mm - 8mm margins, minus a small safety
+    const MIN_ZOOM = 0.6; // below this the text is unreadable: let it go to 2 pages
+
+    const fit = () => {
+      const root = document.querySelector<HTMLElement>(".fiche-root");
+      const sheet = document.getElementById("print-fiche-sheet");
+      if (!root || !sheet) return;
+      root.classList.add("print-mode");
+      sheet.style.zoom = "";
+      let z = 1;
+      while (true) {
+        sheet.style.width = `${PAGE_W / z}px`;
+        if (sheet.getBoundingClientRect().height * z <= PAGE_H || z <= MIN_ZOOM) break;
+        z = Math.max(MIN_ZOOM, Math.round((z - 0.02) * 100) / 100);
+      }
+      sheet.style.zoom = String(z);
+    };
+    const reset = () => {
+      document.querySelector(".fiche-root")?.classList.remove("print-mode");
+      const sheet = document.getElementById("print-fiche-sheet");
+      if (sheet) { sheet.style.width = ""; sheet.style.zoom = ""; }
+    };
+
+    window.addEventListener("beforeprint", fit);
+    window.addEventListener("afterprint", reset);
+    return () => {
+      window.removeEventListener("beforeprint", fit);
+      window.removeEventListener("afterprint", reset);
+    };
+  }, []);
+
 
   const handleNext = () => {
     if (loadedConfigKey !== null && loadedConfigKey !== configKey) {
@@ -49,7 +97,21 @@ export default function FicheTechWizard() {
     setSessionNumber(1);
     setIndividual(EMPTY_PICK);
     setCollective(EMPTY_PICK);
+    setMode("choose");
     setPage(1);
+  };
+
+  // "بطاقة جاهزة": the state is prepared from the وحدة + الدفتر, then same flow as the manual fiche
+  const handleReady = (cfg: ReadyConfig) => {
+    setLevel(cfg.level);
+    setSessionNumber(cfg.sessionNumber);
+    setIndividual(cfg.individual);
+    setCollective(cfg.collective);
+    setFicheId(null);
+    setSavedFields(cfg.fields);
+    setLoadedConfigKey(JSON.stringify({ level: cfg.level, sessionNumber: cfg.sessionNumber, individual: cfg.individual, collective: cfg.collective }));
+    setSheetKey(k => k + 1);
+    setPage(2);
   };
 
   const handleOpen = async (id: string) => {
@@ -82,6 +144,11 @@ export default function FicheTechWizard() {
     fetchList();
     return true;
   };
+
+  const { publish } = useShared();
+  // a snapshot of what is on the screen; the saved fiche (if any) is the source -> publishing again updates it
+  const handleShare = (fields: Record<string, string>) =>
+    publish("fiche", { level, sessionNumber, individual, collective, fields }, ficheId);
 
   const handleRegenerate = () => {
     if (!confirm("سيتم استبدال تعديلاتك بالمحتوى الأصلي (لن يحذف المحفوظ حتى تضغط حفظ). متابعة؟")) return;
@@ -168,6 +235,54 @@ export default function FicheTechWizard() {
               gap: 10px;
               justify-content: center;
             }
+        .diagrams { display:flex; flex-direction:column; gap:8px; margin-top:8px; }
+        .diagram-item { position:relative; }
+        .diagram-num { position:absolute; top:0; right:0; font-size:11px; font-weight:700; color:var(--green); }
+
+          /* ===== PRINT =====
+             The fit script (FicheTechWizard, "beforeprint") adds .print-mode to .fiche-root,
+             measures the sheet and sets a zoom so it ALWAYS fits on one A4 landscape page.
+             These rules are not inside @media print so they can be measured before printing. */
+          .fiche-root.print-mode {
+            background: #fff !important;
+            padding: 0 !important;
+            max-width: none !important;
+            margin: 0 !important;
+          }
+          .print-mode #print-fiche-sheet {
+            display: flex !important;
+            flex-direction: column !important;
+            max-width: none !important;
+            height: auto !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            border: none !important;
+            font-size: 11px !important;
+          }
+          .print-mode .letterhead { padding: 4px 8px !important; border-bottom: 2px solid var(--green) !important; }
+          .print-mode .letterhead h1 { font-size: 12px !important; margin: 0 !important; }
+          .print-mode .letterhead .eyebrow { display: none !important; }
+          .print-mode .meta-strip { display: grid !important; break-inside: avoid; page-break-inside: avoid; }
+          .print-mode .meta-item { padding: 3px 10px !important; }
+          .print-mode .meta-label { font-size: 8.5px !important; }
+          .print-mode .meta-value { font-size: 11px !important; }
+          .print-mode .objective-box { margin: 4px 8px !important; padding: 3px 10px !important; font-size: 10px !important; }
+          .print-mode .table-wrap { overflow: visible !important; margin-top: 6px !important; }
+          .print-mode table.phases { width: 100% !important; font-size: 8.5px !important; }
+          .print-mode table.phases th,
+          .print-mode table.phases td { padding: 6px 8px !important; }
+          .print-mode table.phases tr { break-inside: avoid; page-break-inside: avoid; }
+          .print-mode .multi div + div { margin-top: 3px; padding-top: 3px; }
+          .print-mode .cond-block { font-size: 7.5px !important; line-height: 1.35 !important; }
+
+          /* diagrams: 2 per row (drawing only), 3 per row (text + drawing) */
+          .print-mode .diagrams { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 3px 5px !important; margin-top: 4px !important; }
+          .print-mode div:not([style*="none"]) + .diagrams { grid-template-columns: repeat(3, 1fr) !important; gap: 2px 3px !important; }
+          .print-mode .diagram-item { break-inside: avoid; page-break-inside: avoid; }
+          .print-mode .diagram-num { font-size: 7px !important; color: #000 !important; }
+          .print-mode .diagrams svg { display: block; width: 100% !important; max-width: 100% !important; height: auto !important; max-height: 125px; margin: 0 auto; }
+          .print-mode div:not([style*="none"]) + .diagrams svg { max-height: 100px; }
+
           @media print {
             @page {
               size: A4 landscape;
@@ -188,92 +303,60 @@ export default function FicheTechWizard() {
             }
 
             .toolbar { display: none !important; }
-
-            .fiche-root {
-              background: #fff !important;
-              padding: 0 !important;
-              max-width: 100% !important;
-              margin: 0 !important;
-            }
-
-            #print-fiche-sheet {
-              display: flex !important;
-              flex-direction: column !important;
-              width: 100% !important;
-              max-width: 100% !important;
-              height: auto !important;
-              margin: 0 auto !important;
-              box-shadow: none !important;
-              border: none !important;
-              font-size: 11px !important;
-            }
-
-            .letterhead {
-              padding: 4px 8px !important;
-              border-bottom: 2px solid var(--green) !important;
-            }
-            .letterhead h1 {
-              font-size: 12px !important;
-              margin: 0 !important;
-            }
-            .letterhead .eyebrow {
-              display: none !important;
-            }
-
-            .meta-strip {
-              display: grid !important;
-              break-inside: avoid;
-              page-break-inside: avoid;
-            }
-            .meta-item {
-              padding: 3px 10px !important;
-            }
-            .meta-label {
-              font-size: 8.5px !important;
-            }
-            .meta-value {
-              font-size: 11px !important;
-            }
-
-            .objective-box {
-              margin: 4px 8px !important;
-              padding: 3px 10px !important;
-              font-size: 10px !important;
-            }
-
-            .table-wrap {
-              flex: 1 !important;
-              height: 100% !important;
-              overflow: visible !important;
-              margin-top: 6px !important;
-            }
-
-            table.phases {
-              width: 100% !important;
-              height: 100% !important;
-              font-size: 8.5px !important;
-            }
-            table.phases th,
-            table.phases td {
-              padding: 6px 8px !important;
-            }
-            table.phases tr {
-              break-inside: avoid;
-              page-break-inside: avoid;
-            }
           }
       `}</style>
 
       {page === 1 && (
         <>
-          <FicheTechConfig
-            level={level} setLevel={setLevel}
-            sessionNumber={sessionNumber} setSessionNumber={setSessionNumber}
-            individual={individual} setIndividual={setIndividual}
-            collective={collective} setCollective={setCollective}
-            canProceed={canProceed}
-            onNext={handleNext}
-          />
+          {mode === "choose" && (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 14, marginBottom: 18 }}>
+              <button
+                className="panel"
+                onClick={() => setMode("ready")}
+                style={{ textAlign: "right", cursor: "pointer", border: "2px solid var(--line)", display: "flex", flexDirection: "column", gap: 6 }}
+              >
+                <span style={{ fontSize: 28 }}>⚡</span>
+                <span style={{ fontSize: 17, fontWeight: 800 }}>بطاقة جاهزة</span>
+                <span style={{ fontSize: 12.5, color: "#555" }}>
+                  بطاقة واحدة لكل مستوى، تُملأ تلقائيا من الوحدة التعلمية وتقدم الدفتر اليومي. راجعها ثم اطبعها.
+                </span>
+              </button>
+              <button
+                className="panel"
+                onClick={() => setMode("manual")}
+                style={{ textAlign: "right", cursor: "pointer", border: "2px solid var(--line)", display: "flex", flexDirection: "column", gap: 6 }}
+              >
+                <span style={{ fontSize: 28 }}>✍️</span>
+                <span style={{ fontSize: 17, fontWeight: 800 }}>بطاقة يدوية</span>
+                <span style={{ fontSize: 12.5, color: "#555" }}>
+                  اختر بنفسك المستوى والحصة والمؤشر والتمارين.
+                </span>
+              </button>
+            </div>
+          )}
+
+          {mode !== "choose" && (
+            <div style={{ marginBottom: 12 }}>
+              <button className="btn btn-ghost" onClick={() => setMode("choose")}>→ رجوع إلى الاختيار</button>
+            </div>
+          )}
+
+          {mode === "ready" && (
+            <div style={{ marginBottom: 18 }}>
+              <FicheReady onOpen={handleReady} />
+            </div>
+          )}
+
+          {mode === "manual" && (
+            <FicheTechConfig
+              level={level} setLevel={setLevel}
+              sessionNumber={sessionNumber} setSessionNumber={setSessionNumber}
+              individual={individual} setIndividual={setIndividual}
+              collective={collective} setCollective={setCollective}
+              canProceed={canProceed}
+              onNext={handleNext}
+            />
+          )}
 
           <div className="panel mt-4" style={{ marginBottom: 18 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
@@ -347,9 +430,11 @@ export default function FicheTechWizard() {
           level={level} sessionNumber={sessionNumber}
           individual={individual} collective={collective}
           savedFields={savedFields}
-          onBack={() => setPage(1)}
+          onBack={handleNew}
           onPrint={handlePrint}
           onSave={handleSave}
+          onShare={preview ? undefined : handleShare}
+          readOnly={!!preview}
           onRegenerate={handleRegenerate}
         />
       )}

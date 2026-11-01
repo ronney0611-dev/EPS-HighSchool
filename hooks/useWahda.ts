@@ -38,7 +38,10 @@ export const useWahda = () => {
 
   const saveWahda = async (
     level: string, 
-    payload: { sport: string; trimester: string; sessions: ISession[] }
+    payload: {
+      sport: string; trimester: string; sessions: ISession[];
+      kaidiIndex?: number; ahdafIndex?: number; dates?: string[];
+    }
   ) => {
     setLoading(true);
     setError(null);

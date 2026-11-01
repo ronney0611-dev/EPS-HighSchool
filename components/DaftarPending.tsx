@@ -213,7 +213,8 @@ export default function DaftarPending({
             for (const part of pending) {
                 const sport = sportFor(card, part)
                 const offKey = `${card.classId}|${sport}`
-                const info = done ? sessionFor(card, part, offsets[offKey] ?? 0) : null
+                // not done: the goal of the planned session is still written (it stays pending, the count does not move)
+                const info = sessionFor(card, part, done ? (offsets[offKey] ?? 0) : 0)
                 const session = info?.status === 'ok' ? info.session : null
                 const res = await addEntry({
                     classId: card.classId,
