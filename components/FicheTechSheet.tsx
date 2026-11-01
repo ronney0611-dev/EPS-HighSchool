@@ -195,22 +195,43 @@ function Editable({
   field,
   saved,
   className,
+  style,
   children,
 }: {
   as?: "td" | "span" | "div";
   field: string;
   saved?: Record<string, string>;
   className?: string;
+  style?: React.CSSProperties;
   children?: React.ReactNode;
 }) {
   const Tag = as;
   const value = saved?.[field];
   const readOnly = useContext(ReadOnlyCtx);
-  const common = { className, "data-field": field, contentEditable: !readOnly, suppressContentEditableWarning: true };
+  // an emptied piece must keep a size, otherwise the teacher can no longer click in it to write
+  const keepSize: React.CSSProperties =
+    as === "span" ? { display: "inline-block", minWidth: "8em", minHeight: "1.3em" }
+      : as === "div" ? { minHeight: "3em", outline: "none", cursor: "text" }
+        : {};
+  const common = { className, style: { ...keepSize, ...style }, "data-field": field, contentEditable: !readOnly, suppressContentEditableWarning: true };
   return value !== undefined
     ? <Tag {...common} dangerouslySetInnerHTML={{ __html: clean(value) }} />
     : <Tag {...common}>{children}</Tag>;
 }
+
+// a click anywhere in the ظروف الإنجاز cell writes in its text (like the other cells)
+const focusText = (e: React.MouseEvent<HTMLTableCellElement>) => {
+  if (e.target !== e.currentTarget) return;
+  const el = e.currentTarget.querySelector<HTMLElement>('[contenteditable="true"]');
+  if (!el) return;
+  el.focus();
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  range.collapse(false);
+  const sel = window.getSelection();
+  sel?.removeAllRanges();
+  sel?.addRange(range);
+};
 
 const collectFields = () => {
   const out: Record<string, string> = {};
@@ -469,7 +490,7 @@ export default function FicheTechSheet({
                   احماء خاص.
                 </Editable>
                 <Editable field="prep_dur" saved={s}>15د</Editable>
-                <td>
+                <td onClick={focusText} style={{ cursor: "text" }}>
                   <div style={{ display: showText ? undefined : "none" }}>
                     <Editable as="div" field="prep_cond" saved={s}>
                       <div className="multi">
@@ -501,7 +522,7 @@ export default function FicheTechSheet({
                   <div className=" border-t border-gray-300 border-dashed">تقويم تكويني: شبه منافسة</div>
                 </Editable>
                 <Editable field="ind_dur" saved={s}>40د</Editable>
-                <td>
+                <td onClick={focusText} style={{ cursor: "text" }}>
                   {/* kept in the page even when hidden, so it is still saved */}
                   <div style={{ display: showText ? undefined : "none" }}>
                     <Editable as="div" field="ind_cond" saved={s}>
@@ -529,7 +550,7 @@ export default function FicheTechSheet({
                   <div className=" border-t border-gray-300 border-dashed">تقويم تكويني: شبه منافسة</div>
                 </Editable>
                 <Editable field="col_dur" saved={s}>50د</Editable>
-                <td>
+                <td onClick={focusText} style={{ cursor: "text" }}>
                   <div style={{ display: showText ? undefined : "none" }}>
                     <Editable as="div" field="col_cond" saved={s}>
                       <ConditionsText list={isBattery ? collectiveBattery : collectiveExercises} />
@@ -546,7 +567,7 @@ export default function FicheTechSheet({
                 <Editable field="eval_goal" saved={s}>العودة بالجسم الى الحالة الطبيعية (الاسترخاء)</Editable>
                 <Editable field="eval_situ" saved={s}>جري خفيف حول الملعب, اصطفاف ( تمديدات ) , ومناقشة الحصة ثم تحية و انصراف.</Editable>
                 <Editable field="eval_dur" saved={s}>5د</Editable>
-                <td>
+                <td onClick={focusText} style={{ cursor: "text" }}>
                   <div style={{ display: showText ? undefined : "none" }}>
                     <Editable as="div" field="eval_cond" saved={s}>
                       <div className="multi">

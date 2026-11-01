@@ -51,7 +51,12 @@ function Editable({
   const Tag = as;
   const value = saved?.[field];
   const readOnly = useContext(ReadOnlyCtx);
-  const common = { className, style, "data-field": field, contentEditable: !readOnly, suppressContentEditableWarning: true };
+  // an emptied piece must keep a size, otherwise the teacher can no longer click in it to write
+  const keepSize: React.CSSProperties =
+    as === "span" ? { display: "inline-block", minWidth: "8em", minHeight: "1.3em" }
+      : as === "div" ? { minHeight: "3em", outline: "none", cursor: "text" }
+        : {};
+  const common = { className, style: { ...keepSize, ...style }, "data-field": field, contentEditable: !readOnly, suppressContentEditableWarning: true };
   return value !== undefined
     ? <Tag {...common} dangerouslySetInnerHTML={{ __html: clean(value) }} />
     : <Tag {...common}>{children}</Tag>;
