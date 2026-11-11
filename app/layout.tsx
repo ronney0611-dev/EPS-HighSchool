@@ -1,9 +1,10 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/Footer";
 import Navbare from "@/components/Navbare";
 import Providers from "@/components/Providers";
+import PwaInstall from "@/components/PwaInstall";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -51,6 +52,27 @@ export const metadata: Metadata = {
     type: "website",
     url: "https://www.epsdz.com",
   },
+  // app (PWA): name and icon on the phone, full screen on iPhone
+  applicationName: "EPS DZ",
+  appleWebApp: {
+    capable: true,
+    title: "EPS DZ",
+    statusBarStyle: "black-translucent",
+  },
+  icons: {
+    icon: [
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180" }],
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#000000",
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -91,6 +113,7 @@ export default function RootLayout({
           <Navbare />
           {children}
           <Footer />
+          <PwaInstall />
         </Providers>
       </body>
     </html>

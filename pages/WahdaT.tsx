@@ -11,8 +11,7 @@ import level2Curriculum from '@/src/config/level2Curriculum.json'
 import level3Curriculum from '@/src/config/level3Curriculum.json'
 import { useTeacher } from '@/hooks/useTeacher'
 import { useShared } from '@/hooks/useShared'
-import { useDailyLogLycee } from '@/hooks/useDailyLogLycee'
-import { trimesterOf } from '@/src/lib/daftarUtils'
+import { SCHEDULES, SCHEDULE_S1_S2 } from '@/src/config/annualSchedule'
 
 const SPORTS = [
     { key: 'sprint', name: 'سباق السرعة' },
@@ -37,10 +36,9 @@ const FARDI_SPORTS = ['sprint', 'long_jump', 'shot_put'];
 const getSportType = (sportKey: string): 'fardi' | 'groupe' =>
     FARDI_SPORTS.includes(sportKey) ? 'fardi' : 'groupe';
 
-// '2026-10-31' -> '31/10/2026'
-const toDZ = (iso: string) => {
-    const [y, m, d] = iso.split('-')
-    return y && m && d ? `${d}/${m}/${y}` : ''
+// the 3 فصول of the وحدة = the 3 مجالات of the annual plan
+const DOMAIN_OF_TRIMESTER: Record<string, string> = {
+    '1': 'المجال التعلمي الأول', '2': 'المجال التعلمي الثاني', '3': 'المجال التعلمي الثالث',
 }
 
 const getLevelKeyFromClass = (
@@ -73,8 +71,6 @@ export default function WahdaGeneratorPage() {
     const [trimester, setTrimester] = useState<'1' | '2' | '3'>('1');
     const [is12, setIs12] = useState<boolean>(false);
     const [kaidiIndex, setKaidiIndex] = useState<0 | 1 | 2>(0);
-    const { entries } = useDailyLogLycee();
-    const [dateEdits, setDateEdits] = useState<Record<string, string>>({});
 
     useEffect(() => {
         if (level && sport && trimester) {
@@ -304,14 +300,12 @@ export default function WahdaGeneratorPage() {
 
     const handleSave = async () => {
         if (!wahda) return
-        const rows = wahda.sessions.length + 2 // تشخيصي + sessions + تحصيلي
         const success = await saveWahda(level, {
             sport: wahda.sport,
             trimester: wahda.trimester,
             sessions: wahda.sessions,
             kaidiIndex,
             ahdafIndex,
-            dates: Array.from({ length: rows }, (_, row) => dateEdits[`${level}|${sport}|${trimester}|${row}`] ?? ''),
         })
         if (success) {
             toast("تم حفظ الوحدة التعلمية بنجاح !", { type: "success" });
@@ -333,7 +327,7 @@ export default function WahdaGeneratorPage() {
 
     const ahdafText = kaidi?.ahdafTaalamuiya[ahdafIndex] || '';
 
-    // a saved وحدة brings back its الكفاءة القاعدية, الهدف التعلمي and typed dates
+    // a saved وحدة brings back its الكفاءة القاعدية and الهدف التعلمي
     const syncKey = wahda?._id ? `${wahda._id}|${String(wahda.updatedAt ?? '')}` : null
     const [prevSync, setPrevSync] = useState<string | null>(null)
     if (syncKey && syncKey !== prevSync && wahda) {
@@ -343,49 +337,36 @@ export default function WahdaGeneratorPage() {
         setKaidiIndex(k)
         setPrevKaidi(planOfYearConfig[LEVEL_TO_CONFIG_KEY[level]]?.kafaatQaaidiya[k])
         setAhdafIndex(a)
-        const prefix = `${wahda.level}|${wahda.sport}|${wahda.trimester}|`
-        setDateEdits(d => {
-            const next: Record<string, string> = {}
-            Object.entries(d).forEach(([key, v]) => { if (!key.startsWith(prefix)) next[key] = v })
-                ; (wahda.dates ?? []).forEach((v, row) => { if (v) next[prefix + row] = v })
-            return next
-        })
     }
 
-    // date of each row = first date a class of this level did this session (الدفتر اليومي, done only)
-    // row 0 = تشخيصي, 1..n = sessions of the وحدة, n+1 = تحصيلي (same order as the الدفتر)
-    const autoDates = useMemo(() => {
+    // dates = the weeks of the annual plan (المخطط السنوي), fixed:
+    // row 0 = تشخيصي, 1..n = sessions of the وحدة, n+1 = تحصيلي
+    const planDates = useMemo(() => {
         const out: string[] = []
-        const ids = new Set(
-            (Array.isArray(classes) ? classes : [])
-                .filter(c => c.level === 'lycee' && getLevelKeyFromClass(c.name) === level)
-                .map(c => String(c._id))
-        )
-        const byClass = new Map<string, string[]>()
-            ;[...(entries ?? [])]
-                .filter(e => ids.has(String(e.classId)) && e.sport === sport && e.done && String(trimesterOf(e.date)) === trimester)
-                .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time))
-                .forEach(e => {
-                    const id = String(e.classId)
-                    byClass.set(id, [...(byClass.get(id) ?? []), e.date])
-                })
-        byClass.forEach(dates => dates.forEach((d, k) => {
-            if (!out[k] || d < out[k]) out[k] = d
-        }))
+        if (!wahda) return out
+        const domain = DOMAIN_OF_TRIMESTER[String(wahda.trimester)] ?? ''
+        const rows = (SCHEDULES[LEVEL_TO_CONFIG_KEY[level]] ?? SCHEDULE_S1_S2).filter(r => r.domain === domain)
+        const weekOf = (unit: number) => rows.find(r => r.type === 'regular' && Number(r.unit) === unit)?.dates ?? ''
+        out[0] = rows.find(r => r.type === 'diagnostic' && r.individualGoal === 'تقويم تشخيصي')?.dates ?? ''
+        const learning = wahda.sessions.filter(x => x.sessionNumber !== 0).length
+        const units = Math.max(1, rows.filter(r => r.type === 'regular').reduce((m, r) => Math.max(m, Number(r.unit) || 0), 0))
+        let k = 0
+        let last = ''
+        wahda.sessions.forEach((x, i) => {
+            if (x.sessionNumber === 0) { out[i + 1] = last; return } // تقويم بيني: same week as the session before it
+            k++
+            last = weekOf(Math.min(units, Math.ceil((k * units) / Math.max(1, learning))))
+            out[i + 1] = last
+        })
+        out[wahda.sessions.length + 1] = rows.find(r => r.type === 'summative')?.dates ?? ''
         return out
-    }, [entries, classes, level, sport, trimester])
+    }, [wahda, level])
 
-    const dateCell = (row: number) => {
-        const key = `${level}|${sport}|${trimester}|${row}`
-        return (
-            <input
-                value={dateEdits[key] ?? (autoDates[row] ? toDZ(autoDates[row]) : '')}
-                onChange={(e) => setDateEdits(d => ({ ...d, [key]: e.target.value }))}
-                placeholder="--/--/----"
-                className="w-full bg-transparent border-none text-center text-gray-800 font-mono text-xs p-0 focus:ring-1 focus:ring-blue-300 rounded"
-            />
-        )
-    }
+    const dateCell = (row: number) => (
+        <span className="block text-center text-gray-800 font-mono text-[10px] leading-tight whitespace-pre-line">
+            {(planDates[row] || '--/--/----').replace(' - ', '\n')}
+        </span>
+    )
 
     return (
         <div dir="rtl" className="p-4 sm:p-8 max-w-7xl mx-auto space-y-8 text-right font-sans bg-black min-h-screen">
@@ -539,7 +520,7 @@ export default function WahdaGeneratorPage() {
                                 <tr className="bg-blue-100 font-black text-gray-900 border-b-2 border-black">
                                     <th className="border border-black p-3 w-[12%]">التاريخ</th>
                                     <th className="border border-black p-3 w-[15%]">طبيعة الحصة</th>
-                                    <th className="border border-black p-3 w-[25%]">المعايير (المؤشر)</th>
+                                    <th className="border border-black p-3 w-[25%]">المعايير (النقائص)</th>
                                     <th className="border border-black p-3 w-[24%]">الأهداف الخاصة</th>
                                     <th className="border border-black p-3 w-[24%]">هدف النشاط</th>
                                 </tr>
