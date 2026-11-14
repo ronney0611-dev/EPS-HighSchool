@@ -36,7 +36,13 @@ export default function PwaInstall() {
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js").catch(() => { });
+      if (process.env.NODE_ENV === "production") {
+        navigator.serviceWorker.register("/sw.js").catch(() => {});
+      } else {
+        // dev (localhost): file names are not versioned, a cache would show old code -> remove it
+        navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister())).catch(() => {});
+        if ("caches" in window) caches.keys().then(ks => ks.forEach(k => caches.delete(k))).catch(() => {});
+      }
     }
     if (isStandalone()) return;
     try {
@@ -80,6 +86,14 @@ export default function PwaInstall() {
     if (ios) setGuide(true);
   };
 
+  // opens the iPhone share menu directly (the teacher then taps «إضافة إلى الشاشة الرئيسية»)
+  const canShare = typeof navigator !== "undefined" && "share" in navigator;
+  const openShare = async () => {
+    try {
+      await navigator.share({ title: "EPS DZ", url: window.location.origin });
+    } catch { /* closed by the teacher */ }
+  };
+
   const later = () => {
     setShow(false);
     try { localStorage.setItem(HIDE_KEY, String(Date.now() + 7 * 24 * 3600 * 1000)); } catch { /* ignore */ }
@@ -89,11 +103,11 @@ export default function PwaInstall() {
 
   return (
     <>
-      <div dir="rtl" className="print:hidden fixed bottom-4 left-4 right-4 z-200 mx-auto flex max-w-md items-center gap-3 rounded-2xl border border-zinc-700 bg-zinc-900/95 p-3 shadow-2xl shadow-black/60 backdrop-blur-md sm:right-auto">
+      <div dir="rtl" className="print:hidden fixed bottom-4 left-4 right-4 z-[200] mx-auto flex max-w-md items-center gap-3 rounded-2xl border border-zinc-700 bg-zinc-900/95 p-3 shadow-2xl shadow-black/60 backdrop-blur-md sm:right-auto">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/icons/icon-192.png" alt="" className="h-12 w-12 rounded-xl" />
         <div className="min-w-0 flex-1">
-          <div className="text-sm font-extrabold text-white">تطبيق EPSDZ</div>
+          <div className="text-sm font-extrabold text-white">تطبيق EPS DZ</div>
           <div className="text-xs text-zinc-400">ثبّته على هاتفك وافتحه بضغطة واحدة</div>
         </div>
         <button
@@ -109,7 +123,7 @@ export default function PwaInstall() {
       </div>
 
       {guide && (
-        <div dir="rtl" className="print:hidden fixed inset-0 z-210 flex items-end justify-center bg-black/70 p-4" onClick={() => setGuide(false)}>
+        <div dir="rtl" className="print:hidden fixed inset-0 z-[210] flex items-end justify-center bg-black/70 p-4" onClick={() => setGuide(false)}>
           <div className="w-full max-w-md rounded-3xl border border-zinc-700 bg-zinc-900 p-5 text-white" onClick={(e) => e.stopPropagation()}>
             <div className="mb-4 flex items-center gap-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -137,10 +151,23 @@ export default function PwaInstall() {
                 </li>
               </ol>
             )}
+
+            {iosSafari && canShare && (
+              <button type="button" onClick={openShare} className="mb-2 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#0A84FF] text-sm font-extrabold text-white">
+                <ShareIcon size={20} color="#ffffff" />
+                افتح قائمة المشاركة
+              </button>
+            )}
             <button type="button" onClick={() => setGuide(false)} className="h-12 w-full rounded-xl bg-white text-sm font-extrabold text-black">
               فهمت
             </button>
           </div>
+          {iosSafari && (
+            <div className="pointer-events-none fixed bottom-2 left-1/2 flex -translate-x-1/2 animate-bounce flex-col items-center" aria-hidden="true">
+              <ShareIcon size={34} />
+              <span className="text-3xl leading-none text-[#0A84FF]">↓</span>
+            </div>
+          )}
         </div>
       )}
     </>

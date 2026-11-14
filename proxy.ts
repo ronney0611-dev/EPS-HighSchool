@@ -3,13 +3,6 @@ import { getToken } from 'next-auth/jwt'
 
 const REFRESH_TIMEOUT_MS = 3000
 
-// After a successful subscription check, the result is remembered for 15 min
-// in a signed cookie. During that time /documents pages do NOT call
-// /api/auth/refresh again (= far fewer function calls + MongoDB queries).
-// - Only a SUCCESS is remembered: a teacher who just paid is unlocked immediately.
-// - The cookie is signed with NEXTAUTH_SECRET and bound to the user id:
-//   it cannot be faked or reused by another account.
-// - It never outlives paidUntil.
 const ACCESS_COOKIE = 'eps_access'
 const ACCESS_TTL_MS = 15 * 60 * 1000
 

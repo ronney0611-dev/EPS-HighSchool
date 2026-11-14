@@ -1,9 +1,14 @@
 'use client'
 import { useClasses } from "@/hooks/useClasses"
 import { useGroupe } from "@/hooks/useGroupe";
-import React, { useState } from "react"
-import { Gender, getScore } from "@/src/config/barem2"
-import { useTakwini } from "@/hooks/useTakwini";
+import React, { useEffect, useState } from "react"
+import { Gender } from "@/src/config/barem2"
+import { useTakwini, levelToNote, fardiSessionNote } from "@/hooks/useTakwini";
+import { useAttendance } from "@/hooks/useMostamir";
+import TakwiniMaidani, { type MaidaniResult } from "@/components/TakwiniMaidani";
+import { type Activity, WEEK_OPTIONS, nextWeeks, buildSessionWeeks, levelKeyOfClass } from "@/src/config/takwiniWeeks";
+
+const noteInputOk = (v: string) => v === '' || (/^\d{0,2}([.,]\d{0,2})?$/.test(v) && parseFloat(v.replace(',', '.') || '0') <= 20);
 import { ToastContainer, toast } from "react-toastify";
 
 const TaqwimTakwini = () => {
@@ -11,10 +16,19 @@ const TaqwimTakwini = () => {
     const [classSelect, setClassSelect] = useState('');
     const { groupe, fetchGroupes } = useGroupe();
     const { saveTakwini, fetchTakwini, performances, setPerformances,
+        fardiLevels, setFardiLevels,
         groupLevels, setGroupLevels,
-        groupNotes, setGroupNotes, } = useTakwini();
-    const [activity, setActivity] = useState<'sprint' | 'longjump' | 'throw'>('sprint');
+        groupNotes, setGroupNotes,
+        fardiEdit, setFardiEdit,
+        finalEdit, setFinalEdit,
+        weeks, fetchWeeks, saveWeeks, } = useTakwini();
+    const { attendance, fetcheAttendance } = useAttendance();
+    const [activity, setActivity] = useState<Activity>('sprint');
+    const [maidaniOpen, setMaidaniOpen] = useState(false);
     const [is9, setIs9] = useState(false);
+
+    // weeks of ح1..ح9 = per teacher + activity
+    useEffect(() => { fetchWeeks(activity); }, [activity]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const selectedClassData = classes.find(c => c.name === classSelect);
     const isThirdYear = selectedClassData?.name.startsWith('3') ?? false;
@@ -25,6 +39,7 @@ const TaqwimTakwini = () => {
     // If saved data already has sessions 7-9, always show 9 so nothing is hidden.
     const hasExtraSessions =
         Object.keys(performances).some(k => /-(6|7|8)$/.test(k)) ||
+        Object.keys(fardiLevels).some(k => /-(6|7|8)$/.test(k)) ||
         Object.keys(groupLevels).some(k => /-(6|7|8)$/.test(k));
     const SESSIONS = is9 || hasExtraSessions ? 9 : 6;
 
@@ -39,29 +54,43 @@ const TaqwimTakwini = () => {
     const studentIds = classStudents.map(s => s._id);
     const genders = Object.fromEntries(classStudents.map(s => [s._id, s.gender as Gender]));
 
-    const levelToNote = (level: string) => {
-        switch (level) {
-            case 'A': return { default: 19, min: 18, max: 20 };
-            case 'B': return { default: 16, min: 15, max: 17 };
-            case 'C': return { default: 12, min: 11, max: 14 };
-            case 'D': return { default: 9, min: 7, max: 10 };
-            case 'E': return { default: 4, min: 3, max: 6 };
-            default: return null;
-        }
-    };
-
-    const calcScore = (studentId: string, gender: Gender, perf: string): number => {
-        const val = parseFloat(perf);
-        if (isNaN(val) || val <= 0) return 0;
-        return getScore(activity, gender, val, isThirdYear);
-    };
-
+    // individual note = best session; a session = الأداء, النتيجة, or (الأداء + النتيجة) / 2
     const getBestFardi = (studentId: string, gender: Gender): number => {
-        const scores = Array.from({ length: SESSIONS }, (_, j) => {
-            const perf = performances[`${studentId}-${j}`] ?? '';
-            return calcScore(studentId, gender, perf);
-        });
-        return Math.max(...scores, 0);
+        const notes = Array.from({ length: SESSIONS }, (_, j) =>
+            fardiSessionNote(fardiLevels[`${studentId}-${j}`] ?? '', performances[`${studentId}-${j}`] ?? '', activity, gender, isThirdYear));
+        return Math.max(...notes, 0);
+    };
+
+    // each ح = one week (cell 0..35 of the attendance page). Teacher sets ح1, the rest follow.
+    const sessionWeeks = buildSessionWeeks(weeks, SESSIONS, levelKeyOfClass(selectedClassData?.name), activity);
+    const changeWeek = (gi: number, cellIndex: number) => {
+        const after = nextWeeks(gi, cellIndex, SESSIONS);
+        saveWeeks(activity, sessionWeeks.map((w, k) => (k < gi ? w : k === gi ? cellIndex : after[k])))
+            .then(ok => { if (!ok) toast("فشل حفظ الأسبوع، حاول مرة أخرى", { type: "error" }); });
+    };
+    const attendanceOf = (studentId: string, gi: number): string => {
+        const slot = sessionWeeks[gi];
+        if (slot === undefined) return '';
+        return attendance.find(a => String(a.studentId) === studentId)?.sessions?.[slot] ?? '';
+    };
+
+    // field test results -> table (same ح tested again: keep the better note)
+    const applyMaidani = (gi: number, results: MaidaniResult[]) => {
+        const perf = { ...performances };
+        const lv = { ...fardiLevels };
+        for (const r of results) {
+            const key = `${r.studentId}-${gi}`;
+            const g = genders[r.studentId] === 'male' ? 'male' : 'female';
+            const oldNote = fardiSessionNote(lv[key] ?? '', perf[key] ?? '', activity, g, isThirdYear);
+            const newNote = fardiSessionNote(r.level, r.perf, activity, g, isThirdYear);
+            if (newNote <= 0 || newNote < oldNote) continue;
+            if (r.perf) perf[key] = r.perf; else delete perf[key];
+            if (r.level) lv[key] = r.level; else delete lv[key];
+        }
+        setPerformances(perf);
+        setFardiLevels(lv);
+        if (gi >= 6) setIs9(true);
+        toast("تمت إضافة النتائج إلى الجدول، لا تنس الحفظ", { type: "success" });
     };
 
     const getGroupSessionKey = (studentId: string, groupIndex: number, gi: number) =>
@@ -97,6 +126,9 @@ const TaqwimTakwini = () => {
                             onChange={e => {
                                 setClassSelect(e.target.value);
                                 setPerformances({});
+                                setFardiLevels({});
+                                setFardiEdit({});
+                                setFinalEdit({});
                                 setGroupLevels({});
                                 setGroupNotes({});
                                 const found = classes.find(c => c.name === e.target.value);
@@ -104,6 +136,7 @@ const TaqwimTakwini = () => {
                                     fetchStudents(found._id);
                                     fetchGroupes(found._id);
                                     fetchTakwini(found._id, activity);
+                                    fetcheAttendance(found._id);
                                 }
                             }}>
                             <option value="">— اختر القسم —</option>
@@ -119,7 +152,7 @@ const TaqwimTakwini = () => {
                             className="w-full h-11 border border-gray-200 rounded-xl px-3 bg-gray-50 text-gray-800 text-sm font-semibold focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition"
                             value={activity}
                             onChange={e => {
-                                const newActivity = e.target.value as 'sprint' | 'longjump' | 'throw';
+                                const newActivity = e.target.value as Activity;
                                 setActivity(newActivity);
                                 if (classSelect) fetchTakwini(selectedClassData?._id ?? '', newActivity);
                             }}>
@@ -147,6 +180,14 @@ const TaqwimTakwini = () => {
                     </div>
 
                 </div>
+                <button
+                    onClick={() => {
+                        if (!selectedClassData) return toast("اختر القسم أولا", { type: "error" });
+                        setMaidaniOpen(true);
+                    }}
+                    className='mt-4 w-full bg-emerald-600 text-white py-3 rounded-xl font-bold text-base cursor-pointer'>
+                    ⏱️ اختبار ميداني
+                </button>
             </div>
 
             {/* Document Grid */}
@@ -166,7 +207,16 @@ const TaqwimTakwini = () => {
                                 <th></th>
                                 <th className="border border-black bg-blue-200 print:bg-blue-200">الفوج</th>
                                 {Array.from({ length: SESSIONS }).map((_, i) => (
-                                    <th colSpan={2} className="border border-black bg-blue-200 print:bg-blue-200" key={i}>ح{i + 1}</th>
+                                    <th colSpan={2} className="border border-black bg-blue-200 print:bg-blue-200" key={i}>
+                                        ح{i + 1}
+                                        <select
+                                            className="block w-full text-[8px] font-normal leading-tight bg-transparent outline-none appearance-none text-center cursor-pointer"
+                                            value={sessionWeeks[i]}
+                                            onChange={e => changeWeek(i, Number(e.target.value))}
+                                        >
+                                            {WEEK_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                                        </select>
+                                    </th>
                                 ))}
                                 <th className="border border-black bg-blue-200 print:bg-blue-200">علامة النشاط الفردي</th>
                                 <th colSpan={SESSIONS} className="border border-black bg-blue-200 print:bg-blue-200 p-1 text-xs">
@@ -198,7 +248,9 @@ const TaqwimTakwini = () => {
                                 const gender: Gender = s.gender === 'male' ? 'male' : 'female';
                                 const groupIndex = getStudentGroupIndex(s._id);
                                 const groupLabel = groupIndex !== -1 ? groupLabels[groupIndex] : '—';
-                                const bestFardi = getBestFardi(s._id, gender);
+                                const autoFardi = getBestFardi(s._id, gender);
+                                const typedFardi = parseFloat(fardiEdit[s._id] ?? '');
+                                const bestFardi = !isNaN(typedFardi) ? typedFardi : autoFardi;
                                 const jamaiNote = getJamaiNote(s._id, groupIndex);
                                 const isMalade = s.status === 'malade';
                                 let currentGroupLevel = '';
@@ -226,35 +278,57 @@ const TaqwimTakwini = () => {
                                         </td>
                                         {isMalade ? (
                                             <>
-                                                {Array.from({ length: SESSIONS * 3 + 4 }).map((_, k) => (
-                                                    <td key={k} className={`${cell} text-red-500 `}>اعفاء</td>
-                                                ))}
+                                                <td colSpan={SESSIONS * 3 + 4} className={`${cell} text-red-500`}>اعفاء</td>
                                             </>
                                         ) : (
                                             <>
                                                 <td className='border border-black font-semibold'>{groupLabel}</td>
 
-                                                {/* INDIVIDUAL PERFORMANCE SESSIONS INPUTS */}
+                                                {/* INDIVIDUAL SESSIONS: الأداء (A..E) + النتيجة (performance) */}
                                                 {Array.from({ length: SESSIONS }).map((_, gi) => {
-                                                    const perfKey = `${s._id}-${gi}`;
-                                                    const rawPerf = performances[perfKey] ?? '';
-                                                    const currentScore = calcScore(s._id, gender, rawPerf);
-
+                                                    const key = `${s._id}-${gi}`;
+                                                    const att = attendanceOf(s._id, gi);
+                                                    if (att === 'A' || att === 'M') {
+                                                        return (
+                                                            <td key={gi} colSpan={2} className='border border-black font-semibold' title={att === 'A' ? 'غائب' : 'مريض'}>
+                                                                {att === 'A' ? 'غ' : 'م'}
+                                                            </td>
+                                                        );
+                                                    }
                                                     return (
                                                         <React.Fragment key={gi}>
                                                             <td className='border border-black p-0'>
+                                                                <select
+                                                                    className="w-full text-center outline-none appearance-none bg-transparent text-xs p-1"
+                                                                    value={fardiLevels[key] ?? ''}
+                                                                    onChange={e => {
+                                                                        const v = e.target.value;
+                                                                        setFardiLevels(prev => {
+                                                                            const n = { ...prev };
+                                                                            if (v) n[key] = v; else delete n[key];
+                                                                            return n;
+                                                                        });
+                                                                    }}
+                                                                >
+                                                                    <option value=""></option>
+                                                                    <option value="A">A</option>
+                                                                    <option value="B">B</option>
+                                                                    <option value="C">C</option>
+                                                                    <option value="D">D</option>
+                                                                    <option value="E">E</option>
+                                                                </select>
+                                                            </td>
+                                                            <td className='border border-black p-0'>
                                                                 <input
                                                                     type="text"
+                                                                    inputMode="decimal"
                                                                     className={inputCls}
-                                                                    value={rawPerf}
+                                                                    value={performances[key] ?? ''}
                                                                     onChange={e => {
                                                                         const val = e.target.value;
-                                                                        setPerformances(prev => ({ ...prev, [perfKey]: val }));
+                                                                        setPerformances(prev => ({ ...prev, [key]: val }));
                                                                     }}
                                                                 />
-                                                            </td>
-                                                            <td className='border border-black text-gray-600 font-medium bg-gray-50/50'>
-                                                                {currentScore > 0 ? currentScore : ''}
                                                             </td>
                                                         </React.Fragment>
                                                     );
@@ -262,7 +336,22 @@ const TaqwimTakwini = () => {
 
                                                 {/* BEST PERFORMANCE SUMMARY COLUMN */}
                                                 <td className={`${cell} font-semibold text-blue-700 bg-blue-50/30`}>
-                                                    {bestFardi > 0 ? bestFardi.toFixed(2) : ''}
+                                                    <input
+                                                        type="text"
+                                                        inputMode="decimal"
+                                                        className={`${inputCls} font-semibold text-blue-700 ${fardiEdit[s._id] !== undefined ? 'underline decoration-dotted print:no-underline' : ''}`}
+                                                        title={fardiEdit[s._id] !== undefined ? 'علامة معدلة من طرف الأستاذ (امسحها للرجوع إلى العلامة التلقائية)' : undefined}
+                                                        value={fardiEdit[s._id] ?? (autoFardi > 0 ? autoFardi.toFixed(2) : '')}
+                                                        onChange={e => {
+                                                            const v = e.target.value;
+                                                            if (!noteInputOk(v)) return;
+                                                            setFardiEdit(prev => {
+                                                                const n = { ...prev };
+                                                                if (v === '') delete n[s._id]; else n[s._id] = v.replace(',', '.');
+                                                                return n;
+                                                            });
+                                                        }}
+                                                    />
                                                 </td>
 
                                                 {/* SHARED GROUP ACTIONS LOOP FOR ALL SESSIONS */}
@@ -301,7 +390,7 @@ const TaqwimTakwini = () => {
                                                                     }
                                                                 }}
                                                             >
-                                                                <option value="">-</option>
+                                                                <option value=""></option>
                                                                 <option value="A">A</option>
                                                                 <option value="B">B</option>
                                                                 <option value="C">C</option>
@@ -332,12 +421,27 @@ const TaqwimTakwini = () => {
                                                                 <option key={n} value={n}>{n}</option>
                                                             ))}
                                                         </select>
-                                                    ) : jamaiNote > 0 ? jamaiNote : '—'}
+                                                    ) : jamaiNote > 0 ? jamaiNote : ''}
                                                 </td>
 
                                                 {/* FINAL OVERALL TOTAL SCORE */}
                                                 <td className='border border-black font-bold bg-amber-50/50 text-emerald-700 text-sm'>
-                                                    {final > 0 ? final.toFixed(2) : ''}
+                                                    <input
+                                                        type="text"
+                                                        inputMode="decimal"
+                                                        className={`${inputCls} font-bold text-sm text-emerald-700 ${finalEdit[s._id] !== undefined ? 'underline decoration-dotted print:no-underline' : ''}`}
+                                                        title={finalEdit[s._id] !== undefined ? 'علامة معدلة من طرف الأستاذ (امسحها للرجوع إلى العلامة التلقائية)' : undefined}
+                                                        value={finalEdit[s._id] ?? (final > 0 ? final.toFixed(2) : '')}
+                                                        onChange={e => {
+                                                            const v = e.target.value;
+                                                            if (!noteInputOk(v)) return;
+                                                            setFinalEdit(prev => {
+                                                                const n = { ...prev };
+                                                                if (v === '') delete n[s._id]; else n[s._id] = v.replace(',', '.');
+                                                                return n;
+                                                            });
+                                                        }}
+                                                    />
                                                 </td>
                                             </>
                                         )}
@@ -349,11 +453,14 @@ const TaqwimTakwini = () => {
                 </div>
 
             </div>
+            <p className="print:hidden mt-3 text-xs text-gray-500">
+                غ = غائب · م = مريض (من صفحة الحضور) · علامة الحصة: الأداء، أو النتيجة، أو (الأداء + النتيجة) ÷ 2 · العلامة المسطرة = معدلة من طرف الأستاذ (امسحها للرجوع إلى التلقائية)
+            </p>
             <div className="print:hidden my-6 flex gap-4" >
                 <button
-                    onClick={() => {
-                        saveTakwini(classId, activity, studentIds, genders, isThirdYear);
-                        toast("تم حفظ المعلومات بنجاح !", { type: "success" });
+                    onClick={async () => {
+                        const ok = await saveTakwini(classId, activity, studentIds, genders, isThirdYear);
+                        toast(ok ? "تم حفظ المعلومات بنجاح !" : "فشل الحفظ، حاول مرة أخرى", { type: ok ? "success" : "error" });
                     }}
                     className='bg-green-600 text-white px-6 py-2 rounded-xl font-semibold text-sm w-full md:w-auto cursor-pointer'>
                     حفظ
@@ -365,6 +472,21 @@ const TaqwimTakwini = () => {
                 </button>
                 <ToastContainer />
             </div>
+
+            {maidaniOpen && selectedClassData && (
+                <TakwiniMaidani
+                    classId={classId}
+                    activity={activity}
+                    sessions={SESSIONS}
+                    weekLabels={sessionWeeks.map(w => WEEK_OPTIONS[w]?.label ?? '')}
+                    students={classStudents.map(s => ({ _id: s._id, name: s.name, gender: s.gender, status: s.status }))}
+                    groups={(groupe ?? []).map((g, gi) => ({ label: groupLabels[gi] ?? String(gi + 1), index: gi }))}
+                    groupOf={getStudentGroupIndex}
+                    attendanceOf={attendanceOf}
+                    onApply={applyMaidani}
+                    onClose={() => setMaidaniOpen(false)}
+                />
+            )}
 
             {/* print-only CSS, self-contained in this file: landscape A4
                 (this table has 22+ columns, needs the wide dimension),

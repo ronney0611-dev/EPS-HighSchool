@@ -3,7 +3,10 @@ import mongoose, { Document } from "mongoose";
 export interface ITakwini {
     studentId: mongoose.Types.ObjectId,
     performances: string[],
+    levels: string[],
     bestFardi: number,
+    fardiEdited: boolean,
+    finalNote: number | null,
 }
 
 export interface ITakwiniAll extends Document {
@@ -17,7 +20,10 @@ export interface ITakwiniAll extends Document {
 const TakwiniSchema = new mongoose.Schema<ITakwini>({
     studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Student' },
     performances: [{ type: String }],
+    levels: { type: [String], default: [] },
     bestFardi: { type: Number },
+    fardiEdited: { type: Boolean, default: false },
+    finalNote: { type: Number, default: null },
 });
 
 const AllTakwiniSchema = new mongoose.Schema<ITakwiniAll>({

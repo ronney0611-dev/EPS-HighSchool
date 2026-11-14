@@ -8,7 +8,7 @@ import type { Group } from '@/hooks/useGroupe'
 import { useState } from 'react'
 
 type TakwiniDoc = {
-    students?: { studentId: string; bestFardi: number }[]
+    students?: { studentId: string; bestFardi: number; finalNote?: number | null }[]
     groupNotes?: Record<string, number>
 }
 
@@ -70,7 +70,10 @@ const getGroupIndex = (studentId: string, groupes: Group[]): number =>
 // same logic as getJamaiNote + final in the takwini page
 const takwiniFinal = (doc: TakwiniDoc | undefined, studentId: string, groupIndex: number): number => {
     if (!doc) return 0
-    const bestFardi = doc.students?.find(s => s.studentId === studentId)?.bestFardi ?? 0
+    const st = doc.students?.find(s => s.studentId === studentId)
+    // final note typed by the teacher on the takwini page
+    if (typeof st?.finalNote === 'number' && st.finalNote > 0) return st.finalNote
+    const bestFardi = st?.bestFardi ?? 0
     let jamai = 0
     // 9 = covers teachers on 6 AND on 9 sessions (missing keys are just skipped)
     for (let gi = 0; gi < 9; gi++) {
@@ -168,6 +171,7 @@ const AllNotes = () => {
                             throwRes?.data?.students ?? []
 
                 const mostamirStudents = mostamirRes?.data?.students || []
+                const mostamirHasIds = mostamirStudents.some((m: { studentId?: string }) => m.studentId)
 
                 // same rule as tahsili: use the first activity that has data
                 const takwiniDoc: TakwiniDoc | undefined = [tkSprintRes, tkJumpRes, tkThrowRes]
@@ -206,7 +210,11 @@ const AllNotes = () => {
                     }
 
                     const studentIndex = appClassStudents.indexOf(student)
-                    const mostamirScore = mostamirStudents[studentIndex]?.scores?.reduce((a: number, b: number) => a + b, 0) ?? ''
+                    // by studentId (by position only for old data saved without ids)
+                    const mostamirRow = mostamirHasIds
+                        ? mostamirStudents.find((m: { studentId?: string }) => String(m.studentId) === student._id)
+                        : mostamirStudents[studentIndex]
+                    const mostamirScore = mostamirRow?.scores?.reduce((a: number, b: number) => a + b, 0) ?? ''
                     const tahsiliGrade = tahsiliStudents.find((t: { name: string; final: number }) => t.name === student.name)?.final ?? ''
 
                     const gIndex = getGroupIndex(student._id, groupes)
